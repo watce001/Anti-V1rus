@@ -62,3 +62,6 @@ build/
 
 ## OS Specific
 .DS_Store
+*.java
+core/src/Units/Player.java
+core/src/com/antivirus/Lvl1.java
