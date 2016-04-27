@@ -28,19 +28,16 @@ public class Trojan extends Enemies{
         sprite.setSize(200,200);
     }
 
-    public void getSmallTrojan(){
-        hp = 25;
-        damage = 2;
-        id = 4;
-        speed = 2;
-        fileDropCount = 1;
-        healthDropProb = 0.10;
-        spawnNum = 5;
-        points = 100;
+    public void setSmallTrojan(){
+        setHp(25);
+        setDamage(2);
+        setId(4);
+        setSpeed(2);
+        setFileDropCount(1);
+        setHealthDropProb(0.10f);
+        setSpawnNum(5);
+        setPoints(100);
 
-        batch = new SpriteBatch();
-        img = new TextureRegion(new Texture("EnemyTest.png"));
-        sprite = new Sprite(img);
         sprite.setSize(125, 125);
     }
 }
