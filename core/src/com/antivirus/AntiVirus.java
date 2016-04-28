@@ -4,9 +4,15 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
+/**
+ * Created by Caroline on 22/03/2016.
+ * Co-Authored by Corey
+ */
 public class AntiVirus extends Game implements ApplicationListener {
     //Menu Class
     public static MenuScreen menuScreen;
+    //Level Select Class
+    public static LevelSelect levelSelectScreen;
     //Level1 Class
     public static Lvl1 level1;
 
@@ -16,6 +22,7 @@ public class AntiVirus extends Game implements ApplicationListener {
         Gdx.app.log("AntiVirus: ", "create");
         level1 = new Lvl1(this);
         menuScreen = new MenuScreen(this);
+        levelSelectScreen = new LevelSelect(this);
         Gdx.app.log("AntiVirus: ", "About to change screen to menuScreen");
         //change screen to menu
         setScreen(menuScreen);

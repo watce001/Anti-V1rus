@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 /**
  * Created by Caroline on 22/03/2016.
+ * Co-Authored by Corey
  */
 public class MenuScreen implements Screen {
 
@@ -41,7 +42,7 @@ public class MenuScreen implements Screen {
 
 
     public void create(){
-        Gdx.app.log("MenuScren: ", "menuScreen create");
+        Gdx.app.log("MenuScreen: ", "menuScreen create");
         batch = new SpriteBatch();
         //initFonts(Gdx.graphics.getWidth()/10);
         skin = new Skin(Gdx.files.internal("uidata/uiskin.json"));
@@ -65,9 +66,9 @@ public class MenuScreen implements Screen {
         button.addListener(new ClickListener(){
            public void clicked (InputEvent event, float x, float y){
                button.setText("CLICKED");
-               Gdx.app.log("MenuScreen: ", "About to call level1");
-               game.setScreen(AntiVirus.level1);
-               Gdx.app.log("MenuScreen: ", "level1 started");
+               Gdx.app.log("MenuScreen: ", "About to call LevelSelectScreen");
+               game.setScreen(AntiVirus.levelSelectScreen);
+               Gdx.app.log("MenuScreen: ", "LevelSelectScreen started");
            }
         });
 
