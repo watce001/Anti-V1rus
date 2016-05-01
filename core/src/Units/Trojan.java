@@ -14,7 +14,8 @@ public class Trojan extends Enemies{
         hp = 150;
         damage = 4;
         id = 3;
-        speed = 2;
+        ySpeed = 2;
+        xSpeed = 0;
 
         fileDropCount = 5;
         spawnNum = 1;
@@ -32,7 +33,7 @@ public class Trojan extends Enemies{
         setHp(25);
         setDamage(2);
         setId(4);
-        setSpeed(2);
+        setySpeed(2);
         setFileDropCount(1);
         setHealthDropProb(0.10f);
         setSpawnNum(5);

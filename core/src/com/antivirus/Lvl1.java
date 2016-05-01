@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import java.util.ArrayList;
 
 import Projectiles.Bullet;
+import Units.MemoryLeak;
 import Units.Player;
 import Units.Trojan;
 import Units.Worm;
@@ -49,6 +50,14 @@ public class Lvl1 implements Screen, InputProcessor{
     int trojanWidth;
     int trojanHeight;
     Trojan removeTrojan;
+
+    //Enemy (MemLeak)
+    ArrayList<MemoryLeak> memLeaks;
+    float memLeakSpawnTime;
+    int memLeaksSpawned;
+    int memLeakWidth;
+    int memLeakHeight;
+    MemoryLeak removeMemLeak;
 
     //Screen size?
     public static int WIDTH;
@@ -120,6 +129,12 @@ public class Lvl1 implements Screen, InputProcessor{
         trojanWidth = WIDTH / 4;
         trojanHeight = HEIGHT;
 
+        //Enemy (MemLeak)
+        memLeaks = new ArrayList<MemoryLeak>();
+        memLeakSpawnTime = 0.0f;
+        memLeaksSpawned = 0;
+        memLeakWidth = WIDTH/4;
+        memLeakHeight = HEIGHT;
 
         //creating sprite
         batch = new SpriteBatch();
@@ -179,7 +194,7 @@ public class Lvl1 implements Screen, InputProcessor{
             }
         }
 
-        //Draws trojans is trojan array is holding trojan objects
+        //Draws trojans if trojan array is holding trojan objects
         if (trojans.size() > 0){
             if (bigTrojan == null){
                 for (Trojan trojan: trojans){
@@ -188,6 +203,12 @@ public class Lvl1 implements Screen, InputProcessor{
             }
             else if(bigTrojan != null){
                 bigTrojan.getSprite().draw(batch);
+            }
+        }
+        //Draws memLeaks if memLeak array is holding memLeak objects
+        if (memLeaks.size() > 0){
+            for (MemoryLeak memLeak : memLeaks){
+                memLeak.getSprite().draw(batch);
             }
         }
 
@@ -200,161 +221,73 @@ public class Lvl1 implements Screen, InputProcessor{
         removeTrojan = null;
 
 
-
         //If movement cooldown is zero.
         if(movementCd <= 0.0f){
             //Spawing time, for when we want a specific enemy to spawn
             spawnCd ++;
+
+            //FOR FIGURING OUT WHEN TO SPAWN THINGS
             Gdx.app.log("Lvl1: ", "spawnCd: " + spawnCd);
 
-            //Bullet update
-            for(Bullet bullet: bullets) {
-                bullet.getBounds().setPosition(bullet.getX(),bullet.getY() + 10);
-                bullet.setY(bullet.getY() + 10);
-                if (bullet.getY() > 1670) {
-                    removeBullet = bullet;
-                }
-                //If bullet hits worm, worm loses health
-                for (Worm worm : worms) {
-                    if (worm.getBounds().overlaps(bullet.getBounds())){
-                        worm.setHp(worm.getHp() - bullet.getDamage());
-                        removeBullet = bullet;
-                        //If health is zero, remove it
-                        if (worm.getHp() <= 0) {
-                            removeWorm = worm;
-                        }
-                    }
-                }
-                //If bullet hits trojan, trojan loses health
-                //If there is no big trojan, there are only baby trojans to hit
-                if (bigTrojan == null){
-                    for (Trojan trojan : trojans){
-                        if (trojan.getBounds().overlaps(bullet.getBounds())){
-                            trojan.setHp(trojan.getHp() - bullet.getDamage());
-                            removeBullet = bullet;
-                            if (trojan.getHp() <= 0){
-                                removeTrojan = trojan;
-                            }
-                        }
-                    }
-                }
-                //otherwise there is just the big trojan
-                else{
-                    if(bigTrojan.getBounds().overlaps(bullet.getBounds())){
-                        bigTrojan.setHp(bigTrojan.getHp() - bullet.getDamage());
-                        removeBullet = bullet;
-                        if (bigTrojan.getHp() <= 0){
-                            bigTrojan = null;
-                            //Sets baby trojans to where big trojan died
-                            for (Trojan trojan : trojans){
-                                trojan.setY(trojanHeight);
+            //Shooting player bullets
+            playerBulletSpawn();
 
-                                trojan.setX(trojanWidth);
-                                trojan.getSprite().setPosition(trojan.getX(), trojan.getY());
-
-                                //Creates Bounding box
-                                trojan.setBounds(new Rectangle(trojan.getX(), trojan.getY(), trojan.getSprite().getWidth(), trojan.getSprite().getHeight()));
-                                trojanWidth += 200;
-                            }
-                        }
-                    }
-                }
-            }
-            //remove shot worm
-            if (removeWorm != null){
-                worms.remove(removeWorm);
-                removeWorm = null;
-            }
-            //remove shot trojan
-            if (removeTrojan != null){
-                trojans.remove(removeTrojan);
-                removeTrojan = null;
-            }
-            //remove bullet
-            if(removeBullet != null){
-                bullets.remove(removeBullet);
-            }
-            //Bullet shooting incrementer (See shooting in touch dragged)
-            bulletCd++;
+            //Bullets
+            playerBulletUpdate();
 
             //background
             animateBackground();
 
-            //Move worm
-            for (Worm worm: worms){
-                worm.getBounds().setPosition(worm.getX(), worm.getY() - worm.getSpeed());
-                worm.setY(worm.getY() - worm.getSpeed());
-                worm.getSprite().setPosition(worm.getX(), worm.getY());
-                //if worm collides with player remove player and worm section
-                if (worm.getBounds().overlaps(player.getBounds())){
-                    removeWorm = worm;
-                }
+            if (worms.size() > 0){
+                //Move worm:
+                moveWorm();
+                //remove out of bounds worms (worms that have moved past the screen)
+                removeOutOfBoundsWorm();
             }
-            if (removeWorm != null){
-                worms.remove(removeWorm);
+
+            if (trojans.size() > 0){
+                //Move trojan
+                moveTrojans();
+                //remove out of bounds trojans (trojans that have moved past the screen)
+                removeOutOfBoundsTrojan();
             }
-            //remove out of bounds worms (worms that have moved past the screen)
-            removeOutOfBoundsWorm();
 
-            //Move trojan
-            //Move baby trojans
-            if (bigTrojan == null){
-                for (Trojan trojan: trojans){
-                    //set X & Y to bigTrojan's death point.
-
-                    trojan.getBounds().setPosition(trojan.getX(), trojan.getY() - trojan.getSpeed());
-                    trojan.setY(trojan.getY() - trojan.getSpeed());
-                    trojan.getSprite().setPosition(trojan.getX(), trojan.getY());
-                    //if trojan collides with player remove player and worm section
-                    if (trojan.getBounds().overlaps(player.getBounds())){
-                        removeTrojan = trojan;
-                    }
-                }
-                if (removeTrojan != null){
-                    trojans.remove(removeTrojan);
-                }
+            if (memLeaks.size() > 0){
+                //Move memLeak
+                moveMemLeak();
+                //remove out of bounds memory leaks ( memLeaks that have moved past the screen)
+                removeOutOfBoundsMemLeak();
             }
-            //Move big trojan
-            else{
-                Gdx.app.log("Lvl1: ", "Trojan X: " + bigTrojan.getX() + " Trojan Y: " + bigTrojan.getY());
-                bigTrojan.getBounds().setPosition(bigTrojan.getX(), bigTrojan.getY() - bigTrojan.getSpeed());
-                bigTrojan.setY(bigTrojan.getY() - bigTrojan.getSpeed());
-                bigTrojan.getSprite().setPosition(bigTrojan.getX(), bigTrojan.getY());
-                trojanWidth = (int)bigTrojan.getX() - 150;
-                trojanHeight = (int)bigTrojan.getY();
-                if (bigTrojan.getBounds().overlaps(player.getBounds())){
-                    bigTrojan = null;
-                    //Sets baby trojans to where big trojan died
-                    for (Trojan trojan : trojans){
-                        trojan.setY(trojanHeight);
 
-                        trojan.setX(trojanWidth);
-                        trojan.getSprite().setPosition(trojan.getX(), trojan.getY());
 
-                        //Creates Bounding box
-                        trojan.setBounds(new Rectangle(trojan.getX(), trojan.getY(), trojan.getSprite().getWidth(), trojan.getSprite().getHeight()));
-                        trojanWidth += 200;
-                    }
-                }
-            }
-            //remove out of bounds trojans (trojans that have moved past the screen)
-            removeOutOfBoundsTrojan();
-
+            //SPAWNING
+            //Worm speed = 3
+            //Trojan speed = 2
+            //MemLeak speed = 4
 
             //Spawns worm
             if (spawnCd == 100){
-                spawnWorm();
+                spawnWorm(5, HEIGHT, 0);
             }
-//            while (worms.size() == 10){
-//
-//            }
-
+            //Spawns Trojan
             if (spawnCd == 500){
-                spawnTrojans(WIDTH / 2);
+                spawnTrojans(WIDTH/2, HEIGHT, 0,0);
             }
 
-            //Spawn baby trojans when big trojan is dead
+            //Spawns memLeak
+            if (spawnCd == 1000){
+                spawnMemLeaks(150,HEIGHT,0);
+            }
 
+            if (spawnCd == 1500){
+                spawnWorm(WIDTH ,HEIGHT, -5);
+            }
+            if (spawnCd == 2000){
+                spawnMemLeaks(0 - 500, HEIGHT - HEIGHT/5, 2);
+            }
+            if (spawnCd == 2500){
+                spawnTrojans(0, HEIGHT, 3, -3);
+            }
 
             animateWorm();
         }
@@ -365,6 +298,7 @@ public class Lvl1 implements Screen, InputProcessor{
     public void dispose(){
         img.dispose();
         batch.dispose();
+        game.dispose();
     }
     @Override
     public void resize(int width, int height) {}
@@ -424,30 +358,30 @@ public class Lvl1 implements Screen, InputProcessor{
             //Right
             if (delta.x > 50){
                 if (playerSprite.getX() < (980)){
-                    player.getBounds().setPosition(playerSprite.getX() + player.getSpeed(), playerSprite.getY());
-                    playerSprite.setX(playerSprite.getX() + player.getSpeed());
+                    player.getBounds().setPosition(playerSprite.getX() + player.getxSpeed(), playerSprite.getY());
+                    playerSprite.setX(playerSprite.getX() + player.getxSpeed());
                 }
             }
             //Left
             if (delta.x < -50){
                 if (playerSprite.getX() > 0){
-                    player.getBounds().setPosition(playerSprite.getX() - player.getSpeed(), playerSprite.getY());
-                    playerSprite.setX(playerSprite.getX() - player.getSpeed());
+                    player.getBounds().setPosition(playerSprite.getX() - player.getxSpeed(), playerSprite.getY());
+                    playerSprite.setX(playerSprite.getX() - player.getxSpeed());
                 }
 
             }
             //Down
             if (delta.y > 50){
                 if (playerSprite.getY() > 0){
-                    player.getBounds().setPosition(playerSprite.getX(), playerSprite.getY() - player.getSpeed());
-                    playerSprite.setY(playerSprite.getY() - player.getSpeed());
+                    player.getBounds().setPosition(playerSprite.getX(), playerSprite.getY() - player.getySpeed());
+                    playerSprite.setY(playerSprite.getY() - player.getySpeed());
                 }
             }
             //Up
             if (delta.y < -50){
                 if (playerSprite.getY() < (1670)){
-                    player.getBounds().setPosition(playerSprite.getX(), playerSprite.getY() + player.getSpeed());
-                    playerSprite.setY(playerSprite.getY() + player.getSpeed());
+                    player.getBounds().setPosition(playerSprite.getX(), playerSprite.getY() + player.getySpeed());
+                    playerSprite.setY(playerSprite.getY() + player.getxSpeed());
                 }
             }
             //Static (centre)
@@ -464,16 +398,7 @@ public class Lvl1 implements Screen, InputProcessor{
             movementCd -= elapsedTime;
         }
 
-        //Shooting
-        if (bulletCd >= 20){
-            //Gdx.app.log("Lvl1: ", "Adding bullets!");
-            if (bullets.size() <= 10){
-                Bullet bullet = new Bullet(playerSprite.getX() + 75, playerSprite.getY() + 90, player.getId(), player.getDamage());
-                bullet.setBounds(new Rectangle(playerSprite.getX() + 75, playerSprite.getY() + 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
-                bullets.add(bullet);
-            }
-            bulletCd = 0;
-        }
+
 
         playerSprite.setPosition(playerSprite.getX(), playerSprite.getY());
 
@@ -511,26 +436,140 @@ public class Lvl1 implements Screen, InputProcessor{
         }
     }
 
+    //BULLETS
+
+    public void playerBulletUpdate(){
+        //Bullet update
+        for(Bullet bullet: bullets) {
+            bullet.getBounds().setPosition(bullet.getX(),bullet.getY() + 10);
+            bullet.setY(bullet.getY() + 10);
+            if (bullet.getY() > 1670) {
+                removeBullet = bullet;
+            }
+            //WORM
+            //If bullet hits worm, worm loses health
+            if (worms.size() >0){
+                for (Worm worm : worms) {
+                    if (worm.getBounds().overlaps(bullet.getBounds())){
+                        worm.setHp(worm.getHp() - bullet.getDamage());
+                        removeBullet = bullet;
+                        //If health is zero, remove it
+                        if (worm.getHp() <= 0) {
+                            removeWorm = worm;
+                        }
+                    }
+                }
+            }
+            //MEMLEAK
+            //If bullet hits memory leak, memleak loses health
+            if (memLeaks.size() > 0){
+                for (MemoryLeak memleak : memLeaks){
+                    if (memleak.getBounds().overlaps(bullet.getBounds())){
+                        memleak.setHp(memleak.getHp() - bullet.getDamage());
+                        removeBullet = bullet;
+                        //if health is zero, remove it
+                        if (memleak.getHp() <= 0){
+                            removeMemLeak = memleak;
+                        }
+                    }
+                }
+            }
+            //TROJAN
+            //If bullet hits trojan, trojan loses health
+            //If there is no big trojan, there are only baby trojans to hit
+            if (bigTrojan == null){
+                if (trojans.size() > 0){
+                    for (Trojan trojan : trojans){
+                        if (trojan.getBounds().overlaps(bullet.getBounds())){
+                            trojan.setHp(trojan.getHp() - bullet.getDamage());
+                            removeBullet = bullet;
+                            if (trojan.getHp() <= 0){
+                                removeTrojan = trojan;
+                            }
+                        }
+                    }
+                }
+            }
+            //otherwise there is just the big trojan
+            else{
+                if(bigTrojan.getBounds().overlaps(bullet.getBounds())){
+                    bigTrojan.setHp(bigTrojan.getHp() - bullet.getDamage());
+                    removeBullet = bullet;
+                    if (bigTrojan.getHp() <= 0){
+                        bigTrojan = null;
+                        //Sets baby trojans to where big trojan died
+                        for (Trojan trojan : trojans){
+                            trojan.setY(trojanHeight);
+
+                            trojan.setX(trojanWidth);
+                            trojan.getSprite().setPosition(trojan.getX(), trojan.getY());
+
+                            //Creates Bounding box
+                            trojan.setBounds(new Rectangle(trojan.getX(), trojan.getY(), trojan.getSprite().getWidth(), trojan.getSprite().getHeight()));
+                            trojanWidth += 200;
+                        }
+                    }
+                }
+            }
+        }
+        //remove shot worm
+        if (removeWorm != null){
+            worms.remove(removeWorm);
+            removeWorm = null;
+        }
+        //remove shot memLeak
+        if (removeMemLeak != null){
+            memLeaks.remove(removeMemLeak);
+            removeMemLeak = null;
+        }
+        //remove shot trojan
+        if (removeTrojan != null){
+            trojans.remove(removeTrojan);
+            removeTrojan = null;
+        }
+        //remove bullet
+        if(removeBullet != null){
+            bullets.remove(removeBullet);
+        }
+        //Bullet shooting incrementer (See shooting in touch dragged)
+        bulletCd++;
+    }
+
+    public void playerBulletSpawn(){
+        //Shooting
+        if (bulletCd >= 20){
+            //Gdx.app.log("Lvl1: ", "Adding bullets!");
+            if (bullets.size() <= 10){
+                Bullet bullet = new Bullet(playerSprite.getX() + 75, playerSprite.getY() + 90, player.getId(), player.getDamage());
+                bullet.setBounds(new Rectangle(playerSprite.getX() + 75, playerSprite.getY() + 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
+                bullets.add(bullet);
+            }
+            bulletCd = 0;
+        }
+    }
+
     //WORMS
 
-    public void spawnWorm(){
+    public void spawnWorm(int x, int y, int xSpeed){
+        int tempY = y;
         while (wormsSpawned != 10){
             //Gdx.app.log("Lvl1: ", "Worm");
             Worm worm = new Worm();
 
+            worm.setxSpeed(xSpeed);
 
-            if (wormHeight == HEIGHT){
-                worm.setY(HEIGHT);
+            if (tempY == y){
+                worm.setY(tempY);
                 worm.setIsUp(false);
-                wormHeight = HEIGHT + 100;
+                tempY = y + 100;
             }
             else{
-                worm.setY(HEIGHT+100);
+                worm.setY(tempY);
                 worm.setIsUp(true);
-                wormHeight = HEIGHT;
+                tempY = y;
             }
 
-            worm.setX(wormWidth);
+            worm.setX(x);
             worm.getSprite().setPosition(worm.getX(), worm.getY());
 
             //Creates Bounding box
@@ -538,7 +577,7 @@ public class Lvl1 implements Screen, InputProcessor{
             //Adds the worm to the arrayList
             worms.add(worm);
 
-            wormWidth += 100;
+            x += 100;
             wormsSpawned++;
         }
     }
@@ -561,11 +600,28 @@ public class Lvl1 implements Screen, InputProcessor{
         }
     }
 
+    public void moveWorm(){
+        //Move worm
+        for (Worm worm: worms){
+            worm.getBounds().setPosition(worm.getX() - worm.getxSpeed(), worm.getY() - worm.getySpeed());
+            worm.setY(worm.getY() - worm.getySpeed());
+            worm.setX(worm.getX() + worm.getxSpeed());
+            worm.getSprite().setPosition(worm.getX(), worm.getY());
+            //if worm collides with player remove player and worm section
+            if (worm.getBounds().overlaps(player.getBounds())){
+                removeWorm = worm;
+            }
+        }
+        if (removeWorm != null){
+            worms.remove(removeWorm);
+        }
+    }
+
     public void removeOutOfBoundsWorm(){
         removeWorm = null;
-
         for (Worm worm : worms){
-            if (worm.getY() < 0){
+            if (worm.getY() < -100 || worm.getX() > WIDTH + 1000 || worm.getX() < -1000){
+                Gdx.app.log("OUT", "IT IS OUT");
                 removeWorm = worm;
             }
         }
@@ -574,6 +630,7 @@ public class Lvl1 implements Screen, InputProcessor{
         }
         //resets stats for spawnWorm
         if (worms.size() == 0){
+            Gdx.app.log("Worms: ", "All worms removed!");
             wormsSpawned = 0;
             wormHeight = HEIGHT;
             wormWidth = 50;
@@ -582,22 +639,24 @@ public class Lvl1 implements Screen, InputProcessor{
 
     //TROJANS
 
-    public void spawnTrojans(int spawnLocation){
+    public void spawnTrojans(int x, int y, int bigTrojansXSpeed, int smallTrojansXSpeed){
         //For big trojan
 
         bigTrojan = new Trojan();
         //trojanSprite = bigTrojan.getSprite();
-        bigTrojan.setX(spawnLocation - bigTrojan.getSprite().getWidth()/2);
-        bigTrojan.setY(HEIGHT);
-        bigTrojan.getSprite().setPosition(spawnLocation, HEIGHT);
-        bigTrojan.setBounds(new Rectangle(bigTrojan.getX(), bigTrojan.getY(), bigTrojan.getSprite().getWidth(), bigTrojan.getSprite().getHeight()));
+        bigTrojan.setxSpeed(bigTrojansXSpeed);
+        bigTrojan.setX(x - bigTrojan.getSprite().getWidth()/2);
+        bigTrojan.setY(y);
+        bigTrojan.getSprite().setPosition(x, y);
+        bigTrojan.setBounds(new Rectangle(x, y, bigTrojan.getSprite().getWidth(), bigTrojan.getSprite().getHeight()));
 
-        trojanWidth = (int)bigTrojan.getX() - 150;
+        x = (int)bigTrojan.getX() - 150;
         //For the small Trojans
         while (trojansSpawned != 3){
             //Gdx.app.log("Lvl1: ", "Trojan");
             Trojan smallTrojan = new Trojan();
 
+            smallTrojan.setxSpeed(smallTrojansXSpeed);
             smallTrojan.setY(trojanHeight);
 
             smallTrojan.setX(trojanWidth);
@@ -617,12 +676,57 @@ public class Lvl1 implements Screen, InputProcessor{
         }
     }
 
+    public void moveTrojans(){
+        //Move trojan
+        //Move baby trojans
+        if (bigTrojan == null){
+            for (Trojan trojan: trojans){
+                //set X & Y to bigTrojan's death point.
+
+                trojan.getBounds().setPosition(trojan.getX() - trojan.getxSpeed(), trojan.getY() - trojan.getySpeed());
+                trojan.setY(trojan.getY() - trojan.getySpeed());
+                trojan.setX(trojan.getX() + trojan.getxSpeed());
+                trojan.getSprite().setPosition(trojan.getX(), trojan.getY());
+                //if trojan collides with player remove player and worm section
+                if (trojan.getBounds().overlaps(player.getBounds())){
+                    removeTrojan = trojan;
+                }
+            }
+            if (removeTrojan != null){
+                trojans.remove(removeTrojan);
+            }
+        }
+        //Move big trojan
+        else{
+            bigTrojan.getBounds().setPosition(bigTrojan.getX() - bigTrojan.getxSpeed(), bigTrojan.getY() - bigTrojan.getySpeed());
+            bigTrojan.setY(bigTrojan.getY() - bigTrojan.getySpeed());
+            bigTrojan.setX(bigTrojan.getX() + bigTrojan.getxSpeed());
+            bigTrojan.getSprite().setPosition(bigTrojan.getX(), bigTrojan.getY());
+            trojanWidth = (int)bigTrojan.getX() - 150;
+            trojanHeight = (int)bigTrojan.getY();
+            if (bigTrojan.getBounds().overlaps(player.getBounds())){
+                bigTrojan = null;
+                //Sets baby trojans to where big trojan died
+                for (Trojan trojan : trojans){
+                    trojan.setY(trojanHeight);
+
+                    trojan.setX(trojanWidth);
+                    trojan.getSprite().setPosition(trojan.getX(), trojan.getY());
+
+                    //Creates Bounding box
+                    trojan.setBounds(new Rectangle(trojan.getX(), trojan.getY(), trojan.getSprite().getWidth(), trojan.getSprite().getHeight()));
+                    trojanWidth += 200;
+                }
+            }
+        }
+    }
 
     public void removeOutOfBoundsTrojan(){
         removeTrojan = null;
         if (bigTrojan != null){
-            if (bigTrojan.getY() < 100){
+            if (bigTrojan.getY() < - 300 || bigTrojan.getX() > WIDTH + 1000 || bigTrojan.getX() < -1000){
                 bigTrojan = null;
+                Gdx.app.log("BigTrojan: ", "Removed big trojan!");
                 //Sets baby trojans to where big trojan died
                 for (Trojan trojan : trojans){
                     trojan.setY(trojanHeight);
@@ -638,19 +742,80 @@ public class Lvl1 implements Screen, InputProcessor{
         }
         else {
             for (Trojan trojan : trojans){
-                if (trojan.getY() < 100){
+                if (trojan.getY() < - 300 || trojan.getX() > WIDTH + 1000 || trojan.getX() < -1000){
                     removeTrojan = trojan;
                 }
             }
             if (removeTrojan != null){
                 trojans.remove(removeTrojan);
+                Gdx.app.log("Small Trojan: ", "Removed a small trojan!");
             }
             //resets stats for spawnWorm
             if (trojans.size() == 0){
+                Gdx.app.log("Trojan Array: ", "All trojans removed!");
                 trojansSpawned = 0;
                 trojanHeight = HEIGHT;
                 trojanWidth = WIDTH/4;
             }
+        }
+    }
+
+    //MEMORY LEAK
+    public void spawnMemLeaks(int x, int y, int xSpeed){
+        while (memLeaksSpawned != 3){
+            //Gdx.app.log("Lvl1: ", "Worm");
+            MemoryLeak memLeak = new MemoryLeak();
+            memLeak.setxSpeed(xSpeed);
+            memLeak.setY(y);
+            memLeak.setX(x);
+
+            memLeak.getSprite().setPosition(x, y);
+
+            //Creates Bounding box
+            memLeak.setBounds(new Rectangle(x, y, memLeak.getSprite().getWidth(), memLeak.getSprite().getHeight()));
+            //Adds the memory leak to the arrayList
+            memLeaks.add(memLeak);
+
+            x += 175;
+            memLeaksSpawned++;
+        }
+    }
+
+    public void moveMemLeak(){
+        //Move memLeak
+        for (MemoryLeak memLeak : memLeaks){
+            memLeak.getBounds().setPosition(memLeak.getX() - memLeak.getxSpeed(), memLeak.getY() - memLeak.getySpeed());
+            memLeak.setY(memLeak.getY() - memLeak.getySpeed());
+            memLeak.setX(memLeak.getX() + memLeak.getxSpeed());
+            memLeak.getSprite().setPosition(memLeak.getX(), memLeak.getY());
+            //if memory leak collides with player, remove memoryleak
+            if (memLeak.getBounds().overlaps(player.getBounds())){
+                removeMemLeak = memLeak;
+            }
+        }
+        if (removeMemLeak != null){
+            memLeaks.remove(removeMemLeak);
+        }
+    }
+
+    public void removeOutOfBoundsMemLeak(){
+        removeMemLeak = null;
+
+        for (MemoryLeak memLeak : memLeaks){
+            if (memLeak.getY() < - 300 || memLeak.getX() > WIDTH + 1000 || memLeak.getX() < -1000){
+                removeMemLeak = memLeak;
+            }
+        }
+        if (removeMemLeak != null){
+            memLeaks.remove(removeMemLeak);
+            Gdx.app.log("MemLeak: ", "Removed memory leak!");
+        }
+        //resets stats for spawnWorm
+        if (memLeaks.size() == 0){
+            Gdx.app.log("MemLeak: ", "All memory leaks removed!");
+            memLeaksSpawned = 0;
+            //memLeakHeight = HEIGHT;
+            //memLeakWidth = WIDTH/4;
         }
     }
 }

@@ -14,7 +14,8 @@ public class Units {
     protected int damage;
     protected float x;
     protected float y;
-    protected float speed;
+    protected float xSpeed;
+    protected float ySpeed;
     protected int id;
 
     protected Rectangle bounds;
@@ -58,13 +59,13 @@ public class Units {
         this.y = y;
     }
 
-    public float getSpeed(){
-        return speed;
-    }
+    public float getxSpeed() { return xSpeed; }
 
-    public void setSpeed(float speed){
-        this.speed = speed;
-    }
+    public void setxSpeed(float xSpeed) { this.xSpeed = xSpeed; }
+
+    public float getySpeed() { return ySpeed; }
+
+    public void setySpeed(float ySpeed) { this.ySpeed = ySpeed; }
 
     public int getId(){
         return id;

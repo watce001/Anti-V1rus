@@ -16,7 +16,8 @@ public class Worm extends Enemies {
         hp = 25;
         damage = 1;
         id = 2;
-        speed = 3;
+        ySpeed = 3;
+        xSpeed = 0;
 
         fileDropCount = 2;
         spawnNum = 10;

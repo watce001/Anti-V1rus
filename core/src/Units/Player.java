@@ -16,7 +16,8 @@ public class Player extends Units{
         hp = 200;
         damage = 20;
         id = 1;
-        speed = 8;
+        ySpeed = 8;
+        xSpeed = 8;
 
         batch = new SpriteBatch();
         img = new TextureRegion(new Texture("PlayerTest.png"));

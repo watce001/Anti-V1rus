@@ -17,7 +17,8 @@ public class MemoryLeak extends Enemies{
         damage = 6;
         dot = 3;
         id = 5;
-        speed = 4;
+        ySpeed = 4;
+        xSpeed = 0;
 
         fileDropCount = 4;
         spawnNum = 3;
