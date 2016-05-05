@@ -70,4 +70,8 @@ public class Bullet {
     public int getDamage() {
         return damage;
     }
+
+    public int getId() {
+        return id;
+    }
 }

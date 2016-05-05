@@ -30,7 +30,7 @@ public class Trojan extends Enemies{
     }
 
     public void setSmallTrojan(){
-        setHp(25);
+        setHp(100);
         setDamage(2);
         setId(4);
         setySpeed(2);

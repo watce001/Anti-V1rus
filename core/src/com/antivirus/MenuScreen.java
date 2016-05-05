@@ -42,7 +42,7 @@ public class MenuScreen implements Screen {
 
 
     public void create(){
-        Gdx.app.log("MenuScreen: ", "menuScreen create");
+        //Gdx.app.log("MenuScreen: ", "menuScreen create");
         batch = new SpriteBatch();
         //initFonts(Gdx.graphics.getWidth()/10);
         skin = new Skin(Gdx.files.internal("uidata/uiskin.json"));
