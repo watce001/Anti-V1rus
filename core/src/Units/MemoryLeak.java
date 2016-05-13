@@ -26,8 +26,9 @@ public class MemoryLeak extends Enemies{
         points = 150;
 
         batch = new SpriteBatch();
-        img = new TextureRegion(new Texture("EnemyTest.png"));
+        img = new TextureRegion(new Texture("MemLeakSprite.png"));
         sprite = new Sprite(img);
+        sprite.setSize(150,150);
     }
 
     public int getDot() {

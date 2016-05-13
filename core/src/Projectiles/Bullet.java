@@ -24,17 +24,22 @@ public class Bullet {
     protected float x;
     protected float y;
 
-    public Bullet(float x, float y, int id, int damage){
+    public Bullet(float x, float y, int id, int damage, boolean rotate){
         this.x = x;
         this.y = y;
         this.id = id;
         this.damage = damage;
 
         batch = new SpriteBatch();
-        img = new TextureRegion(new Texture("BulletTest.png"));
+        img = new TextureRegion(new Texture("BulletSprite.png"));
         sprite = new Sprite(img);
+        sprite.setSize(25,75);
         sprite.setPosition(x,y);
         bounds = new Rectangle();
+
+        if (rotate == true){
+            sprite.rotate(180);
+        }
     }
 
     public float getX(){

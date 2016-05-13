@@ -23,7 +23,7 @@ public class Trojan extends Enemies{
         points = 200;
 
         batch = new SpriteBatch();
-        img = new TextureRegion(new Texture("EnemyTest.png"));
+        img = new TextureRegion(new Texture("TrojanSprite.png"));
         sprite = new Sprite(img);
 
         sprite.setSize(200,200);

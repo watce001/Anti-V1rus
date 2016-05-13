@@ -25,7 +25,7 @@ public class Worm extends Enemies {
         points = 50;
 
         batch = new SpriteBatch();
-        img = new TextureRegion(new Texture("EnemyTest.png"));
+        img = new TextureRegion(new Texture("WormSprite.png"));
         sprite = new Sprite(img);
 
         sprite.setSize(100,100);

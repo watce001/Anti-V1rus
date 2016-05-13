@@ -13,15 +13,16 @@ import com.badlogic.gdx.math.Rectangle;
 public class Player extends Units{
 
     public Player(){
-        hp = 200;
+        hp = 100;
         damage = 20;
         id = 1;
         ySpeed = 8;
         xSpeed = 8;
 
         batch = new SpriteBatch();
-        img = new TextureRegion(new Texture("PlayerTest.png"));
+        img = new TextureRegion(new Texture("PlayerSprite.png"));
         sprite = new Sprite(img);
+        sprite.setSize(150,150);
         bounds = new Rectangle();
     }
 }
