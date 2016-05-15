@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -21,6 +22,8 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.Media;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -51,6 +54,7 @@ public class GameClass implements Screen{
     AntiVirus game;
 
     //Player
+
     public Player player;
     public Sprite playerSprite;
 
@@ -175,9 +179,13 @@ public class GameClass implements Screen{
     boolean bugFix;
     int touchTime;
 
+    //Game Background Music
+    private Music musicBackground;
+
     public GameClass(AntiVirus game){this.game = game;}
 
     public void create() {
+
         Gdx.app.log("GameClass: ", "level1 create");
 
         //Gets width and height of screen, ans sets them to variables
@@ -190,6 +198,11 @@ public class GameClass implements Screen{
         camera.translate(WIDTH / 2, HEIGHT / 2);
         camera.update();
 
+        //Music
+
+        musicBackground = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
+        musicBackground.setLooping(true);
+        musicBackground.play();
         //Player
         player = new Player();
         playerSprite = player.getSprite();
@@ -199,6 +212,7 @@ public class GameClass implements Screen{
         playerSprite.setPosition(player.getX(),player.getY());
         //Creates collision box for player
         player.setBounds(new Rectangle(playerSprite.getX(), playerSprite.getY(), player.getSprite().getWidth(), player.getSprite().getHeight()));
+
 
         //Enemy (Worm)
         worms = new ArrayList<Worm>();
@@ -602,7 +616,10 @@ public class GameClass implements Screen{
             Gdx.input.setInputProcessor(stage);
             startTime = System.currentTimeMillis();
             gameState = GameState.GAMEOVER;
+            musicBackground.pause();
+
         }
+
     }
 
     public void playerMovement(){
@@ -1503,6 +1520,7 @@ public class GameClass implements Screen{
     Stage pauseStage;
     TextButton resume;
     TextButton exit;
+    TextButton setting;
 
     private void pauseScreenCreate(){
         pauseStage = new Stage();
@@ -1513,7 +1531,7 @@ public class GameClass implements Screen{
         resume.getLabel().setFontScale(3);
         resume.setWidth(WIDTH / 2);
         resume.setHeight(WIDTH / 4);
-        resume.setPosition(WIDTH / 2 - (resume.getWidth() / 2), (HEIGHT - (HEIGHT / 3)) - (resume.getHeight()/2));
+        resume.setPosition(WIDTH / 2 - (resume.getWidth() / 2), (HEIGHT - (HEIGHT / 4)) - (resume.getHeight()));
         resume.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.input.setInputProcessor(inputMultiplexer);
@@ -1522,21 +1540,38 @@ public class GameClass implements Screen{
         });
         resume.toFront();
 
+        setting = new TextButton("Setting", skin, "default");
+        setting.getLabel().setFontScale(3);
+        setting.setWidth(WIDTH / 2);
+        setting.setHeight(WIDTH / 4);
+        setting.setPosition(WIDTH / 2 - (setting.getWidth() / 2), resume.getY() - resume.getHeight() - (resume.getHeight() / 2 ));
+        setting.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.input.setInputProcessor(inputMultiplexer);
+                gameState = GameState.PLAYING;
+                //game.setScreen(AntiVirus.settingPage);
+            }
+        });
+        setting.toFront();
+
         exit = new TextButton("Quit", skin, "default");
         exit.getLabel().setFontScale(3);
         exit.setWidth(WIDTH / 2);
         exit.setHeight(WIDTH / 4);
-        exit.setPosition(WIDTH / 2 - (exit.getWidth() / 2), (HEIGHT / 3) - (exit.getHeight()/2));
+        exit.setPosition(WIDTH / 2 - (exit.getWidth() / 2), setting.getY() - setting.getHeight() - (setting.getHeight()/2)   );
         exit.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.input.setInputProcessor(inputMultiplexer);
                 gameState = GameState.PLAYING;
                 game.setScreen(AntiVirus.levelSelectScreen);
+                musicBackground.pause();
             }
         });
         exit.toFront();
 
+
         pauseStage.addActor(resume);
+        pauseStage.addActor(setting);
         pauseStage.addActor(exit);
         Gdx.input.setInputProcessor(pauseStage);
     }
