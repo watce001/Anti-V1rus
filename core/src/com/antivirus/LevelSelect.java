@@ -94,13 +94,8 @@ public class LevelSelect implements Screen {
         lvl3button.addListener(new ClickListener(){
             public void clicked (InputEvent event, float x, float y){
                 Gdx.app.log("LevelSelectScreen: ", "About to call level3");
-                Gdx.app.log("LevelSelectScreen: ", "Level Coming Soon");
-
-                //Presents dialog box with a coming soon message - Remove once level implemented
-                showComingSoon();
-
-                //game.setScreen(AntiVirus.level3);
-                //Gdx.app.log("LevelSelectScreen: ", "level3 started");
+                game.setScreen(AntiVirus.level3);
+                Gdx.app.log("LevelSelectScreen: ", "level3 started");
             }
         });
 
