@@ -25,6 +25,8 @@ public class Elissa extends Enemies{
         img = new TextureRegion(new Texture("ElissaSprite.png"));
         sprite = new Sprite(img);
         sprite.setSize(300,300);
+
+        hitImg = new Texture("ElissaHitSprite.png");
     }
 
     public boolean getIsUp() {

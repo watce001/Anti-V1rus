@@ -25,8 +25,9 @@ public class Trojan extends Enemies{
         batch = new SpriteBatch();
         img = new TextureRegion(new Texture("TrojanSprite.png"));
         sprite = new Sprite(img);
-
         sprite.setSize(200,200);
+
+        hitImg = new Texture("TrojanHitSprite.png");
     }
 
     public void setSmallTrojan(){

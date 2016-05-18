@@ -27,6 +27,8 @@ public class Player extends Units{
         sprite = new Sprite(img);
         sprite.setSize(150,150);
         bounds = new Rectangle();
+
+        hitImg = new Texture("PlayerHitSprite.png");
     }
 
     public void disableShoot() {
