@@ -533,9 +533,6 @@ public class Lvl3 implements Screen{
                     }
 
                     //SPAWNING
-                    //Worm speed = 3
-                    //Trojan speed = 2
-                    //MemLeak speed = 4
 
                     //Spawns trojan
                     if (spawnCd == 100) {
@@ -543,17 +540,24 @@ public class Lvl3 implements Screen{
                     }
                     //Spawns worm
                     if (spawnCd == 400){
-                        spawnWorm(WIDTH / 5, HEIGHT, 0);
+                        spawnWorm(5, HEIGHT, 0);
                     }
                     //Spawns memLeak
                     if (spawnCd == 700){
-                        spawnMemLeaks(150,HEIGHT,0);
+                        spawnMemLeaks(150, HEIGHT, 1);
                     }
                     if (spawnCd == 1000){
                         spawnWorm(WIDTH, HEIGHT, -3);
                     }
+                    if (spawnCd == 1200) {
+                        if(worms.size() > 0) {
+                            for(Worm worm : worms) {
+                                worm.setxSpeed(-5);
+                            }
+                        }
+                    }
                     if (spawnCd == 1300){
-                        spawnMemLeaks(0 - 500, HEIGHT - HEIGHT / 5, 2);
+                        spawnMemLeaks(-500, HEIGHT, 2);
                     }
                     if (spawnCd == 1600){
                         spawnTrojans(0, HEIGHT, 3, -3);
@@ -562,18 +566,18 @@ public class Lvl3 implements Screen{
                         spawnWorm(WIDTH, HEIGHT, -5);
                     }
                     if (spawnCd == 2200){
-                        spawnMemLeaks(0 - 500, HEIGHT - HEIGHT / 5, 2);
+                        spawnMemLeaks(WIDTH, HEIGHT, -2);
                     }
                     if (spawnCd == 2500){
                         spawnTrojans(WIDTH, HEIGHT, -3, 3);
                     }
-                    if (spawnCd == 2700){
-                        spawnWorm(0, HEIGHT, 5);
+                    if (spawnCd == 2800){
+                        spawnWorm(-500, HEIGHT, 3);
                     }
-                    if (spawnCd == 3000){
+                    if (spawnCd == 3100){
                         spawnElissa();
                     }
-                    if (spawnCd > 3000 && elissaArray.size() == 0){
+                    if (spawnCd > 3100 && elissaArray.size() == 0){
                         bossDefeatedCd ++;
                         if (bossDefeatedCd == 200){
                             Gdx.input.setInputProcessor(stage);
@@ -581,6 +585,7 @@ public class Lvl3 implements Screen{
                             gameState = GameState.COMPLETE;
                         }
                     }
+                    
                 }
                 break;
             case COMPLETE:
@@ -738,9 +743,14 @@ public class Lvl3 implements Screen{
                 enemyBulletUpdate(bullet);
             }
         }
+
         for (ElissaFiles file : elissaFiles) {
             updateCorruptData(file);
         }
+        if (removeElissaFile != null){
+            elissaFiles.remove(removeElissaFile);
+        }
+
 
         //remove shot worm
         if (removeWorm != null){
@@ -873,7 +883,7 @@ public class Lvl3 implements Screen{
                 }
             }
         }
-        //YOURDOOM
+        //ELISSA
         if (elissaArray.size() > 0) {
 
             for (Elissa elissa : elissaArray){
@@ -1049,23 +1059,20 @@ public class Lvl3 implements Screen{
         elissaAttackCd ++;
     }
 
-    public void updateCorruptData(ElissaFiles bullet){
+    public void updateCorruptData(ElissaFiles elissaFile){
         //Bullet update
-        bullet.getBounds().setPosition(bullet.getX(), bullet.getY()  - 15);
-        bullet.setY(bullet.getY() - 15);
-        if (bullet.getY() < 0) {
-            removeElissaFile = bullet;
+        elissaFile.getBounds().setPosition(elissaFile.getX(), elissaFile.getY() - 15);
+        elissaFile.setY(elissaFile.getY() - 15);
+        if (elissaFile.getY() < 0) {
+            removeElissaFile = elissaFile;
         }
         //PLAYER
-        if (player.getBounds().overlaps(bullet.getBounds())){
-            player.setHp(player.getHp() - bullet.getDamage());
+        if (player.getBounds().overlaps(elissaFile.getBounds())){
+            player.setHp(player.getHp() - elissaFile.getDamage());
             Gdx.app.log("Enemy Bullet Update: ", "Player Hit! Dmg: " + player.getHp());
-            removeElissaFile = bullet;
-            playerDisableTime = spawnCd + bullet.getDisableTime();
+            removeElissaFile = elissaFile;
+            playerDisableTime = spawnCd + elissaFile.getDisableTime();
             player.disableShoot();
-        }
-        if (removeElissaFile != null){
-            elissaFiles.remove(bullet);
         }
     }
 
@@ -1372,30 +1379,28 @@ public class Lvl3 implements Screen{
 
     }
 
-    //YOURDOOM
+    //ELISSA
     public void spawnElissa(){
         elissaSpawned = 0;
         while (elissaSpawned < 1){
             Elissa elissa = new Elissa();
 
-            if (elissaHeight == HEIGHT){
+            if (elissaHeight <= HEIGHT){
                 elissa.setY(HEIGHT);
-                elissa.setIsUp(false);
                 elissaHeight = HEIGHT + 150;
             }
             else{
                 elissa.setY(HEIGHT+150);
-                elissa.setIsUp(true);
                 elissaHeight = HEIGHT;
             }
 
-            elissa.setX(elissaWidth);
+            elissa.setX(WIDTH/2 - elissa.getSprite().getWidth()/2);
 
             elissa.getSprite().setPosition(elissa.getX(), elissa.getY());
 
             //Creates Bounding box
             elissa.setBounds(new Rectangle(elissa.getX(), elissa.getY(), elissa.getSprite().getWidth(), elissa.getSprite().getHeight()));
-            //Adds the worm to the arrayList
+            //Adds the boss to the arrayList
             elissaArray.add(elissa);
 
             elissaWidth += 150;
@@ -1405,8 +1410,31 @@ public class Lvl3 implements Screen{
 
     public void moveElissa(){
         if (elissaArray.size() >= 1){
-            if (elissaArray.get(0).getY() <= (HEIGHT-(elissaArray.get(0).getSprite().getHeight()*3))) {
+            if (elissaArray.get(0).getY() <= (HEIGHT-(elissaArray.get(0).getSprite().getHeight()*1.5))) {
                 for (Elissa elissa: elissaArray){
+                    if(!elissa.getIsMovingLeft() && !elissa.getIsMovingRight()) {
+                        elissa.setIsMovingLeft(true);
+                    }
+                    if(elissa.getIsMovingLeft()) {
+                        if (elissa.getX() < WIDTH/8) {
+                            elissa.setIsMovingLeft(false);
+                            elissa.setIsMovingRight(true);
+                        }
+                        else {
+                            elissa.setX(elissa.getX() - elissa.getxSpeed());
+                        }
+                    }
+
+                    if(elissa.getIsMovingRight()) {
+                        if (elissa.getX()+elissa.getSprite().getWidth() > WIDTH - WIDTH/8) {
+                            elissa.setIsMovingLeft(true);
+                            elissa.setIsMovingRight(false);
+                        }
+                        else {
+                            elissa.setX(elissa.getX() + elissa.getxSpeed());
+                        }
+                    }
+
                     elissa.getBounds().setPosition(elissa.getX(), elissa.getY());
                     elissa.getSprite().setPosition(elissa.getX(), elissa.getY());
                     //if worm collides with player remove player and worm section
@@ -1419,6 +1447,7 @@ public class Lvl3 implements Screen{
             }
             else{
                 for (Elissa elissa: elissaArray){
+
                     elissa.getBounds().setPosition(elissa.getX(), elissa.getY() - elissa.getySpeed());
                     elissa.setY(elissa.getY() - elissa.getySpeed());
                     elissa.getSprite().setPosition(elissa.getX(), elissa.getY());

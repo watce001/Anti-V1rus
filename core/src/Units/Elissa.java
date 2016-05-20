@@ -10,7 +10,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  */
 public class Elissa extends Enemies{
 
-    boolean isUp;
+    boolean isMovingLeft = false;
+    boolean isMovingRight = false;
 
     public Elissa(){
         hp = 800;
@@ -19,7 +20,7 @@ public class Elissa extends Enemies{
         points = 400;
         spawnNum = 1;
         xSpeed = 3;
-        ySpeed = 1;
+        ySpeed = 2;
 
         batch = new SpriteBatch();
         img = new TextureRegion(new Texture("ElissaSprite.png"));
@@ -29,12 +30,20 @@ public class Elissa extends Enemies{
         hitImg = new Texture("ElissaHitSprite.png");
     }
 
-    public boolean getIsUp() {
-        return isUp;
+    public boolean getIsMovingLeft() {
+        return isMovingLeft;
     }
 
-    public void setIsUp(boolean isUp) {
-        this.isUp = isUp;
+    public void setIsMovingLeft(boolean isMovingLeft) {
+        this.isMovingLeft = isMovingLeft;
+    }
+
+    public boolean getIsMovingRight() {
+        return isMovingRight;
+    }
+
+    public void setIsMovingRight(boolean isMovingRight) {
+        this.isMovingRight = isMovingRight;
     }
 }
 
