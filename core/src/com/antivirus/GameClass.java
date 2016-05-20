@@ -145,7 +145,7 @@ public class GameClass implements Screen{
     //In-Game Pause Button
     private Skin skin;
     private Stage stage;
-    TextButton pauseButton;
+    public static TextButton pauseButton;
 
     //In-Game Score
     BitmapFont uiFont;
@@ -180,7 +180,7 @@ public class GameClass implements Screen{
     int touchTime;
 
     //Game Background Music
-    private Music musicBackground;
+    public static Music musicBackground;
 
     public GameClass(AntiVirus game){this.game = game;}
 
@@ -454,6 +454,7 @@ public class GameClass implements Screen{
                     gameState = GameState.PLAYING;
                     game.setScreen(AntiVirus.levelSelectScreen);
                 }
+                musicBackground.pause();
                 break;
         }
         batch.end();
@@ -1520,7 +1521,7 @@ public class GameClass implements Screen{
     Stage pauseStage;
     TextButton resume;
     TextButton exit;
-    TextButton setting;
+    public static TextButton setting;
 
     private void pauseScreenCreate(){
         pauseStage = new Stage();
@@ -1549,7 +1550,7 @@ public class GameClass implements Screen{
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.input.setInputProcessor(inputMultiplexer);
                 gameState = GameState.PLAYING;
-                //game.setScreen(AntiVirus.settingPage);
+                game.setScreen(AntiVirus.settingPage);
             }
         });
         setting.toFront();
@@ -1569,7 +1570,6 @@ public class GameClass implements Screen{
         });
         exit.toFront();
 
-
         pauseStage.addActor(resume);
         pauseStage.addActor(setting);
         pauseStage.addActor(exit);
@@ -1581,6 +1581,7 @@ public class GameClass implements Screen{
         uiFont.draw(batch, scoreTxt, 0, HEIGHT - (scoreLayout.height));
         uiFont.draw(batch,healthTxt,WIDTH/2 , HEIGHT - (healthLayout.height));
         resume.draw(batch, 1);
+        setting.draw(batch, 1);
         exit.draw(batch, 1);
         pauseStage.draw();
     }

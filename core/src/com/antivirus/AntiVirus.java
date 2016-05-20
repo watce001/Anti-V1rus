@@ -15,8 +15,8 @@ public class AntiVirus extends Game implements ApplicationListener {
     public static LevelSelect levelSelectScreen;
     //Level1 Class
     public static GameClass level1;
-
-    //public static Setting settingPage;
+    //settingPage
+    public static Setting settingPage;
 
 
     @Override
@@ -25,13 +25,13 @@ public class AntiVirus extends Game implements ApplicationListener {
         level1 = new GameClass(this);
         menuScreen = new MenuScreen(this);
         levelSelectScreen = new LevelSelect(this);
-
+        settingPage = new Setting();
         Gdx.app.log("AntiVirus: ", "About to change screen to menuScreen");
         //change screen to menu
         setScreen(menuScreen);
         Gdx.app.log("AntiVirus: ", "Changed screen to menuScreen");
-        //settingPage = new Setting(this);
-       // Gdx.app.log("AntiVirus: ", "Changed sreen to Setting page");
+
+
     }
 
     @Override

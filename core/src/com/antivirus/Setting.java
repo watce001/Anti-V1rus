@@ -1,34 +1,172 @@
 package com.antivirus;
 
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+
+
+
 
 /**
  * Created by Tony on 13/05/2016.
-
+ */
 public class Setting implements Screen {
-    boolean musicOff;
-    boolean musicOn;
+
+    public enum GameState {PLAYING}
+    GameState gameState = GameState.PLAYING;
+
+    TextButton musicOff;
+    TextButton musicOn;
     private SpriteBatch batch;
     private Skin skin;
+    public static int WIDTH;
+    public static int HEIGHT;
     BitmapFont font;
     String txt;
     GlyphLayout layout;
+    AntiVirus game;
+    TextButton resume;
+    Stage settingStage;
+    InputMultiplexer inputMultiplexer;
 
-    public void create(){
+    public void create() {
         batch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("uidata/uiskin.json"));
         font = new BitmapFont(Gdx.files.internal("MainMenu/datacontrol.fnt"));
-        txt = "anti virus";
-        //Centers font text
+        txt = "setting page";
+        WIDTH = Gdx.graphics.getWidth();
+        HEIGHT = Gdx.graphics.getHeight();
+        inputMultiplexer = new InputMultiplexer();
         layout = new GlyphLayout();
         layout.setText(font, txt);
+
+
+        Gdx.input.setInputProcessor(settingStage);
+        settingButton();
     }
+
+    public void clicked(InputEvent event, float x, float y) {
+        Gdx.app.log("Setting : ", "About to call setting page");
+
+        settingPageRender();
+    }
+
+
+
+
+
+
+    public void render (float f) {
+        Gdx.app.log("Setting: ", "setting page render");
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+
+        batch.begin();
+        font.draw(batch, txt, Gdx.graphics.getWidth()/2 - layout.width/2, (Gdx.graphics.getHeight() - Gdx.graphics.getHeight()/4) + layout.height/2);
+        settingButton();
+        settingPageRender();
+
+        batch.end();
+    }
+    public void dispose(){
+
+    }
+
+    public void resize(int width, int height){}
+
+    public void pause(){}
+
+    public void resume(){}
+
+    public void show(){
+        Gdx.app.log("Setting: ", "Setting show called");
+        create();
+    }
+    public void hide(){
+        Gdx.app.log("Setting: ", "Setting hide called");
+    }
+
+
+    public void settingButton(){
+        settingStage = new Stage();
+
+        //adding buttons
+        resume = new TextButton("Resume", skin, "default");
+        resume.getLabel().setFontScale(3);
+        resume.setWidth(WIDTH / 2);
+        resume.setHeight(WIDTH / 6);
+        resume.setPosition(WIDTH / 2 -resume.getWidth() / 2, resume.getY() + resume.getHeight() - resume.getHeight() + resume.getY()+resume.getHeight());
+
+        resume.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+               // Gdx.input.setInputProcessor(inputMultiplexer);
+                gameState = GameState.PLAYING;
+                //game.setScreen(GameClass.);
+
+            }
+        });
+        resume.toFront();
+
+        musicOff = new TextButton("Music off", skin, "default");
+        musicOff.getLabel().setFontScale(3);
+        musicOff.setWidth(WIDTH / 2);
+        musicOff.setHeight(WIDTH / 6);
+        musicOff.setPosition(WIDTH / 2 -musicOff.getWidth() / 2, musicOff.getY() + musicOff.getHeight() + musicOff.getHeight()+musicOff.getHeight());
+
+        musicOff.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                //Gdx.input.setInputProcessor(inputMultiplexer);
+                GameClass.musicBackground.pause();
+            }
+
+        });
+        musicOff.toFront();
+
+        musicOn = new TextButton("Music on", skin, "default");
+        musicOn.getLabel().setFontScale(3);
+        musicOn.setWidth(WIDTH / 2);
+        musicOn.setHeight(WIDTH / 6);
+        musicOn.setPosition(WIDTH / 2 -musicOn.getWidth() / 2, musicOn.getY() + musicOn.getHeight() + musicOn.getHeight()+musicOn.getHeight()
+                +musicOn.getHeight()+musicOn.getHeight());
+
+        musicOn.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                //Gdx.input.setInputProcessor(inputMultiplexer);
+                GameClass.musicBackground.play();
+            }
+        });
+        musicOn.toFront();
+
+       /* resume.draw(batch, 1);
+        musicOn.draw(batch, 1);
+        musicOff.draw(batch, 1);*/
+
+        settingStage.addActor(musicOff);
+        settingStage.addActor(musicOn);
+        settingStage.addActor(resume);
+        Gdx.input.setInputProcessor(settingStage);
+    }
+
+    public void settingPageRender(){
+        resume.draw(batch, 1);
+        musicOn.draw(batch, 1);
+        musicOff.draw(batch, 1);
+        settingStage.draw();
+    }
+
+
+
 }
- */
+
+
 
