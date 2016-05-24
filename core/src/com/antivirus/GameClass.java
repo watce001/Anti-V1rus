@@ -199,10 +199,10 @@ public class GameClass implements Screen{
         camera.update();
 
         //Music
-
         musicBackground = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
         musicBackground.setLooping(true);
         musicBackground.play();
+
         //Player
         player = new Player();
         playerSprite = player.getSprite();
@@ -442,6 +442,7 @@ public class GameClass implements Screen{
                 font.draw(batch, txt, WIDTH/2 - layout.width/2, HEIGHT/2 + layout.height/2);
                 if (countdown == 5){
                     gameState = GameState.PLAYING;
+                    musicBackground.dispose();
                     game.setScreen(AntiVirus.levelSelectScreen);
                 }
                 break;
@@ -452,6 +453,7 @@ public class GameClass implements Screen{
                 font.draw(batch, complete, WIDTH/2 - completeLayout.width/2, HEIGHT/2 + completeLayout.height/2);
                 if (countdown == 5){
                     gameState = GameState.PLAYING;
+                    musicBackground.dispose();
                     game.setScreen(AntiVirus.levelSelectScreen);
                 }
                 break;
