@@ -2,6 +2,7 @@ package com.antivirus;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -26,6 +27,8 @@ public class MenuScreen implements Screen {
     private Skin skin;
     private Stage stage;
 
+    private Sound selectSound;
+
     //load bitmap font
     BitmapFont font;
 
@@ -48,6 +51,9 @@ public class MenuScreen implements Screen {
         skin = new Skin(Gdx.files.internal("uidata/uiskin.json"));
         stage = new Stage();
 
+        //init select sound
+        selectSound = Gdx.audio.newSound(Gdx.files.internal("Blip_Select.wav"));
+
         //Initializes title
         font = new BitmapFont(Gdx.files.internal("MainMenu/datacontrol.fnt"));
         txt = "anti virus";
@@ -66,6 +72,7 @@ public class MenuScreen implements Screen {
         button.addListener(new ClickListener(){
            public void clicked (InputEvent event, float x, float y){
                button.setText("CLICKED");
+               selectSound.play();
                Gdx.app.log("MenuScreen: ", "About to call LevelSelectScreen");
                game.setScreen(AntiVirus.levelSelectScreen);
                Gdx.app.log("MenuScreen: ", "LevelSelectScreen started");
@@ -105,6 +112,7 @@ public class MenuScreen implements Screen {
     public void dispose(){
 //        titleFont.dispose();
 //        startFont.dispose();
+        selectSound.dispose();
     }
     @Override
     public void resize(int width, int height){}
