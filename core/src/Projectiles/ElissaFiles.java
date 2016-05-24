@@ -1,0 +1,88 @@
+package Projectiles;
+
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+
+/**
+ * Created by Caroline on 14/04/2016.
+ */
+public class ElissaFiles {
+
+    float disableTime = 100;
+    private SpriteBatch batch;
+    private TextureRegion img;
+    private Sprite sprite;
+    private Rectangle bounds;
+
+    //1=player,2=enemy1, etc.
+    // REMOVE ID
+    private int id;
+
+    int damage;
+
+    protected float x;
+    protected float y;
+
+    public ElissaFiles(float x, float y, int id, int damage, boolean rotate){
+        this.x = x;
+        this.y = y;
+        this.id = id;
+        this.damage = damage;
+
+        batch = new SpriteBatch();
+        img = new TextureRegion(new Texture("CorruptedDataSprite.png"));
+        sprite = new Sprite(img);
+        sprite.setSize(50,50);
+        sprite.setPosition(x,y);
+        bounds = new Rectangle();
+
+        if (rotate == true){
+            sprite.rotate(180);
+        }
+    }
+
+    public float getX(){
+        return x;
+    }
+
+    public void setX(float x){
+        this.x = x;
+        sprite.setPosition(x,y);
+    }
+
+    public float getY(){
+        return y;
+    }
+
+    public void setY(float y){
+        this.y = y;
+        sprite.setPosition(x,y);
+    }
+
+    public Sprite getSprite(){
+        return sprite;
+    }
+
+    public Rectangle getBounds() {
+        return bounds;
+    }
+
+    public void setBounds(Rectangle bounds) {
+        this.bounds = bounds;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public float getDisableTime() {
+        return disableTime;
+    }
+}

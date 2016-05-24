@@ -3,11 +3,13 @@ package Units;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 
 
 /**
  * Created by Caroline on 14/04/2016.
+ * Co-Authored by Corey
  */
 public class Units {
     protected int hp;
@@ -17,11 +19,14 @@ public class Units {
     protected float xSpeed;
     protected float ySpeed;
     protected int id;
+    protected boolean hit = false;
+    private int hitFrameCount = 0;
 
     protected Rectangle bounds;
 
     protected SpriteBatch batch;
     protected TextureRegion img;
+    protected Texture hitImg;
     protected Sprite sprite;
 
     public Units(){ }
@@ -33,6 +38,7 @@ public class Units {
 
     public void setHp(int hp){
         this.hp = hp;
+        hit = true;
     }
 
     public int getDamage(){
@@ -76,7 +82,21 @@ public class Units {
     }
 
     public Sprite getSprite(){
+        if (hit) {
+            sprite.setTexture(hitImg);
+            hitFrameCount = 1;
+            hit = false;
+        }
+        if(hitFrameCount >= 1) {
+            if (hitFrameCount <= 10) {
+                hitFrameCount++;
+            }
+            else {
+                sprite.setTexture(img.getTexture());
+            }
+        }
         return sprite;
+
     }
 
     public Rectangle getBounds() {

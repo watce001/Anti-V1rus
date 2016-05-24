@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 /**
  * BOSS CLASS
  * Created by Caroline on 9/05/2016.
+ * Co-Authored by Corey
  */
 public class YourDoom extends Worm{
 
@@ -24,5 +25,7 @@ public class YourDoom extends Worm{
         img = new TextureRegion(new Texture("YourDoomSprite.png"));
         sprite = new Sprite(img);
         sprite.setSize(150,150);
+
+        hitImg = new Texture("WormHitSprite.png");
     }
 }
