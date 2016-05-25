@@ -1549,7 +1549,7 @@ public class GameClass implements Screen{
         setting.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.input.setInputProcessor(inputMultiplexer);
-                gameState = GameState.PLAYING;
+                gameState = GameState.PLAYING;//,llklk
                 game.setScreen(AntiVirus.settingPage);
             }
         });

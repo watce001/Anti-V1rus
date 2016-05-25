@@ -21,8 +21,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
  */
 public class Setting implements Screen {
 
-    public enum GameState {PLAYING}
+    public enum GameState {PLAYING, PAUSED}
     GameState gameState = GameState.PLAYING;
+
 
     TextButton musicOff;
     TextButton musicOn;
@@ -38,6 +39,9 @@ public class Setting implements Screen {
     Stage settingStage;
     InputMultiplexer inputMultiplexer;
 
+    public Setting(AntiVirus game){
+        this.game = game;
+    }
     public void create() {
         batch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("uidata/uiskin.json"));
@@ -48,7 +52,6 @@ public class Setting implements Screen {
         inputMultiplexer = new InputMultiplexer();
         layout = new GlyphLayout();
         layout.setText(font, txt);
-
 
         Gdx.input.setInputProcessor(settingStage);
         settingButton();
@@ -86,7 +89,9 @@ public class Setting implements Screen {
 
     public void pause(){}
 
-    public void resume(){}
+    public void resume(){
+        Gdx.app.log("Resume: ", "Resume working~~!!!!!");
+    }
 
     public void show(){
         Gdx.app.log("Setting: ", "Setting show called");
@@ -109,9 +114,13 @@ public class Setting implements Screen {
 
         resume.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-               // Gdx.input.setInputProcessor(inputMultiplexer);
+                Gdx.input.setInputProcessor(inputMultiplexer);
+                GameClass.musicBackground.pause();
                 gameState = GameState.PLAYING;
-                //game.setScreen(GameClass.);
+                game.setScreen(AntiVirus.level1);
+
+
+                //resume();
 
             }
         });
@@ -147,9 +156,7 @@ public class Setting implements Screen {
         });
         musicOn.toFront();
 
-       /* resume.draw(batch, 1);
-        musicOn.draw(batch, 1);
-        musicOff.draw(batch, 1);*/
+
 
         settingStage.addActor(musicOff);
         settingStage.addActor(musicOn);

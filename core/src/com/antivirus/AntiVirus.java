@@ -25,7 +25,7 @@ public class AntiVirus extends Game implements ApplicationListener {
         level1 = new GameClass(this);
         menuScreen = new MenuScreen(this);
         levelSelectScreen = new LevelSelect(this);
-        settingPage = new Setting();
+        settingPage = new Setting(this);
         Gdx.app.log("AntiVirus: ", "About to change screen to menuScreen");
         //change screen to menu
         setScreen(menuScreen);
