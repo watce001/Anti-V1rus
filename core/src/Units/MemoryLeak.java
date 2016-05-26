@@ -29,6 +29,8 @@ public class MemoryLeak extends Enemies{
         img = new TextureRegion(new Texture("MemLeakSprite.png"));
         sprite = new Sprite(img);
         sprite.setSize(150,150);
+
+        hitImg = new Texture("MemLeakHitSprite.png");
     }
 
     public int getDot() {
