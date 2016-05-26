@@ -15,7 +15,7 @@ import Units.Enemies;
 public class ParticleManager {
     //Constants
     public static final int MAX_PARTICLES = 512;
-    public static final float PLAYER_TRAIL_LIFETIME = 0.1f;
+    public static final float PLAYER_TRAIL_LIFETIME = 0.3f;
     public static final float IMPACT_LIFETIME = 0.2f;
     public static final float IMPACT_SCATTER = 150f;
     public static final float EXPLOSION_LIFETIME = 0.8f;
@@ -107,12 +107,12 @@ public class ParticleManager {
         //Type-specific initialization
         switch(t) {
             case PLAYER_TRAIL: {
-                vX[i] = MathUtils.random(-10f, 10f);
-                vY[i] = -60f;
+                vX[i] = MathUtils.random(-100f, 100f);
+                vY[i] = -600f;
                 lifetime[i] = PLAYER_TRAIL_LIFETIME;
                 break;
             } case MUZZLE_FLASH: {
-                if(spawner.getClass().equals(Enemies.class)) {
+                if(spawner instanceof Enemies) {
                     vX[i] = 0f;
                     vY[i] = 5f;
                 }
@@ -167,8 +167,8 @@ public class ParticleManager {
                     TextureRegion reg = playerTrailTextures[i % playerTrailTextures.length];
                     batch.setColor(1f, 1f, 1f, Math.max(lifetime[i] / PLAYER_TRAIL_LIFETIME, 0f));
                     batch.draw(reg,
-                            x[i] - reg.getRegionWidth()/2f,
-                            y[i] - reg.getRegionHeight()/2f, 15, 15);
+                            x[i] - 12.5f,
+                            y[i] - 12.5f, 25f, 25f);
                     break;
                 } case MUZZLE_FLASH: {
                     TextureRegion reg = muzzleFlash;
@@ -176,10 +176,17 @@ public class ParticleManager {
                     /* Muzzle flashes look a lot better when snapped to their source.
                      * Doing so is simply a matter of drawing it relative to whatever
                      * entity spawned it */
-                    Sprite spawner = source[i].getSprite();
+                    Units spawner = source[i];
+                    int yOffset = 0;
+                    //if spawned by an enemy, flip texture and offset y value
+                    if(spawner instanceof Enemies) {
+                        reg = new TextureRegion(muzzleFlash);
+                        reg.flip(false, true);
+                        yOffset = -40; //so sprite renders below the enemy;
+                    }
                     batch.draw(reg,
-                            spawner.getX() + x[i] - 17.5f,
-                            spawner.getY() + y[i], 35, 45);
+                            spawner.getSprite().getX() + x[i] - 17.5f,
+                            spawner.getSprite().getY() + y[i] + yOffset, 35, 45);
                     break;
                 } case IMPACT: {
                     TextureRegion reg = new TextureRegion(impact);
