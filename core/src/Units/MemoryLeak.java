@@ -15,7 +15,7 @@ public class MemoryLeak extends Enemies{
     public MemoryLeak(){
         hp = 100;
         damage = 6;
-        dot = 3;
+        dot = 2;
         id = 5;
         ySpeed = 4;
         xSpeed = 0;

@@ -90,6 +90,7 @@ public class Lvl1 implements Screen{
     int memLeakHeight;
     MemoryLeak removeMemLeak;
     boolean dotHappening;
+    int dotDamage;
 
     //Boss - YourDoom
     ArrayList<YourDoom> yourDoomArray;
@@ -253,6 +254,7 @@ public class Lvl1 implements Screen{
         memLeakWidth = WIDTH/4;
         memLeakHeight = HEIGHT;
         dotHappening = false;
+        dotDamage = 0;
 
         //Boss - YourDoom
         yourDoomArray = new ArrayList<YourDoom>();
@@ -1456,6 +1458,7 @@ public class Lvl1 implements Screen{
             if (memLeak.getBounds().overlaps(player.getBounds())){
                 score += memLeak.getPoints();
                 dotHappening = true;
+                dotDamage = memLeak.getDot();
                 startTime = System.currentTimeMillis();
                 for(int i = 0; i < 10; i++) {
                     int p = particles.spawn(ParticleManager.Type.DATA, memLeak);
@@ -1503,14 +1506,17 @@ public class Lvl1 implements Screen{
 
         countdown = ((System.currentTimeMillis() - startTime) / 1000);
 
-        //Gdx.app.log( "LastNuM : " , "" + lastNum);
-        //Gdx.app.log("Countdown: " , "" + countdown);
+        Gdx.app.log( "LastNuM : " , "" + lastNum);
+        Gdx.app.log("Countdown: " , "" + countdown);
         if (countdown > lastNum){
-            //Gdx.app.log("DAMAGE: " , "");
+            Gdx.app.log("DAMAGE: " , "");
+            player.setHp(player.getHp() - dotDamage);
+            sfx.playSound(SoundFXManager.Type.HIT);
         }
 
-        if (countdown == 6){
+        if (countdown >= 6){
             dotHappening = false;
+            dotDamage = 0;
         }
         lastNum = countdown;
 
