@@ -14,10 +14,10 @@ public class Elissa extends Enemies{
     boolean isMovingRight = false;
 
     public Elissa(){
-        hp = 800;
+        hp = 1500;
         damage = 10;
-        fileDropCount = 10;
-        points = 400;
+        fileDropCount = 15;
+        points = 2000;
         spawnNum = 1;
         xSpeed = 3;
         ySpeed = 2;
