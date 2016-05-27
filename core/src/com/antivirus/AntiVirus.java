@@ -14,7 +14,7 @@ public class AntiVirus extends Game implements ApplicationListener {
     //Level Select Class
     public static LevelSelect levelSelectScreen;
     //Level1 Class
-    public static GameClass level1;
+    public static Lvl1 level1;
     //Level2 Class
     //public static Lvl2 level2;
     //Level3 Class
@@ -23,7 +23,7 @@ public class AntiVirus extends Game implements ApplicationListener {
     @Override
     public void create() {
         Gdx.app.log("AntiVirus: ", "create");
-        level1 = new GameClass(this);
+        level1 = new Lvl1(this);
         level3 = new Lvl3(this);
         menuScreen = new MenuScreen(this);
         levelSelectScreen = new LevelSelect(this);
@@ -32,6 +32,7 @@ public class AntiVirus extends Game implements ApplicationListener {
         setScreen(menuScreen);
         Gdx.app.log("AntiVirus: ", "Changed screen to menuScreen");
 
+        ScoreHandler.load();
     }
 
     @Override

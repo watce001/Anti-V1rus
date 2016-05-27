@@ -44,7 +44,7 @@ import Units.YourDoom;
  * Created by Caroline on 22/03/2016.
  * Co-Authored by Corey
  */
-public class GameClass implements Screen{
+public class Lvl1 implements Screen{
 
     public enum GameState {PLAYING, PAUSED, COMPLETE, GAMEOVER}
     GameState gameState = GameState.PLAYING;
@@ -192,11 +192,11 @@ public class GameClass implements Screen{
     private ParticleManager particles;
     float playerTrailCD;
 
-    public GameClass(AntiVirus game){this.game = game;}
+    public Lvl1(AntiVirus game){this.game = game;}
 
     public void create() {
 
-        Gdx.app.log("GameClass: ", "level1 create");
+        Gdx.app.log("Lvl1: ", "level1 create");
 
         //Gets width and height of screen, ans sets them to variables
         WIDTH = Gdx.graphics.getWidth();
@@ -283,6 +283,11 @@ public class GameClass implements Screen{
         yourDoomBulletCd = 0.0f;
         spawnCd = 0.0f;
         bossDefeatedCd = 0.0f;
+
+        playerTrailCD = 0.0f;
+
+        //reset total files
+        totalFiles = 0;
 
         //Initializing bullets
         //playerBullet = new Bullet(playerSprite.getX(), playerSprite.getY(), player.getId(), player.getDamage());
@@ -467,15 +472,7 @@ public class GameClass implements Screen{
                 }
                 break;
             case COMPLETE:
-                countdown = ((System.currentTimeMillis() - startTime) / 1000);
-                Gdx.app.log("Seconds Elapsed: ", "" + ((System.currentTimeMillis() - startTime) / 1000));
-                overlay.draw(batch, 0.5f);
-                font.draw(batch, complete, WIDTH/2 - completeLayout.width/2, HEIGHT/2 + completeLayout.height/2);
-                if (countdown == 5){
-                    gameState = GameState.PLAYING;
-                    musicBackground.dispose();
-                    game.setScreen(AntiVirus.levelSelectScreen);
-                }
+                completeScreenRender();
                 break;
         }
         batch.end();
@@ -567,33 +564,40 @@ public class GameClass implements Screen{
                     //Spawns worm
                     if (spawnCd == 100){
                         spawnWorm(5, HEIGHT, 0);
+                        System.out.println("File Count: " + totalFiles + " of expected 20");
                     }
                     //Spawns Trojan
                     if (spawnCd == 500){
                         spawnTrojans(WIDTH/2, HEIGHT, 0,0);
+                        System.out.println("File Count: " + totalFiles + " of expected 28");
                     }
 
                     //Spawns memLeak
                     if (spawnCd == 1000){
                         spawnMemLeaks(150,HEIGHT,0);
+                        System.out.println("File Count: " + totalFiles + " of expected 40");
                     }
 
                     if (spawnCd == 1500){
                         spawnWorm(WIDTH, HEIGHT, -5);
+                        System.out.println("File Count: " + totalFiles + " of expected 60");
                     }
                     if (spawnCd == 2000){
                         spawnMemLeaks(0 - 500, HEIGHT - HEIGHT / 5, 2);
+                        System.out.println("File Count: " + totalFiles + " of expected 72");
                     }
                     if (spawnCd == 2500){
                         spawnTrojans(0, HEIGHT, 3, -3);
+                        System.out.println("File Count: " + totalFiles + " of expected 80");
                     }
                     if (spawnCd == 3000){
                         spawnYourDoom();
+                        System.out.println("File Count: " + totalFiles + " of expected 150");
                     }
                     if (spawnCd > 3000 && yourDoomArray.size() == 0){
                         bossDefeatedCd ++;
                         if (bossDefeatedCd == 200){
-                            Gdx.input.setInputProcessor(stage);
+                            completeScreenCreate();
                             startTime = System.currentTimeMillis();
                             gameState = GameState.COMPLETE;
                         }
@@ -629,12 +633,12 @@ public class GameClass implements Screen{
 
     @Override
     public void show(){
-        Gdx.app.log("GameClass: ", "level1 show called");
+        Gdx.app.log("Lvl1: ", "level1 show called");
         create();
     }
     @Override
     public void hide(){
-        Gdx.app.log("GameClass: ", "level1 hide called");
+        Gdx.app.log("Lvl1: ", "level1 hide called");
     }
 
     //PLAYER
@@ -730,9 +734,9 @@ public class GameClass implements Screen{
     public void animateBackground(){
         bg1.setPosition(bg1.getX(), posXBackground1);
         bg2.setPosition(bg2.getX(), posXBackground2);
-        //Gdx.app.log("GameClass: ", "" + posXBackground1);
+        //Gdx.app.log("Lvl1: ", "" + posYBackground1);
         if(posXBackground1 < -1920){
-            //Gdx.app.log("GameClass: ", "Got here! " + HEIGHT);
+            //Gdx.app.log("Lvl1: ", "Got here! " + HEIGHT);
             bg1.setPosition(0,bg2.getHeight());
             posXBackground1 = (int)bg2.getHeight();
             posXBackground1 -= 5;
@@ -809,7 +813,7 @@ public class GameClass implements Screen{
     //PLAYER BULLETS
     public void playerBulletSpawn(){
         //Shooting
-        //Gdx.app.log("GameClass: ", "Adding bullets!" + bullets.size());
+        //Gdx.app.log("Lvl1: ", "Adding bullets!" + bullets.size());
         if (playerBulletCd >= 10){
 
             if (bullets.size() <= 30){
@@ -1013,7 +1017,7 @@ public class GameClass implements Screen{
             }
             //Gdx.app.log("Worm bullets: ", "Rand num: " + num);
             Worm worm = worms.get(num);
-            //Gdx.app.log("GameClass: ", "Adding bullets!");
+            //Gdx.app.log("Lvl1: ", "Adding bullets!");
             if (bullets.size() <= 30){
                 Bullet bullet = new Bullet(worm.getSprite().getX() + worm.getSprite().getWidth()/2, worm.getSprite().getY() - 90, worm.getId(), worm.getDamage(), true);
                 bullet.setBounds(new Rectangle(worm.getSprite().getX() - 75, worm.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
@@ -1092,7 +1096,7 @@ public class GameClass implements Screen{
             }
             //Gdx.app.log("Worm bullets: ", "Rand num: " + num);
             MemoryLeak memLeak = memLeaks.get(num);
-            //Gdx.app.log("GameClass: ", "Adding bullets!");
+            //Gdx.app.log("Lvl1: ", "Adding bullets!");
             if (bullets.size() <= 30){
                 Bullet bullet = new Bullet(memLeak.getSprite().getX() + memLeak.getSprite().getWidth()/2, memLeak.getSprite().getY() - 90, memLeak.getId(), memLeak.getDamage(), true);
                 bullet.setBounds(new Rectangle(memLeak.getSprite().getX() - 75, memLeak.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
@@ -1123,7 +1127,7 @@ public class GameClass implements Screen{
             }
             //Gdx.app.log("Worm bullets: ", "Rand num: " + num);
             YourDoom yourDoom = yourDoomArray.get(num);
-            //Gdx.app.log("GameClass: ", "Adding bullets!");
+            //Gdx.app.log("Lvl1: ", "Adding bullets!");
             if (bullets.size() <= 30){
                 Bullet bullet = new Bullet(yourDoom.getSprite().getX() + yourDoom.getSprite().getWidth()/2, yourDoom.getSprite().getY() - 90, yourDoom.getId(), yourDoom.getDamage(), true);
                 bullet.setBounds(new Rectangle(yourDoom.getSprite().getX() - 75, yourDoom.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
@@ -1160,7 +1164,7 @@ public class GameClass implements Screen{
         int tempY = y;
         wormsSpawned = 0;
         while (wormsSpawned != 10){
-            //Gdx.app.log("GameClass: ", "Worm");
+            //Gdx.app.log("Lvl1: ", "Worm");
             Worm worm = new Worm();
 
             worm.setxSpeed(xSpeed);
@@ -1181,6 +1185,10 @@ public class GameClass implements Screen{
 
             //Creates Bounding box
             worm.setBounds(new Rectangle(worm.getX(), worm.getY(), worm.getSprite().getWidth(), worm.getSprite().getHeight()));
+
+            //increments totalFiles
+            totalFiles += worm.getFileDropCount();
+
             //Adds the worm to the arrayList
             worms.add(worm);
 
@@ -1233,6 +1241,7 @@ public class GameClass implements Screen{
         if (removeWorm != null){
             spawnFiles(removeWorm.getFileDropCount(), removeWorm.getX() + (removeWorm.getSprite().getWidth()/2), removeWorm.getY() + removeWorm.getSprite().getHeight()/2);
             worms.remove(removeWorm);
+            removeWorm = null;
         }
     }
 
@@ -1267,10 +1276,13 @@ public class GameClass implements Screen{
         bigTrojan.getSprite().setPosition(x, y);
         bigTrojan.setBounds(new Rectangle(x, y, bigTrojan.getSprite().getWidth(), bigTrojan.getSprite().getHeight()));
 
+        //increments totalFiles
+        totalFiles += bigTrojan.getFileDropCount();
+
         x = (int)bigTrojan.getX() - 150;
         //For the small Trojans
         while (trojansSpawned != 3){
-            //Gdx.app.log("GameClass: ", "Trojan");
+            //Gdx.app.log("Lvl1: ", "Trojan");
             Trojan smallTrojan = new Trojan();
 
             smallTrojan.setxSpeed(smallTrojansXSpeed);
@@ -1281,7 +1293,8 @@ public class GameClass implements Screen{
 
             //Creates Bounding box
             smallTrojan.setBounds(new Rectangle(smallTrojan.getX(), smallTrojan.getY(), smallTrojan.getSprite().getWidth(), smallTrojan.getSprite().getHeight()));
-            //Adds the worm to the arrayList
+
+            //Adds the trojan to the arrayList
             trojans.add(smallTrojan);
 
             trojanWidth += 150;
@@ -1290,6 +1303,9 @@ public class GameClass implements Screen{
 
         for (Trojan trojan : trojans){
             trojan.setSmallTrojan();
+
+            //increments totalFiles
+            totalFiles += trojan.getFileDropCount();
         }
     }
 
@@ -1323,6 +1339,7 @@ public class GameClass implements Screen{
             if (removeTrojan != null) {
                 spawnFiles(removeTrojan.getFileDropCount(), removeTrojan.getX() + (removeTrojan.getSprite().getWidth() / 2), removeTrojan.getY() + removeTrojan.getSprite().getHeight()/2);
                 trojans.remove(removeTrojan);
+                removeTrojan = null;
             }
         }
         //Move big trojan
@@ -1335,6 +1352,7 @@ public class GameClass implements Screen{
             trojanHeight = (int)bigTrojan.getY();
             if (bigTrojan.getBounds().overlaps(player.getBounds())){
                 score += bigTrojan.getPoints();
+                spawnFiles(bigTrojan.getFileDropCount(), bigTrojan.getX() + (bigTrojan.getSprite().getWidth()/2), bigTrojan.getY() + bigTrojan.getSprite().getHeight()/2);
                 player.setHp(player.getHp() - (bigTrojan.getDamage()*10));
                 for(int i = 0; i < 10; i++) {
                     int p = particles.spawn(ParticleManager.Type.DATA, bigTrojan);
@@ -1405,7 +1423,7 @@ public class GameClass implements Screen{
         Gdx.app.log("spawnMemLeaks: ", "Spawning memLeaks");
         memLeaksSpawned = 0;
         while (memLeaksSpawned != 3){
-            //Gdx.app.log("GameClass: ", "Worm");
+            //Gdx.app.log("Lvl1: ", "Worm");
             MemoryLeak memLeak = new MemoryLeak();
             memLeak.setxSpeed(xSpeed);
             memLeak.setY(y);
@@ -1415,6 +1433,10 @@ public class GameClass implements Screen{
 
             //Creates Bounding box
             memLeak.setBounds(new Rectangle(x, y, memLeak.getSprite().getWidth(), memLeak.getSprite().getHeight()));
+
+            //increments totalFiles
+            totalFiles += memLeak.getFileDropCount();
+
             //Adds the memory leak to the arrayList
             memLeaks.add(memLeak);
 
@@ -1451,6 +1473,7 @@ public class GameClass implements Screen{
         if (removeMemLeak != null){
             spawnFiles(removeMemLeak.getFileDropCount(), removeMemLeak.getX() + (removeMemLeak.getSprite().getWidth()/2), removeMemLeak.getY() + removeMemLeak.getSprite().getHeight()/2);
             memLeaks.remove(removeMemLeak);
+            removeMemLeak = null;
         }
     }
 
@@ -1480,10 +1503,10 @@ public class GameClass implements Screen{
 
         countdown = ((System.currentTimeMillis() - startTime) / 1000);
 
-        Gdx.app.log( "LastNuM : " , "" + lastNum);
-        Gdx.app.log("Countdown: " , "" + countdown);
+        //Gdx.app.log( "LastNuM : " , "" + lastNum);
+        //Gdx.app.log("Countdown: " , "" + countdown);
         if (countdown > lastNum){
-            Gdx.app.log("DAMAGE: " , "");
+            //Gdx.app.log("DAMAGE: " , "");
         }
 
         if (countdown == 6){
@@ -1517,6 +1540,10 @@ public class GameClass implements Screen{
 
             //Creates Bounding box
             yourDoom.setBounds(new Rectangle(yourDoom.getX(), yourDoom.getY(), yourDoom.getSprite().getWidth(), yourDoom.getSprite().getHeight()));
+
+            //increments totalFiles
+            totalFiles += yourDoom.getFileDropCount();
+
             //Adds the worm to the arrayList
             yourDoomArray.add(yourDoom);
 
@@ -1619,6 +1646,7 @@ public class GameClass implements Screen{
         if (removeYourDoom != null){
             spawnFiles(removeYourDoom.getFileDropCount(), removeYourDoom.getX() + (removeYourDoom.getSprite().getWidth()/2), removeYourDoom.getY() + removeYourDoom.getSprite().getHeight());
             yourDoomArray.remove(removeYourDoom);
+            removeYourDoom = null;
         }
     }
 
@@ -1626,7 +1654,7 @@ public class GameClass implements Screen{
     public void spawnFiles(int amount, float x, float y){
         int count = 0;
         //Random rand = new Random();
-
+        System.out.println("FilesSpawned: " + amount);
         int locationX = (int)x - 100;
         int locationY = (int)y;
 
@@ -1704,6 +1732,7 @@ public class GameClass implements Screen{
 
     public void updateFiles(){
         float y;
+        ArrayList<Files> filesToRemove = new ArrayList<Files>();
         for (Files file : files){
             y = file.getY() - 2;
             file.setY(y);
@@ -1712,12 +1741,14 @@ public class GameClass implements Screen{
 
             if (file.getBounds().overlaps(player.getBounds())){
                 sfx.playSound(SoundFXManager.Type.FILE);
-                removeFile = file;
+                filesToRemove.add(file);
                 fileScore ++;
             }
         }
-        if (removeFile != null){
-            files.remove(removeFile);
+        if (!filesToRemove.isEmpty()){
+            for (Files file : filesToRemove) {
+                files.remove(file);
+            }
         }
     }
 
@@ -1793,6 +1824,62 @@ public class GameClass implements Screen{
         resume.draw(batch, 1);
         exit.draw(batch, 1);
         pauseStage.draw();
+    }
+
+    //LEVEL COMPLETE SCREEN
+    //Level Complete Screen Variables
+    Stage completeStage;
+    TextButton done;
+    int fileRecovery;
+
+    private void completeScreenCreate(){
+        completeStage = new Stage();
+
+        if(totalFiles > 0) {
+            fileRecovery = Math.round(((float)fileScore / (float)totalFiles) * 100f);
+        }
+        else
+        {
+            fileRecovery = -1;
+        }
+
+        //check to see if player has High Score
+        if(score > ScoreHandler.getHighScore(1) || fileRecovery > ScoreHandler.getHighFileRecovery(1)) {
+            complete = "HIGH SCORE!";
+            ScoreHandler.setHighScore(score, fileRecovery, 1);
+        }
+
+        //Add button
+        done = new TextButton("Continue", skin, "default");
+        done.getLabel().setFontScale(3);
+        done.setWidth(WIDTH / 2);
+        done.setHeight(WIDTH / 4);
+        done.setPosition(WIDTH / 2 - (done.getWidth() / 2), (HEIGHT / 4) - (done.getHeight()));
+        done.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                sfx.playSound(SoundFXManager.Type.SELECT);
+                gameState = GameState.PLAYING;
+                musicBackground.dispose();
+                game.setScreen(AntiVirus.levelSelectScreen);
+            }
+        });
+        done.toFront();
+        completeStage.addActor(done);
+        Gdx.input.setInputProcessor(completeStage);
+    }
+
+    private void completeScreenRender(){
+        overlay.draw(batch, 0.5f);
+        font.draw(batch, complete, WIDTH/2 - completeLayout.width/2, HEIGHT/2 + completeLayout.height/2);
+        String fileString = ("Data Recovery: " + fileRecovery + "%");
+        completeLayout.setText(uiFont, fileString);
+        uiFont.draw(batch, fileString, WIDTH / 2 - completeLayout.width / 2, HEIGHT / 2 - HEIGHT / 4);
+        completeLayout.setText(font, complete);
+        overlay.draw(batch, 0.5f);
+        uiFont.draw(batch, scoreTxt, 0, HEIGHT - (scoreLayout.height));
+        uiFont.draw(batch,healthTxt,WIDTH/2 , HEIGHT - (healthLayout.height));
+        done.draw(batch, 1);
+        completeStage.draw();
     }
 
 }

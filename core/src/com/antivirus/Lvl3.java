@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
 
 import FX.ParticleManager;
@@ -63,11 +64,9 @@ public class Lvl3 implements Screen{
     int wormHeight;
     Worm removeWorm;
 
-
     //Enemy (Trojan)
     //Big trojan
     Trojan bigTrojan;
-    Sprite trojanSprite;
     //Small trojans
     ArrayList<Trojan> trojans;
     float trojanSpawnTime;
@@ -127,8 +126,8 @@ public class Lvl3 implements Screen{
     //Background
     Image bg1;
     Image bg2;
-    int posXBackground1;
-    int posXBackground2;
+    int posYBackground1;
+    int posYBackground2;
 
     //Creates the camera that will view the game
     public static OrthographicCamera camera;
@@ -195,7 +194,7 @@ public class Lvl3 implements Screen{
     public Lvl3(AntiVirus game){this.game = game;}
 
     public void create() {
-        Gdx.app.log("GameClass: ", "level1 create");
+        Gdx.app.log("Lvl3: ", "level3 create");
 
         //Gets width and height of screen, ans sets them to variables
         WIDTH = Gdx.graphics.getWidth();
@@ -270,8 +269,8 @@ public class Lvl3 implements Screen{
         bg2 = new Image(texture);
         bg1.setPosition(0, 0);
         bg2.setPosition(0, bg1.getHeight());
-        posXBackground1 = 0;
-        posXBackground2 = (int) bg1.getHeight();
+        posYBackground1 = 0;
+        posYBackground2 = (int) bg1.getHeight();
 
         //Sets movement processor
         movementCd = 0.0f;
@@ -285,6 +284,9 @@ public class Lvl3 implements Screen{
         bossDefeatedCd = 0.0f;
 
         playerTrailCD = 0.0f;
+
+        //reset total files
+        totalFiles = 0;
 
         //Initializing bullets
         //playerBullet = new Bullet(playerSprite.getX(), playerSprite.getY(), player.getId(), player.getDamage());
@@ -325,7 +327,7 @@ public class Lvl3 implements Screen{
         score = 0;
         uiFont = new BitmapFont(Gdx.files.internal("MainMenu/datacontrol.fnt"));
         uiFont.getData().setScale(0.5f,0.5f);
-        scoreTxt = "Score: " + String.format("%06d", score);
+        scoreTxt = "Score: " + String.format(Locale.US, "%06d", score);
         scoreLayout = new GlyphLayout();
         scoreLayout.setText(uiFont, scoreTxt);
         //Health
@@ -343,7 +345,6 @@ public class Lvl3 implements Screen{
         complete = "Level Complete!";
         completeLayout = new GlyphLayout();
         completeLayout.setText(font, complete);
-        completeScreenCreate();
 
         //GameOver/Complete time
         startTime = 0;
@@ -446,7 +447,7 @@ public class Lvl3 implements Screen{
         switch (gameState){
             case PLAYING:
                 //Score
-                scoreTxt = "Score: " + String.format("%06d", score);
+                scoreTxt = "Score: " + String.format(Locale.US, "%06d", score);
                 uiFont.draw(batch, scoreTxt, 0, HEIGHT - (scoreLayout.height));
                 //Health
                 healthTxt = "Health: " + player.getHp();
@@ -491,7 +492,7 @@ public class Lvl3 implements Screen{
             case PLAYING:
                 //If movement cooldown is zero.
                 if(movementCd <= 0.0f){
-                    //Spawing time, for when we want a specific enemy to spawn
+                    //Spawning time, for when we want a specific enemy to spawn
                     spawnCd ++;
 
                     checkPlayerHealth();
@@ -508,7 +509,7 @@ public class Lvl3 implements Screen{
                     //background
                     animateBackground();
 
-                    if (dotHappening == true){
+                    if (dotHappening){
                         Gdx.app.log("Is True: ", "true");
                         damageOverTimeCollision();
                     }
@@ -574,7 +575,6 @@ public class Lvl3 implements Screen{
                     }
                     if (spawnCd == 1000){
                         spawnWorm(WIDTH, HEIGHT, -3);
-                        totalFiles += 14;
                     }
                     if (spawnCd == 1200) {
                         if(worms.size() > 0) {
@@ -607,16 +607,14 @@ public class Lvl3 implements Screen{
                     if (spawnCd > 3100 && elissaArray.size() == 0){
                         bossDefeatedCd ++;
                         if (bossDefeatedCd == 200){
-                            Gdx.input.setInputProcessor(stage);
+                            completeScreenCreate();
                             startTime = System.currentTimeMillis();
                             gameState = GameState.COMPLETE;
                         }
                     }
-                    
                 }
                 break;
             case COMPLETE:
-                //Fill in complete code
                 break;
             case GAMEOVER:
                 //Fill in game over code
@@ -644,12 +642,12 @@ public class Lvl3 implements Screen{
 
     @Override
     public void show(){
-        Gdx.app.log("GameClass: ", "level1 show called");
+        Gdx.app.log("Lvl3: ", "level3 show called");
         create();
     }
     @Override
     public void hide(){
-        Gdx.app.log("GameClass: ", "level1 hide called");
+        Gdx.app.log("Lvl3: ", "level3 hide called");
     }
 
     //PLAYER
@@ -665,7 +663,7 @@ public class Lvl3 implements Screen{
     }
 
     public void playerMovement(){
-        if (isTouched == true){
+        if (isTouched){
             newTouch.set(Gdx.input.getX(), HEIGHT - Gdx.input.getY());
             if (touchTime >= 1){
                 //Gdx.app.log("Playing: " , "NTx: " + newTouch.x + " NTy: " + newTouch.y);
@@ -741,23 +739,21 @@ public class Lvl3 implements Screen{
 
     //BACKGROUND
     public void animateBackground(){
-        bg1.setPosition(bg1.getX(), posXBackground1);
-        bg2.setPosition(bg2.getX(), posXBackground2);
-        //Gdx.app.log("GameClass: ", "" + posXBackground1);
-        if(posXBackground1 < -1920){
-            //Gdx.app.log("GameClass: ", "Got here! " + HEIGHT);
+        bg1.setPosition(bg1.getX(), posYBackground1);
+        bg2.setPosition(bg2.getX(), posYBackground2);
+        if(posYBackground1 < -1920){
             bg1.setPosition(0,bg2.getHeight());
-            posXBackground1 = (int)bg2.getHeight();
-            posXBackground1 -= 5;
+            posYBackground1 = (int)bg2.getHeight();
+            posYBackground1 -= 5;
         }
-        else if(posXBackground2 < -1920){
+        else if(posYBackground2 < -1920){
             bg2.setPosition(0,bg1.getHeight());
-            posXBackground2 = (int) bg1.getHeight();
-            posXBackground2 -= 5;
+            posYBackground2 = (int) bg1.getHeight();
+            posYBackground2 -= 5;
         }
         else{
-            posXBackground1 -= 5;
-            posXBackground2 -= 5;
+            posYBackground1 -= 5;
+            posYBackground2 -= 5;
         }
     }
 
@@ -831,7 +827,6 @@ public class Lvl3 implements Screen{
     //PLAYER BULLETS
     public void playerBulletSpawn(){
         //Shooting
-        //Gdx.app.log("GameClass: ", "Adding bullets!" + bullets.size());
         if(!player.canShoot()) {
             if(spawnCd >= playerDisableTime){
                 player.enableShoot();
@@ -1039,7 +1034,6 @@ public class Lvl3 implements Screen{
             }
             //Gdx.app.log("Worm bullets: ", "Rand num: " + num);
             Worm worm = worms.get(num);
-            //Gdx.app.log("GameClass: ", "Adding bullets!");
             if (bullets.size() <= 30){
                 Bullet bullet = new Bullet(worm.getSprite().getX() + worm.getSprite().getWidth()/2, worm.getSprite().getY() - 90, worm.getId(), worm.getDamage(), true);
                 bullet.setBounds(new Rectangle(worm.getSprite().getX() - 75, worm.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
@@ -1116,7 +1110,6 @@ public class Lvl3 implements Screen{
             }
             //Gdx.app.log("Worm bullets: ", "Rand num: " + num);
             MemoryLeak memLeak = memLeaks.get(num);
-            //Gdx.app.log("GameClass: ", "Adding bullets!");
             if (bullets.size() <= 30){
                 Bullet bullet = new Bullet(memLeak.getSprite().getX() + memLeak.getSprite().getWidth()/2, memLeak.getSprite().getY() - 90, memLeak.getId(), memLeak.getDamage(), true);
                 bullet.setBounds(new Rectangle(memLeak.getSprite().getX() - 75, memLeak.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
@@ -1145,7 +1138,6 @@ public class Lvl3 implements Screen{
             }
             //Gdx.app.log("Worm bullets: ", "Rand num: " + num);
             Elissa elissa = elissaArray.get(num);
-            //Gdx.app.log("GameClass: ", "Adding bullets!");
             if (bullets.size() <= 30){
                 Bullet bullet = new Bullet(elissa.getSprite().getX() + elissa.getSprite().getWidth()/2, elissa.getSprite().getY() - 90, elissa.getId(), elissa.getDamage(), true);
                 bullet.setBounds(new Rectangle(elissa.getSprite().getX() - 75, elissa.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
@@ -1189,7 +1181,6 @@ public class Lvl3 implements Screen{
             }
             //Gdx.app.log("Worm bullets: ", "Rand num: " + num);
             Elissa elissa = elissaArray.get(num);
-            //Gdx.app.log("GameClass: ", "Adding bullets!");
             if (elissaFiles.size() <= 30){
                 int x = rand.nextInt(WIDTH - 50);
                 ElissaFiles bullet = new ElissaFiles(x, HEIGHT + 50, elissa.getId(), elissa.getDamage(), false);
@@ -1214,6 +1205,10 @@ public class Lvl3 implements Screen{
             Gdx.app.log("Enemy Bullet Update: ", "Player Hit! Dmg: " + player.getHp());
             removeElissaFile = elissaFile;
             playerDisableTime = spawnCd + elissaFile.getDisableTime();
+
+            //penalize score
+            score -= 20;
+
             player.disableShoot();
             sfx.playSound(SoundFXManager.Type.CORRUPTFILE);
         }
@@ -1225,7 +1220,6 @@ public class Lvl3 implements Screen{
         int tempY = y;
         wormsSpawned = 0;
         while (wormsSpawned != 10){
-            //Gdx.app.log("GameClass: ", "Worm");
             Worm worm = new Worm();
 
             worm.setxSpeed(xSpeed);
@@ -1263,11 +1257,11 @@ public class Lvl3 implements Screen{
         //Move worm sprite like it's wiggling
         if (wormSpawnTime == 50){
             for (Worm worm : worms){
-                if (worm.getIsUp() == true){
+                if (worm.getIsUp()){
                     worm.setY(worm.getY() - 100);
                     worm.setIsUp(false);
                 }
-                else if (worm.getIsUp() == false){
+                else if (!worm.getIsUp()){
                     worm.setY(worm.getY() + 100);
                     worm.setIsUp(true);
                 }
@@ -1339,10 +1333,8 @@ public class Lvl3 implements Screen{
         //increments totalFiles
         totalFiles += bigTrojan.getFileDropCount();
 
-        x = (int)bigTrojan.getX() - 150;
         //For the small Trojans
         while (trojansSpawned != 3){
-            //Gdx.app.log("GameClass: ", "Trojan");
             Trojan smallTrojan = new Trojan();
 
             smallTrojan.setxSpeed(smallTrojansXSpeed);
@@ -1353,8 +1345,8 @@ public class Lvl3 implements Screen{
 
             //Creates Bounding box
             smallTrojan.setBounds(new Rectangle(smallTrojan.getX(), smallTrojan.getY(), smallTrojan.getSprite().getWidth(), smallTrojan.getSprite().getHeight()));
-            //Adds the worm to the arrayList
 
+            //Adds the trojan to the arrayList
             trojans.add(smallTrojan);
 
             trojanWidth += 150;
@@ -1481,7 +1473,6 @@ public class Lvl3 implements Screen{
         Gdx.app.log("spawnMemLeaks: ", "Spawning memLeaks");
         memLeaksSpawned = 0;
         while (memLeaksSpawned != 3){
-            //Gdx.app.log("GameClass: ", "Worm");
             MemoryLeak memLeak = new MemoryLeak();
             memLeak.setxSpeed(xSpeed);
             memLeak.setY(y);
@@ -1491,11 +1482,11 @@ public class Lvl3 implements Screen{
 
             //Creates Bounding box
             memLeak.setBounds(new Rectangle(x, y, memLeak.getSprite().getWidth(), memLeak.getSprite().getHeight()));
-            //Adds the memory leak to the arrayList
 
             //increments totalFiles
             totalFiles += memLeak.getFileDropCount();
 
+            //Adds the memory leak to the arrayList
             memLeaks.add(memLeak);
 
             x += 175;
@@ -1787,6 +1778,7 @@ public class Lvl3 implements Screen{
 
     public void updateFiles(){
         float y;
+        ArrayList<Files> filesToRemove = new ArrayList<Files>();
         for (Files file : files){
             y = file.getY() - 2;
             file.setY(y);
@@ -1795,12 +1787,14 @@ public class Lvl3 implements Screen{
 
             if (file.getBounds().overlaps(player.getBounds())){
                 sfx.playSound(SoundFXManager.Type.FILE);
-                removeFile = file;
+                filesToRemove.add(file);
                 fileScore ++;
             }
         }
-        if (removeFile != null){
-            files.remove(removeFile);
+        if (!filesToRemove.isEmpty()){
+            for (Files file : filesToRemove) {
+                files.remove(file);
+            }
         }
     }
 
@@ -1882,20 +1876,35 @@ public class Lvl3 implements Screen{
     //Level Complete Screen Variables
     Stage completeStage;
     TextButton done;
+    int fileRecovery;
 
     private void completeScreenCreate(){
         completeStage = new Stage();
-        sfx.playSound(SoundFXManager.Type.SELECT);
+
+        if(totalFiles > 0) {
+            fileRecovery = Math.round(((float)fileScore / (float)totalFiles) * 100f);
+        }
+        else
+        {
+            fileRecovery = -1;
+        }
+
+        System.out.println("SCORE: " + score + " | Data Recovery: " + fileRecovery + "%");
+
+        //check to see if player has High Score
+        if(score > ScoreHandler.getHighScore(3) || fileRecovery > ScoreHandler.getHighFileRecovery(3)) {
+            complete = "HIGH SCORE!";
+            ScoreHandler.setHighScore(score, fileRecovery, 3);
+        }
 
         //Add button
-        done = new TextButton("Return to Level Select", skin, "default");
+        done = new TextButton("Continue", skin, "default");
         done.getLabel().setFontScale(3);
         done.setWidth(WIDTH / 2);
         done.setHeight(WIDTH / 4);
-        done.setPosition(WIDTH / 2 - (done.getWidth() / 2), (HEIGHT - (HEIGHT / 4)) - (done.getHeight()));
+        done.setPosition(WIDTH / 2 - (done.getWidth() / 2), (HEIGHT / 4) - (done.getHeight()));
         done.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.input.setInputProcessor(inputMultiplexer);
                 sfx.playSound(SoundFXManager.Type.SELECT);
                 gameState = GameState.PLAYING;
                 musicBackground.dispose();
@@ -1903,7 +1912,6 @@ public class Lvl3 implements Screen{
             }
         });
         done.toFront();
-
         completeStage.addActor(done);
         Gdx.input.setInputProcessor(completeStage);
     }
@@ -1911,12 +1919,14 @@ public class Lvl3 implements Screen{
     private void completeScreenRender(){
         overlay.draw(batch, 0.5f);
         font.draw(batch, complete, WIDTH/2 - completeLayout.width/2, HEIGHT/2 + completeLayout.height/2);
-        font.draw(batch, ("File Recovery Amount: " + (fileScore/totalFiles)*100 + "%"), WIDTH/2 - completeLayout.width/2, HEIGHT/2 + (completeLayout.height/4)*3);
+        String fileString = ("Data Recovery: " + fileRecovery + "%");
+        completeLayout.setText(uiFont, fileString);
+        uiFont.draw(batch, fileString, WIDTH / 2 - completeLayout.width / 2, HEIGHT / 2 - HEIGHT / 4);
+        completeLayout.setText(font, complete);
         overlay.draw(batch, 0.5f);
         uiFont.draw(batch, scoreTxt, 0, HEIGHT - (scoreLayout.height));
         uiFont.draw(batch,healthTxt,WIDTH/2 , HEIGHT - (healthLayout.height));
         done.draw(batch, 1);
         completeStage.draw();
     }
-
 }

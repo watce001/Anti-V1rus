@@ -1,14 +1,19 @@
 package com.antivirus;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -24,11 +29,26 @@ public class LevelSelect implements Screen {
     private SpriteBatch batch;
     private Skin skin;
     private Stage stage;
+    public static int WIDTH;
+    public static int HEIGHT;
+    InputMultiplexer inputMultiplexer;
+    private boolean checkingScore;
+
+    //Overlay
+    Pixmap pixmap;
+    TextureRegion scoreBackground;
+    Image overlay;
+
+    GlyphLayout scoreLayout;
+
+    private int checkedScore;
+    private int checkedFileRecovery;
 
     private Sound selectSound;
 
     //load bitmap font
     BitmapFont font;
+    BitmapFont uiFont;
 
     String txt;
 
@@ -45,6 +65,13 @@ public class LevelSelect implements Screen {
         skin = new Skin(Gdx.files.internal("uidata/uiskin.json"));
         stage = new Stage();
 
+        //Gets width and height of screen, ans sets them to variables
+        WIDTH = Gdx.graphics.getWidth();
+        HEIGHT = Gdx.graphics.getHeight();
+
+        //set default to not checking score
+        checkingScore = false;
+
         //init select sound
         selectSound = Gdx.audio.newSound(Gdx.files.internal("Blip_Select.wav"));
 
@@ -54,6 +81,23 @@ public class LevelSelect implements Screen {
         //Centers font text
         layout = new GlyphLayout();
         layout.setText(font, txt);
+
+        //init UIfont
+        uiFont = new BitmapFont(Gdx.files.internal("MainMenu/datacontrol.fnt"));
+        uiFont.getData().setScale(0.5f,0.5f);
+
+        //Managing input from both stage, and sprite batch
+        inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(stage);
+
+        //Overlay for other screens
+        pixmap = new Pixmap(0,0,Pixmap.Format.RGB888);
+        scoreBackground = new TextureRegion(new Texture(pixmap));
+        overlay = new Image(scoreBackground);
+        pixmap.setColor(1, 0, 0, 05f);
+        pixmap.fill();
+        overlay.setWidth(WIDTH);
+        overlay.setHeight(HEIGHT);
 
         //Creates button to start level 1
         final TextButton lvl1button = new TextButton("LVL1:\\WORM.EXE", skin, "default");
@@ -65,9 +109,9 @@ public class LevelSelect implements Screen {
         lvl1button.addListener(new ClickListener(){
             public void clicked (InputEvent event, float x, float y){
                 selectSound.play();
-                Gdx.app.log("LevelSelectScreen: ", "About to call level1");
-                game.setScreen(AntiVirus.level1);
-                Gdx.app.log("LevelSelectScreen: ", "level1 started");
+                Gdx.app.log("LevelSelectScreen: ", "About to call level1 Score");
+                scoreScreenCreate(1);
+                checkingScore = true;
             }
         });
 
@@ -81,7 +125,7 @@ public class LevelSelect implements Screen {
         lvl2button.addListener(new ClickListener(){
             public void clicked (InputEvent event, float x, float y){
                 selectSound.play();
-                Gdx.app.log("LevelSelectScreen: ", "About to call level2");
+                Gdx.app.log("LevelSelectScreen: ", "About to call level2 Score");
                 Gdx.app.log("LevelSelectScreen: ", "Level Coming Soon");
 
                 //Presents dialog box with a coming soon message - Remove once level implemented
@@ -102,9 +146,9 @@ public class LevelSelect implements Screen {
         lvl3button.addListener(new ClickListener(){
             public void clicked (InputEvent event, float x, float y){
                 selectSound.play();
-                Gdx.app.log("LevelSelectScreen: ", "About to call level3");
-                game.setScreen(AntiVirus.level3);
-                Gdx.app.log("LevelSelectScreen: ", "level3 started");
+                Gdx.app.log("LevelSelectScreen: ", "About to call level3 Score");
+                scoreScreenCreate(3);
+                checkingScore = true;
             }
         });
 
@@ -123,6 +167,10 @@ public class LevelSelect implements Screen {
 
         batch.begin();
         font.draw(batch, txt, Gdx.graphics.getWidth()/2 - layout.width/2, (Gdx.graphics.getHeight() - Gdx.graphics.getHeight()/4) + layout.height/2);
+
+        if(checkingScore){
+            scoreScreenRender();
+        }
 
         batch.end();
     }
@@ -161,5 +209,88 @@ public class LevelSelect implements Screen {
     @Override
     public void hide(){
         Gdx.app.log("LevelSelect: ", "levelSelect hide called");
+    }
+
+    //HIGH SCORE SCREEN
+    //High Score Screen Variables
+    Stage scoreStage;
+    TextButton play;
+    TextButton back;
+
+    private void scoreScreenCreate(int lvl){
+        scoreStage = new Stage();
+        scoreLayout = new GlyphLayout();
+
+        //Add buttons
+        play = new TextButton("Play", skin, "default");
+        play.getLabel().setFontScale(3);
+        play.setWidth(WIDTH / 2);
+        play.setHeight(WIDTH / 4);
+        play.setPosition(WIDTH / 2 - (play.getWidth() / 2), (play.getHeight())*1.2f);
+        if(lvl == 1) {
+            play.addListener(new ClickListener() {
+                public void clicked(InputEvent event, float x, float y) {
+                    selectSound.play();
+                    Gdx.app.log("LevelSelectScreen: ", "About to call level1");
+                    game.setScreen(AntiVirus.level1);
+                    Gdx.app.log("LevelSelectScreen: ", "level1 started");
+                }
+            });
+        }
+        else if(lvl == 2) {
+            play.addListener(new ClickListener() {
+                public void clicked(InputEvent event, float x, float y) {
+                    selectSound.play();
+                    Gdx.app.log("LevelSelectScreen: ", "About to call level2");
+                    game.setScreen(AntiVirus.level1);
+                    Gdx.app.log("LevelSelectScreen: ", "level2 started");
+                }
+            });
+        }
+        else {
+            play.addListener(new ClickListener() {
+                public void clicked(InputEvent event, float x, float y) {
+                    selectSound.play();
+                    Gdx.app.log("LevelSelectScreen: ", "About to call level3");
+                    game.setScreen(AntiVirus.level3);
+                    Gdx.app.log("LevelSelectScreen: ", "level3 started");
+                }
+            });
+        }
+        play.toFront();
+
+        checkedScore = ScoreHandler.getHighScore(lvl);
+        checkedFileRecovery = ScoreHandler.getHighFileRecovery(lvl);
+
+        back = new TextButton("Back", skin, "default");
+        back.getLabel().setFontScale(3);
+        back.setWidth(WIDTH / 2);
+        back.setHeight(WIDTH / 4);
+        back.setPosition(WIDTH / 2 - (back.getWidth() / 2), back.getHeight()*0.1f);
+        back.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                selectSound.play();
+                checkingScore = false;
+                Gdx.input.setInputProcessor(stage);
+            }
+        });
+        back.toFront();
+
+        scoreStage.addActor(back);
+        scoreStage.addActor(play);
+        Gdx.input.setInputProcessor(scoreStage);
+    }
+
+    private void scoreScreenRender(){
+        overlay.draw(batch, 0.5f);
+        String score = ("High Score: " + checkedScore);
+        String fileScore = ("Data Recovery: " + checkedFileRecovery + "%");
+        scoreLayout.setText(uiFont, score);
+        uiFont.draw(batch, score, WIDTH / 2 - scoreLayout.width / 2, HEIGHT / 2 + HEIGHT / 4);
+        scoreLayout.setText(uiFont, fileScore);
+        uiFont.draw(batch, fileScore, WIDTH / 2 - scoreLayout.width / 2, HEIGHT / 2);
+        play.draw(batch, 1);
+        back.draw(batch, 1);
+        scoreStage.draw();
     }
 }
