@@ -1281,7 +1281,7 @@ public class Lvl3 implements Screen{
             worm.getSprite().setPosition(worm.getX(), worm.getY());
             //if worm collides with player remove player and worm section
             if (worm.getBounds().overlaps(player.getBounds())){
-                score += worm.getPoints();
+                score += worm.getPoints()/2;
                 for(int i = 0; i < 10; i++) {
                     int p = particles.spawn(ParticleManager.Type.DATA, worm);
                     particles.x[p] = (worm.getX() + worm.getSprite().getWidth()/2);
@@ -1376,7 +1376,7 @@ public class Lvl3 implements Screen{
                 trojan.getSprite().setPosition(trojan.getX(), trojan.getY());
                 //if trojan collides with player remove player and worm section
                 if (trojan.getBounds().overlaps(player.getBounds())){
-                    score += trojan.getPoints();
+                    score += trojan.getPoints()/2;
                     for(int i = 0; i < 10; i++) {
                         int p = particles.spawn(ParticleManager.Type.DATA, trojan);
                         particles.x[p] = (trojan.getX() + trojan.getSprite().getWidth()/2);
@@ -1404,7 +1404,7 @@ public class Lvl3 implements Screen{
             trojanWidth = (int)bigTrojan.getX() - 150;
             trojanHeight = (int)bigTrojan.getY();
             if (bigTrojan.getBounds().overlaps(player.getBounds())){
-                score += bigTrojan.getPoints();
+                score += bigTrojan.getPoints()/2;
                 player.setHp(player.getHp() - (bigTrojan.getDamage()*10));
                 for(int i = 0; i < 10; i++) {
                     int p = particles.spawn(ParticleManager.Type.DATA, bigTrojan);
@@ -1505,7 +1505,7 @@ public class Lvl3 implements Screen{
             memLeak.getSprite().setPosition(memLeak.getX(), memLeak.getY());
             //if memory leak collides with player, remove memoryleak
             if (memLeak.getBounds().overlaps(player.getBounds())){
-                score += memLeak.getPoints();
+                score += memLeak.getPoints()/2;
                 dotHappening = true;
                 dotDamage = memLeak.getDot();
                 startTime = System.currentTimeMillis();
@@ -1633,7 +1633,7 @@ public class Lvl3 implements Screen{
                     elissa.getSprite().setPosition(elissa.getX(), elissa.getY());
                     //if worm collides with player remove player and worm section
                     if (elissa.getBounds().overlaps(player.getBounds())){
-                        score += elissa.getPoints();
+                        score += elissa.getPoints()/2;
                         for(int i = 0; i < 10; i++) {
                             int p = particles.spawn(ParticleManager.Type.DATA, elissa);
                             particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth()/2);
@@ -1656,7 +1656,7 @@ public class Lvl3 implements Screen{
                     elissa.getSprite().setPosition(elissa.getX(), elissa.getY());
                     //if worm collides with player remove player and worm section
                     if (elissa.getBounds().overlaps(player.getBounds())){
-                        score += elissa.getPoints();
+                        score += elissa.getPoints()/2;
                         for(int i = 0; i < 10; i++) {
                             int p = particles.spawn(ParticleManager.Type.DATA, elissa);
                             particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth()/2);
@@ -1678,7 +1678,7 @@ public class Lvl3 implements Screen{
                 elissa.getSprite().setPosition(elissa.getX(), elissa.getY());
                 //if worm collides with player remove player and worm section
                 if (elissa.getBounds().overlaps(player.getBounds())){
-                    score += elissa.getPoints();
+                    score += elissa.getPoints()/2;
                     for(int i = 0; i < 10; i++) {
                         int p = particles.spawn(ParticleManager.Type.DATA, elissa);
                         particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth()/2);
