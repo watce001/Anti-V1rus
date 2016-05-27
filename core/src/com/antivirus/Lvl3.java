@@ -343,6 +343,7 @@ public class Lvl3 implements Screen{
         complete = "Level Complete!";
         completeLayout = new GlyphLayout();
         completeLayout.setText(font, complete);
+        completeScreenCreate();
 
         //GameOver/Complete time
         startTime = 0;
@@ -473,15 +474,7 @@ public class Lvl3 implements Screen{
                 }
                 break;
             case COMPLETE:
-                countdown = ((System.currentTimeMillis() - startTime) / 1000);
-                Gdx.app.log("Seconds Elapsed: ", "" + ((System.currentTimeMillis() - startTime) / 1000));
-                overlay.draw(batch, 0.5f);
-                font.draw(batch, complete, WIDTH/2 - completeLayout.width/2, HEIGHT/2 + completeLayout.height/2);
-                if (countdown == 5){
-                    gameState = GameState.PLAYING;
-                    musicBackground.dispose();
-                    game.setScreen(AntiVirus.levelSelectScreen);
-                }
+                completeScreenRender();
                 break;
         }
         batch.end();
@@ -581,6 +574,7 @@ public class Lvl3 implements Screen{
                     }
                     if (spawnCd == 1000){
                         spawnWorm(WIDTH, HEIGHT, -3);
+                        totalFiles += 14;
                     }
                     if (spawnCd == 1200) {
                         if(worms.size() > 0) {
@@ -1252,6 +1246,10 @@ public class Lvl3 implements Screen{
 
             //Creates Bounding box
             worm.setBounds(new Rectangle(worm.getX(), worm.getY(), worm.getSprite().getWidth(), worm.getSprite().getHeight()));
+
+            //increments totalFiles
+            totalFiles += worm.getFileDropCount();
+
             //Adds the worm to the arrayList
             worms.add(worm);
 
@@ -1333,10 +1331,13 @@ public class Lvl3 implements Screen{
         bigTrojan = new Trojan();
         //trojanSprite = bigTrojan.getSprite();
         bigTrojan.setxSpeed(bigTrojansXSpeed);
-        bigTrojan.setX(x - bigTrojan.getSprite().getWidth()/2);
+        bigTrojan.setX(x - bigTrojan.getSprite().getWidth() / 2);
         bigTrojan.setY(y);
         bigTrojan.getSprite().setPosition(x, y);
         bigTrojan.setBounds(new Rectangle(x, y, bigTrojan.getSprite().getWidth(), bigTrojan.getSprite().getHeight()));
+
+        //increments totalFiles
+        totalFiles += bigTrojan.getFileDropCount();
 
         x = (int)bigTrojan.getX() - 150;
         //For the small Trojans
@@ -1353,6 +1354,7 @@ public class Lvl3 implements Screen{
             //Creates Bounding box
             smallTrojan.setBounds(new Rectangle(smallTrojan.getX(), smallTrojan.getY(), smallTrojan.getSprite().getWidth(), smallTrojan.getSprite().getHeight()));
             //Adds the worm to the arrayList
+
             trojans.add(smallTrojan);
 
             trojanWidth += 150;
@@ -1361,6 +1363,9 @@ public class Lvl3 implements Screen{
 
         for (Trojan trojan : trojans){
             trojan.setSmallTrojan();
+
+            //increments totalFiles
+            totalFiles += trojan.getFileDropCount();
         }
     }
 
@@ -1487,6 +1492,10 @@ public class Lvl3 implements Screen{
             //Creates Bounding box
             memLeak.setBounds(new Rectangle(x, y, memLeak.getSprite().getWidth(), memLeak.getSprite().getHeight()));
             //Adds the memory leak to the arrayList
+
+            //increments totalFiles
+            totalFiles += memLeak.getFileDropCount();
+
             memLeaks.add(memLeak);
 
             x += 175;
@@ -1578,6 +1587,9 @@ public class Lvl3 implements Screen{
                 elissa.setY(HEIGHT+150);
                 elissaHeight = HEIGHT;
             }
+
+            //increments totalFiles
+            totalFiles += elissa.getFileDropCount();
 
             elissa.setX(WIDTH/2 - elissa.getSprite().getWidth()/2);
 
@@ -1864,6 +1876,47 @@ public class Lvl3 implements Screen{
         resume.draw(batch, 1);
         exit.draw(batch, 1);
         pauseStage.draw();
+    }
+
+    //LEVEL COMPLETE SCREEN
+    //Level Complete Screen Variables
+    Stage completeStage;
+    TextButton done;
+
+    private void completeScreenCreate(){
+        completeStage = new Stage();
+        sfx.playSound(SoundFXManager.Type.SELECT);
+
+        //Add button
+        done = new TextButton("Return to Level Select", skin, "default");
+        done.getLabel().setFontScale(3);
+        done.setWidth(WIDTH / 2);
+        done.setHeight(WIDTH / 4);
+        done.setPosition(WIDTH / 2 - (done.getWidth() / 2), (HEIGHT - (HEIGHT / 4)) - (done.getHeight()));
+        done.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.input.setInputProcessor(inputMultiplexer);
+                sfx.playSound(SoundFXManager.Type.SELECT);
+                gameState = GameState.PLAYING;
+                musicBackground.dispose();
+                game.setScreen(AntiVirus.levelSelectScreen);
+            }
+        });
+        done.toFront();
+
+        completeStage.addActor(done);
+        Gdx.input.setInputProcessor(completeStage);
+    }
+
+    private void completeScreenRender(){
+        overlay.draw(batch, 0.5f);
+        font.draw(batch, complete, WIDTH/2 - completeLayout.width/2, HEIGHT/2 + completeLayout.height/2);
+        font.draw(batch, ("File Recovery Amount: " + (fileScore/totalFiles)*100 + "%"), WIDTH/2 - completeLayout.width/2, HEIGHT/2 + (completeLayout.height/4)*3);
+        overlay.draw(batch, 0.5f);
+        uiFont.draw(batch, scoreTxt, 0, HEIGHT - (scoreLayout.height));
+        uiFont.draw(batch,healthTxt,WIDTH/2 , HEIGHT - (healthLayout.height));
+        done.draw(batch, 1);
+        completeStage.draw();
     }
 
 }
