@@ -182,6 +182,13 @@ public class Lvl3 implements Screen{
     boolean bugFix;
     int touchTime;
 
+    //Music
+    TextButton musicOff;
+    TextButton musicOn;
+
+    //settingsOn
+    boolean settingsOn;
+
     //Game Background Music
     private Music musicBackground;
 
@@ -207,10 +214,13 @@ public class Lvl3 implements Screen{
         camera.translate(WIDTH / 2, HEIGHT / 2);
         camera.update();
 
+        //settings on
+        settingsOn = false;
+
         //Music
-        musicBackground = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
-        musicBackground.setLooping(true);
-        musicBackground.play();
+        Lvl1.musicBackground = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
+        Lvl1.musicBackground.setLooping(true);
+        Lvl1.musicBackground.play();
 
         //SoundFX
         sfx = new SoundFXManager();
@@ -306,6 +316,7 @@ public class Lvl3 implements Screen{
 
         //Creates button to pause game
         stage = new Stage();
+        settingsOn = false;
         skin = new Skin(Gdx.files.internal("uidata/uiskin.json"));
         pauseButton = new TextButton("||",skin,"default");
         pauseButton.getLabel().setFontScale(3);
@@ -463,7 +474,12 @@ public class Lvl3 implements Screen{
                 break;
             case PAUSED:
                 //Fill in pause code
-                pauseScreenRender();
+                if(settingsOn == false){
+                    pauseScreenRender();
+                }
+                else if(settingsOn == true){
+                    settingsScreenRender();
+                }
                 break;
             case GAMEOVER:
                 countdown = ((System.currentTimeMillis() - startTime) / 1000);
@@ -472,7 +488,7 @@ public class Lvl3 implements Screen{
                 font.draw(batch, txt, WIDTH/2 - layout.width/2, HEIGHT/2 + layout.height/2);
                 if (countdown == 5){
                     gameState = GameState.PLAYING;
-                    musicBackground.dispose();
+                    Lvl1.musicBackground.dispose();
                     game.setScreen(AntiVirus.levelSelectScreen);
                 }
                 break;
@@ -660,7 +676,7 @@ public class Lvl3 implements Screen{
             Gdx.input.setInputProcessor(stage);
             startTime = System.currentTimeMillis();
             gameState = GameState.GAMEOVER;
-            musicBackground.pause();
+            Lvl1.musicBackground.pause();
         }
     }
 
@@ -1808,9 +1824,9 @@ public class Lvl3 implements Screen{
     //Pause Screen Variables
     SpriteBatch pauseBatch;
     Stage pauseStage;
-    TextButton resume;
-    TextButton exit;
-    TextButton setting;
+//    TextButton resume;
+//    TextButton exit;
+//    TextButton setting;
 
     private void pauseScreenCreate(){
         pauseStage = new Stage();
@@ -1840,8 +1856,7 @@ public class Lvl3 implements Screen{
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.input.setInputProcessor(inputMultiplexer);
                 sfx.playSound(SoundFXManager.Type.SELECT);
-                gameState = GameState.PLAYING;
-                //game.setScreen(AntiVirus.settingPage);
+                settingsScreenCreate();
             }
         });
         setting.toFront();
@@ -1857,7 +1872,7 @@ public class Lvl3 implements Screen{
                 sfx.playSound(SoundFXManager.Type.SELECT);
                 gameState = GameState.PLAYING;
                 game.setScreen(AntiVirus.levelSelectScreen);
-                musicBackground.pause();
+                Lvl1.musicBackground.pause();
             }
         });
         exit.toFront();
@@ -1876,6 +1891,89 @@ public class Lvl3 implements Screen{
         resume.draw(batch, 1);
         exit.draw(batch, 1);
         pauseStage.draw();
+    }
+
+    //SETTINGS SCREEN
+    Stage settingStage;
+    TextButton resume;
+    TextButton exit;
+    TextButton setting;
+
+    private void settingsScreenCreate(){
+        settingStage = new Stage();
+        settingsOn = true;
+
+        //music on button
+        musicOn = new TextButton("Music on", skin, "default");
+        musicOn.getLabel().setFontScale(3);
+        musicOn.setWidth(WIDTH / 2);
+        musicOn.setHeight(WIDTH / 4);
+        musicOn.setPosition(WIDTH / 2 - (musicOn.getWidth() / 2), (HEIGHT - (HEIGHT / 4)) - (musicOn.getHeight()));
+
+        musicOn.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                //Gdx.input.setInputProcessor(inputMultiplexer);
+                sfx.playSound(SoundFXManager.Type.SELECT);
+                Lvl1.musicBackground.play();
+            }
+        });
+        musicOn.toFront();
+
+
+
+
+        musicOff = new TextButton("Music off", skin, "default");
+        musicOff.getLabel().setFontScale(3);
+        musicOff.setWidth(WIDTH / 2);
+        musicOff.setHeight(WIDTH / 4);
+        musicOff.setPosition(WIDTH / 2 - (musicOff.getWidth() / 2), musicOn.getY() - musicOn.getHeight() - (musicOn.getHeight() / 2 ));
+
+        musicOff.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                //Gdx.input.setInputProcessor(inputMultiplexer);
+                sfx.playSound(SoundFXManager.Type.SELECT);
+                Lvl1.musicBackground.pause();
+            }
+
+        });
+        musicOff.toFront();
+
+        //adding buttons
+        resume = new TextButton("Resume", skin, "default");
+        resume.getLabel().setFontScale(3);
+        resume.setWidth(WIDTH / 2);
+        resume.setHeight(WIDTH / 4);
+        resume.setPosition(WIDTH / 2 - (resume.getWidth() / 2), musicOff.getY() - musicOff.getHeight() - (musicOff.getHeight()/2)   );
+        resume.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.input.setInputProcessor(inputMultiplexer);
+                sfx.playSound(SoundFXManager.Type.SELECT);
+                settingsOn = false;
+                Lvl1.musicBackground.play();
+                gameState = GameState.PLAYING;
+
+            }
+        });
+        resume.toFront();
+
+
+
+        settingStage.addActor(musicOff);
+        settingStage.addActor(musicOn);
+        settingStage.addActor(resume);
+        Gdx.input.setInputProcessor(settingStage);
+    }
+    //Initializes variables for settings screen
+
+
+    private void settingsScreenRender(){
+        overlay.draw(batch, 0.5f);
+        uiFont.draw(batch, scoreTxt, 0, HEIGHT - (scoreLayout.height));
+        uiFont.draw(batch,healthTxt,WIDTH/2 , HEIGHT - (healthLayout.height));
+        musicOn.draw(batch, 1);
+        musicOff.draw(batch, 1);
+        resume.draw(batch, 1);
+        settingStage.draw();
     }
 
     //LEVEL COMPLETE SCREEN
@@ -1913,7 +2011,7 @@ public class Lvl3 implements Screen{
             public void clicked(InputEvent event, float x, float y) {
                 sfx.playSound(SoundFXManager.Type.SELECT);
                 gameState = GameState.PLAYING;
-                musicBackground.dispose();
+                Lvl1.musicBackground.dispose();
                 game.setScreen(AntiVirus.levelSelectScreen);
             }
         });

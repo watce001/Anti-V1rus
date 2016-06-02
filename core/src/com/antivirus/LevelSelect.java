@@ -125,13 +125,14 @@ public class LevelSelect implements Screen {
         lvl2button.addListener(new ClickListener(){
             public void clicked (InputEvent event, float x, float y){
                 selectSound.play();
-                Gdx.app.log("LevelSelectScreen: ", "About to call level2 Score");
-                Gdx.app.log("LevelSelectScreen: ", "Level Coming Soon");
+                Gdx.app.log("LevelSelectScreen: ", "About to call level1 Score");
+                scoreScreenCreate(2);
+                checkingScore = true;
 
                 //Presents dialog box with a coming soon message - Remove once level implemented
-                showComingSoon();
+//                showComingSoon();
 
-                //game.setScreen(AntiVirus.level2);
+
                 //Gdx.app.log("LevelSelectScreen: ", "level1 started");
             }
         });
@@ -216,10 +217,13 @@ public class LevelSelect implements Screen {
     Stage scoreStage;
     TextButton play;
     TextButton back;
+    String name;
 
     private void scoreScreenCreate(int lvl){
         scoreStage = new Stage();
         scoreLayout = new GlyphLayout();
+
+        name = "";
 
         //Add buttons
         play = new TextButton("Play", skin, "default");
@@ -228,6 +232,7 @@ public class LevelSelect implements Screen {
         play.setHeight(WIDTH / 4);
         play.setPosition(WIDTH / 2 - (play.getWidth() / 2), (play.getHeight())*1.2f);
         if(lvl == 1) {
+            name = "LVL1:\\WORM.EXE";
             play.addListener(new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     selectSound.play();
@@ -238,6 +243,7 @@ public class LevelSelect implements Screen {
             });
         }
         else if(lvl == 2) {
+            name = "LVL2:\\TROJAN.EXE";
             play.addListener(new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     selectSound.play();
@@ -248,6 +254,7 @@ public class LevelSelect implements Screen {
             });
         }
         else {
+            name = "LVL3:\\MACRO.EXE";
             play.addListener(new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
                     selectSound.play();
@@ -282,9 +289,11 @@ public class LevelSelect implements Screen {
     }
 
     private void scoreScreenRender(){
-        overlay.draw(batch, 0.5f);
+        overlay.draw(batch, 1);
         String score = ("High Score: " + checkedScore);
         String fileScore = ("Data Recovery: " + checkedFileRecovery + "%");
+        scoreLayout.setText(font,name);
+        font.draw(batch, name, WIDTH/2 - scoreLayout.width/2, HEIGHT - scoreLayout.height - 10);
         scoreLayout.setText(uiFont, score);
         uiFont.draw(batch, score, WIDTH / 2 - scoreLayout.width / 2, HEIGHT / 2 + HEIGHT / 4);
         scoreLayout.setText(uiFont, fileScore);
