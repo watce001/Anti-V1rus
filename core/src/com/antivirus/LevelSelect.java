@@ -21,8 +21,8 @@ import com.badlogic.gdx.audio.Sound;
 
 
 /**
- * Created by Caroline on 15/04/2016.
- * Co-Authored by Corey
+ * Created by Corey on 15/04/2016.
+ * Co-Authored by Caroline
  */
 public class LevelSelect implements Screen {
     AntiVirus game;
@@ -56,9 +56,11 @@ public class LevelSelect implements Screen {
     GlyphLayout layout;
 
     //Constructor to keep a reference to the main Game class
-    public LevelSelect(AntiVirus game){this.game = game;}
+    public LevelSelect(AntiVirus game) {
+        this.game = game;
+    }
 
-    public void create(){
+    public void create() {
         Gdx.app.log("LevelSelect: ", "levelSelect create");
         batch = new SpriteBatch();
         //initFonts(Gdx.graphics.getWidth()/10);
@@ -84,14 +86,14 @@ public class LevelSelect implements Screen {
 
         //init UIfont
         uiFont = new BitmapFont(Gdx.files.internal("MainMenu/datacontrol.fnt"));
-        uiFont.getData().setScale(0.5f,0.5f);
+        uiFont.getData().setScale(0.5f, 0.5f);
 
         //Managing input from both stage, and sprite batch
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(stage);
 
         //Overlay for other screens
-        pixmap = new Pixmap(0,0,Pixmap.Format.RGB888);
+        pixmap = new Pixmap(0, 0, Pixmap.Format.RGB888);
         scoreBackground = new TextureRegion(new Texture(pixmap));
         overlay = new Image(scoreBackground);
         pixmap.setColor(1, 0, 0, 05f);
@@ -101,13 +103,13 @@ public class LevelSelect implements Screen {
 
         //Creates button to start level 1
         final TextButton lvl1button = new TextButton("LVL1:\\WORM.EXE", skin, "default");
-        lvl1button.setWidth(Gdx.graphics.getWidth()/2);
+        lvl1button.setWidth(Gdx.graphics.getWidth() / 2);
         lvl1button.setHeight(Gdx.graphics.getHeight() / 8);
-        lvl1button.setPosition((Gdx.graphics.getWidth() / 2) - (lvl1button.getWidth()/2),
-                ((Gdx.graphics.getHeight() / 4)) + (lvl1button.getHeight()*1.5f));
+        lvl1button.setPosition((Gdx.graphics.getWidth() / 2) - (lvl1button.getWidth() / 2),
+                ((Gdx.graphics.getHeight() / 4)) + (lvl1button.getHeight() * 1.5f));
         lvl1button.getLabel().setFontScale(3);
-        lvl1button.addListener(new ClickListener(){
-            public void clicked (InputEvent event, float x, float y){
+        lvl1button.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
                 selectSound.play();
                 Gdx.app.log("LevelSelectScreen: ", "About to call level1 Score");
                 scoreScreenCreate(1);
@@ -117,13 +119,13 @@ public class LevelSelect implements Screen {
 
         //Creates button to start level 2
         final TextButton lvl2button = new TextButton("LVL2:\\TROJAN.EXE", skin, "default");
-        lvl2button.setWidth(Gdx.graphics.getWidth()/2);
+        lvl2button.setWidth(Gdx.graphics.getWidth() / 2);
         lvl2button.setHeight(Gdx.graphics.getHeight() / 8);
-        lvl2button.setPosition((Gdx.graphics.getWidth() / 2) - (lvl2button.getWidth()/2),
+        lvl2button.setPosition((Gdx.graphics.getWidth() / 2) - (lvl2button.getWidth() / 2),
                 ((Gdx.graphics.getHeight() / 4)));
         lvl2button.getLabel().setFontScale(3);
-        lvl2button.addListener(new ClickListener(){
-            public void clicked (InputEvent event, float x, float y){
+        lvl2button.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
                 selectSound.play();
                 Gdx.app.log("LevelSelectScreen: ", "About to call level1 Score");
                 scoreScreenCreate(2);
@@ -139,13 +141,13 @@ public class LevelSelect implements Screen {
 
         //Creates button to start level 3
         final TextButton lvl3button = new TextButton("LVL3:\\MACRO.EXE", skin, "default");
-        lvl3button.setWidth(Gdx.graphics.getWidth()/2);
+        lvl3button.setWidth(Gdx.graphics.getWidth() / 2);
         lvl3button.setHeight(Gdx.graphics.getHeight() / 8);
-        lvl3button.setPosition((Gdx.graphics.getWidth() / 2) - (lvl3button.getWidth()/2),
-                ((Gdx.graphics.getHeight() / 4)) - (lvl3button.getHeight()*1.5f));
+        lvl3button.setPosition((Gdx.graphics.getWidth() / 2) - (lvl3button.getWidth() / 2),
+                ((Gdx.graphics.getHeight() / 4)) - (lvl3button.getHeight() * 1.5f));
         lvl3button.getLabel().setFontScale(3);
-        lvl3button.addListener(new ClickListener(){
-            public void clicked (InputEvent event, float x, float y){
+        lvl3button.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
                 selectSound.play();
                 Gdx.app.log("LevelSelectScreen: ", "About to call level3 Score");
                 scoreScreenCreate(3);
@@ -159,7 +161,7 @@ public class LevelSelect implements Screen {
         Gdx.input.setInputProcessor(stage);
     }
 
-    public void render (float f){
+    public void render(float f) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -167,20 +169,19 @@ public class LevelSelect implements Screen {
         stage.draw();
 
         batch.begin();
-        font.draw(batch, txt, Gdx.graphics.getWidth()/2 - layout.width/2, (Gdx.graphics.getHeight() - Gdx.graphics.getHeight()/4) + layout.height/2);
+        font.draw(batch, txt, Gdx.graphics.getWidth() / 2 - layout.width / 2, (Gdx.graphics.getHeight() - Gdx.graphics.getHeight() / 4) + layout.height / 2);
 
-        if(checkingScore){
+        if (checkingScore) {
             scoreScreenRender();
         }
 
         batch.end();
     }
 
-    private void showComingSoon()
-    {
+    private void showComingSoon() {
         Dialog dialog = new Dialog("Coming Soon!", skin, "dialog") {
             public void result(Object obj) {
-                System.out.println("result "+obj);
+                System.out.println("result " + obj);
             }
         };
         dialog.setScale(3);
@@ -191,24 +192,30 @@ public class LevelSelect implements Screen {
     }
 
     @Override
-    public void dispose(){
+    public void dispose() {
         selectSound.dispose();
     }
-    @Override
-    public void resize(int width, int height){}
-    @Override
-    public void pause(){}
-    @Override
-    public void resume(){}
 
     @Override
-    public void show(){
+    public void resize(int width, int height) {
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
+    @Override
+    public void show() {
         Gdx.app.log("LevelSelect: ", "levelSelect show called");
         create();
     }
 
     @Override
-    public void hide(){
+    public void hide() {
         Gdx.app.log("LevelSelect: ", "levelSelect hide called");
     }
 
@@ -219,7 +226,7 @@ public class LevelSelect implements Screen {
     TextButton back;
     String name;
 
-    private void scoreScreenCreate(int lvl){
+    private void scoreScreenCreate(int lvl) {
         scoreStage = new Stage();
         scoreLayout = new GlyphLayout();
 
@@ -230,8 +237,8 @@ public class LevelSelect implements Screen {
         play.getLabel().setFontScale(3);
         play.setWidth(WIDTH / 2);
         play.setHeight(WIDTH / 4);
-        play.setPosition(WIDTH / 2 - (play.getWidth() / 2), (play.getHeight())*1.2f);
-        if(lvl == 1) {
+        play.setPosition(WIDTH / 2 - (play.getWidth() / 2), (play.getHeight()) * 1.2f);
+        if (lvl == 1) {
             name = "LVL1:\\WORM.EXE";
             play.addListener(new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
@@ -241,8 +248,7 @@ public class LevelSelect implements Screen {
                     Gdx.app.log("LevelSelectScreen: ", "level1 started");
                 }
             });
-        }
-        else if(lvl == 2) {
+        } else if (lvl == 2) {
             name = "LVL2:\\TROJAN.EXE";
             play.addListener(new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
@@ -252,8 +258,7 @@ public class LevelSelect implements Screen {
                     Gdx.app.log("LevelSelectScreen: ", "level2 started");
                 }
             });
-        }
-        else {
+        } else {
             name = "LVL3:\\MACRO.EXE";
             play.addListener(new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
@@ -273,7 +278,7 @@ public class LevelSelect implements Screen {
         back.getLabel().setFontScale(3);
         back.setWidth(WIDTH / 2);
         back.setHeight(WIDTH / 4);
-        back.setPosition(WIDTH / 2 - (back.getWidth() / 2), back.getHeight()*0.1f);
+        back.setPosition(WIDTH / 2 - (back.getWidth() / 2), back.getHeight() * 0.1f);
         back.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 selectSound.play();
@@ -288,12 +293,12 @@ public class LevelSelect implements Screen {
         Gdx.input.setInputProcessor(scoreStage);
     }
 
-    private void scoreScreenRender(){
+    private void scoreScreenRender() {
         overlay.draw(batch, 1);
         String score = ("High Score: " + checkedScore);
         String fileScore = ("Data Recovery: " + checkedFileRecovery + "%");
-        scoreLayout.setText(font,name);
-        font.draw(batch, name, WIDTH/2 - scoreLayout.width/2, HEIGHT - scoreLayout.height - 10);
+        scoreLayout.setText(font, name);
+        font.draw(batch, name, WIDTH / 2 - scoreLayout.width / 2, HEIGHT - scoreLayout.height - 10);
         scoreLayout.setText(uiFont, score);
         uiFont.draw(batch, score, WIDTH / 2 - scoreLayout.width / 2, HEIGHT / 2 + HEIGHT / 4);
         scoreLayout.setText(uiFont, fileScore);

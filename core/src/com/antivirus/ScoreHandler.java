@@ -40,17 +40,15 @@ public class ScoreHandler {
     }
 
     public static void setHighScore(int score, int fileRecovery, int lvl) {
-        if(lvl == 1){
+        if (lvl == 1) {
             prefs.putInteger("Level1HighScore", score);
             prefs.putInteger("Level1FileRecovery", fileRecovery);
             prefs.flush();
-        }
-        else if(lvl == 2){
+        } else if (lvl == 2) {
             prefs.putInteger("Level2HighScore", score);
             prefs.putInteger("Level2FileRecovery", fileRecovery);
             prefs.flush();
-        }
-        else if(lvl == 3){
+        } else if (lvl == 3) {
             prefs.putInteger("Level3HighScore", score);
             prefs.putInteger("Level3FileRecovery", fileRecovery);
             prefs.flush();
@@ -58,31 +56,26 @@ public class ScoreHandler {
     }
 
     public static int getHighScore(int lvl) {
-        if(lvl == 1){
+        if (lvl == 1) {
             return prefs.getInteger("Level1HighScore");
-        }
-        else if(lvl == 2){
+        } else if (lvl == 2) {
             return prefs.getInteger("Level2HighScore");
-        }
-        else if(lvl == 3){
+        } else if (lvl == 3) {
             return prefs.getInteger("Level3HighScore");
-        }
-        else {
+        } else {
             //in case called with a level number that doesn't exist
             return -1;
         }
     }
+
     public static int getHighFileRecovery(int lvl) {
-        if(lvl == 1){
+        if (lvl == 1) {
             return prefs.getInteger("Level1FileRecovery");
-        }
-        else if(lvl == 2){
+        } else if (lvl == 2) {
             return prefs.getInteger("Level2FileRecovery");
-        }
-        else if(lvl == 3){
+        } else if (lvl == 3) {
             return prefs.getInteger("Level3FileRecovery");
-        }
-        else {
+        } else {
             //in case called with a level number that doesn't exist
             return -1;
         }

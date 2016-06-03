@@ -40,9 +40,10 @@ import Units.Worm;
 /**
  * Created by Corey on 5/18/2016.
  */
-public class Lvl3 implements Screen{
+public class Lvl3 implements Screen {
 
     public enum GameState {PLAYING, PAUSED, COMPLETE, GAMEOVER}
+
     GameState gameState = GameState.PLAYING;
 
     InputMultiplexer inputMultiplexer;
@@ -199,7 +200,9 @@ public class Lvl3 implements Screen{
     private ParticleManager particles;
     float playerTrailCD;
 
-    public Lvl3(AntiVirus game){this.game = game;}
+    public Lvl3(AntiVirus game) {
+        this.game = game;
+    }
 
     public void create() {
         Gdx.app.log("Lvl3: ", "level3 create");
@@ -235,7 +238,7 @@ public class Lvl3 implements Screen{
         //sets player in middle of screen, 1/4th of the way up from the bottom
         player.setX(WIDTH / 2 - (playerSprite.getWidth() / 2));
         player.setY(HEIGHT / 4 - (playerSprite.getHeight() / 2));
-        playerSprite.setPosition(player.getX(),player.getY());
+        playerSprite.setPosition(player.getX(), player.getY());
         //Creates collision box for player
         player.setBounds(new Rectangle(playerSprite.getX(), playerSprite.getY(), player.getSprite().getWidth(), player.getSprite().getHeight()));
 
@@ -258,7 +261,7 @@ public class Lvl3 implements Screen{
         memLeaks = new ArrayList<MemoryLeak>();
         memLeakSpawnTime = 0.0f;
         memLeaksSpawned = 0;
-        memLeakWidth = WIDTH/4;
+        memLeakWidth = WIDTH / 4;
         memLeakHeight = HEIGHT;
         dotHappening = false;
         dotDamage = 0;
@@ -305,7 +308,7 @@ public class Lvl3 implements Screen{
         bullets = new ArrayList<Bullet>();
 
         //Overlay for other screens
-        pixmap = new Pixmap(0,0,Pixmap.Format.RGB888);
+        pixmap = new Pixmap(0, 0, Pixmap.Format.RGB888);
         pauseBackground = new TextureRegion(new Texture(pixmap));
         overlay = new Image(pauseBackground);
         pixmap.setColor(1, 0, 0, 05f);
@@ -318,7 +321,7 @@ public class Lvl3 implements Screen{
         stage = new Stage();
         settingsOn = false;
         skin = new Skin(Gdx.files.internal("uidata/uiskin.json"));
-        pauseButton = new TextButton("||",skin,"default");
+        pauseButton = new TextButton("||", skin, "default");
         pauseButton.getLabel().setFontScale(3);
         pauseButton.setWidth(Gdx.graphics.getWidth() / 8);
         pauseButton.setHeight(pauseButton.getWidth());
@@ -339,7 +342,7 @@ public class Lvl3 implements Screen{
         //Score
         score = 0;
         uiFont = new BitmapFont(Gdx.files.internal("MainMenu/datacontrol.fnt"));
-        uiFont.getData().setScale(0.5f,0.5f);
+        uiFont.getData().setScale(0.5f, 0.5f);
         scoreTxt = "Score: " + String.format(Locale.US, "%06d", score);
         scoreLayout = new GlyphLayout();
         scoreLayout.setText(uiFont, scoreTxt);
@@ -384,7 +387,7 @@ public class Lvl3 implements Screen{
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
-    public void render(float f){
+    public void render(float f) {
         //Clear screen white
 //        Gdx.gl.glClearColor(1, 1, 1, 1);
 //        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -403,53 +406,52 @@ public class Lvl3 implements Screen{
         playerSprite.draw(batch);
 
         //Draws bullets if bullet array is holding bullet objects
-        if(bullets.size() > 0){
-            for(Bullet bullet : bullets){
+        if (bullets.size() > 0) {
+            for (Bullet bullet : bullets) {
                 bullet.getSprite().draw(batch);
             }
         }
 
         //Draws worms if worm array is holding worm objects
-        if (worms.size() > 0){
-            for(Worm worm : worms){
+        if (worms.size() > 0) {
+            for (Worm worm : worms) {
                 worm.getSprite().draw(batch);
             }
         }
 
         //Draws trojans if trojan array is holding trojan objects
-        if (trojans.size() > 0){
-            if (bigTrojan == null){
-                for (Trojan trojan: trojans){
+        if (trojans.size() > 0) {
+            if (bigTrojan == null) {
+                for (Trojan trojan : trojans) {
                     trojan.getSprite().draw(batch);
                 }
-            }
-            else if(bigTrojan != null){
+            } else if (bigTrojan != null) {
                 bigTrojan.getSprite().draw(batch);
             }
         }
         //Draws memLeaks if memLeak array is holding memLeak objects
-        if (memLeaks.size() > 0){
-            for (MemoryLeak memLeak : memLeaks){
+        if (memLeaks.size() > 0) {
+            for (MemoryLeak memLeak : memLeaks) {
                 memLeak.getSprite().draw(batch);
             }
         }
 
-        if (elissaArray.size() > 0){
-            for (Elissa elissa : elissaArray){
+        if (elissaArray.size() > 0) {
+            for (Elissa elissa : elissaArray) {
                 elissa.getSprite().draw(batch);
             }
         }
 
         //Draws ElissaFiles if elissaFiles array is holding files objects
-        if (elissaFiles.size() > 0){
-            for (ElissaFiles file : elissaFiles){
+        if (elissaFiles.size() > 0) {
+            for (ElissaFiles file : elissaFiles) {
                 file.getSprite().draw(batch);
             }
         }
 
         //Draws files if files array is holding files objects
-        if (files.size() > 0){
-            for (Files file : files){
+        if (files.size() > 0) {
+            for (Files file : files) {
                 file.getSprite().draw(batch);
             }
         }
@@ -457,14 +459,14 @@ public class Lvl3 implements Screen{
         //particle system
         particles.render(batch);
 
-        switch (gameState){
+        switch (gameState) {
             case PLAYING:
                 //Score
                 scoreTxt = "Score: " + String.format(Locale.US, "%06d", score);
                 uiFont.draw(batch, scoreTxt, 0, HEIGHT - (scoreLayout.height));
                 //Health
                 healthTxt = "Health: " + player.getHp();
-                uiFont.draw(batch,healthTxt,WIDTH/2 , HEIGHT - (healthLayout.height));
+                uiFont.draw(batch, healthTxt, WIDTH / 2, HEIGHT - (healthLayout.height));
                 //MOVEMENT
                 isTouched = Gdx.input.isTouched();
                 //Gdx.app.log("Playing: ", "Is touched: " + isTouched);
@@ -474,10 +476,9 @@ public class Lvl3 implements Screen{
                 break;
             case PAUSED:
                 //Fill in pause code
-                if(settingsOn == false){
+                if (settingsOn == false) {
                     pauseScreenRender();
-                }
-                else if(settingsOn == true){
+                } else if (settingsOn == true) {
                     settingsScreenRender();
                 }
                 break;
@@ -485,8 +486,8 @@ public class Lvl3 implements Screen{
                 countdown = ((System.currentTimeMillis() - startTime) / 1000);
                 Gdx.app.log("Seconds Elapsed: ", "" + ((System.currentTimeMillis() - startTime) / 1000));
                 overlay.draw(batch, 0.5f);
-                font.draw(batch, txt, WIDTH/2 - layout.width/2, HEIGHT/2 + layout.height/2);
-                if (countdown == 5){
+                font.draw(batch, txt, WIDTH / 2 - layout.width / 2, HEIGHT / 2 + layout.height / 2);
+                if (countdown == 5) {
                     gameState = GameState.PLAYING;
                     Lvl1.musicBackground.dispose();
                     game.setScreen(AntiVirus.levelSelectScreen);
@@ -499,19 +500,19 @@ public class Lvl3 implements Screen{
         batch.end();
     }
 
-    public void update(){
+    public void update() {
         removeBullet = null;
         removeWorm = null;
         removeTrojan = null;
         removeFile = null;
         removeElissa = null;
 
-        switch (gameState){
+        switch (gameState) {
             case PLAYING:
                 //If movement cooldown is zero.
-                if(movementCd <= 0.0f){
+                if (movementCd <= 0.0f) {
                     //Spawning time, for when we want a specific enemy to spawn
-                    spawnCd ++;
+                    spawnCd++;
 
                     checkPlayerHealth();
 
@@ -527,7 +528,7 @@ public class Lvl3 implements Screen{
                     //background
                     animateBackground();
 
-                    if (dotHappening){
+                    if (dotHappening) {
                         Gdx.app.log("Is True: ", "true");
                         damageOverTimeCollision();
                     }
@@ -535,7 +536,7 @@ public class Lvl3 implements Screen{
                     //update bullets;
                     // wormBulletUpdate();
 
-                    if (worms.size() > 0){
+                    if (worms.size() > 0) {
                         //Shooting worm bullets
                         wormBulletSpawn();
                         animateWorm();
@@ -545,7 +546,7 @@ public class Lvl3 implements Screen{
                         removeOutOfBoundsWorm();
                     }
 
-                    if (trojans.size() > 0){
+                    if (trojans.size() > 0) {
                         //Shooting trojan bullets
                         trojanBulletSpawn();
                         //Move trojan
@@ -554,7 +555,7 @@ public class Lvl3 implements Screen{
                         removeOutOfBoundsTrojan();
                     }
 
-                    if (memLeaks.size() > 0){
+                    if (memLeaks.size() > 0) {
                         //Spawning memLeak bullets
                         memLeakBulletSpawn();
                         //Move memLeak
@@ -563,13 +564,13 @@ public class Lvl3 implements Screen{
                         removeOutOfBoundsMemLeak();
                     }
 
-                    if (elissaArray.size() > 0){
+                    if (elissaArray.size() > 0) {
                         elissaBulletSpawn();
                         spawnCorruptData();
                         moveElissa();
                     }
 
-                    if (files.size() > 0){
+                    if (files.size() > 0) {
                         updateFiles();
                     }
 
@@ -584,47 +585,47 @@ public class Lvl3 implements Screen{
                         spawnTrojans(WIDTH, HEIGHT, -2, 1);
                     }
                     //Spawns worm
-                    if (spawnCd == 400){
+                    if (spawnCd == 400) {
                         spawnWorm(5, HEIGHT, 0);
                     }
                     //Spawns memLeak
-                    if (spawnCd == 700){
+                    if (spawnCd == 700) {
                         spawnMemLeaks(150, HEIGHT, 1);
                     }
-                    if (spawnCd == 1000){
+                    if (spawnCd == 1000) {
                         spawnWorm(WIDTH, HEIGHT, -3);
                     }
                     if (spawnCd == 1200) {
-                        if(worms.size() > 0) {
-                            for(Worm worm : worms) {
+                        if (worms.size() > 0) {
+                            for (Worm worm : worms) {
                                 worm.setxSpeed(-5);
                             }
                         }
                     }
-                    if (spawnCd == 1300){
+                    if (spawnCd == 1300) {
                         spawnMemLeaks(-500, HEIGHT, 2);
                     }
-                    if (spawnCd == 1600){
+                    if (spawnCd == 1600) {
                         spawnTrojans(0, HEIGHT, 3, -3);
                     }
-                    if (spawnCd == 1900){
+                    if (spawnCd == 1900) {
                         spawnWorm(WIDTH, HEIGHT, -5);
                     }
-                    if (spawnCd == 2200){
+                    if (spawnCd == 2200) {
                         spawnMemLeaks(WIDTH, HEIGHT, -2);
                     }
-                    if (spawnCd == 2500){
+                    if (spawnCd == 2500) {
                         spawnTrojans(WIDTH, HEIGHT, -3, 3);
                     }
-                    if (spawnCd == 2800){
+                    if (spawnCd == 2800) {
                         spawnWorm(-500, HEIGHT, 3);
                     }
-                    if (spawnCd == 3100){
+                    if (spawnCd == 3100) {
                         spawnElissa();
                     }
-                    if (spawnCd > 3100 && elissaArray.size() == 0){
-                        bossDefeatedCd ++;
-                        if (bossDefeatedCd == 200){
+                    if (spawnCd > 3100 && elissaArray.size() == 0) {
+                        bossDefeatedCd++;
+                        if (bossDefeatedCd == 200) {
                             completeScreenCreate();
                             startTime = System.currentTimeMillis();
                             gameState = GameState.COMPLETE;
@@ -644,34 +645,41 @@ public class Lvl3 implements Screen{
     }
 
     @Override
-    public void dispose(){
+    public void dispose() {
         img.dispose();
         batch.dispose();
         game.dispose();
         sfx.dispose();
         particles.dispose();
     }
-    @Override
-    public void resize(int width, int height) {}
-    @Override
-    public void pause(){}
-    @Override
-    public void resume() {}
 
     @Override
-    public void show(){
+    public void resize(int width, int height) {
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
+    @Override
+    public void show() {
         Gdx.app.log("Lvl3: ", "level3 show called");
         create();
     }
+
     @Override
-    public void hide(){
+    public void hide() {
         Gdx.app.log("Lvl3: ", "level3 hide called");
     }
 
     //PLAYER
-    public void checkPlayerHealth(){
+    public void checkPlayerHealth() {
         //Gdx.app.log("Player Health: ", "" + player.getHp());
-        if (player.getHp() <= 0){
+        if (player.getHp() <= 0) {
             sfx.playSound(SoundFXManager.Type.DEATH);
             Gdx.input.setInputProcessor(stage);
             startTime = System.currentTimeMillis();
@@ -680,37 +688,35 @@ public class Lvl3 implements Screen{
         }
     }
 
-    public void playerMovement(){
-        if (isTouched){
+    public void playerMovement() {
+        if (isTouched) {
             newTouch.set(Gdx.input.getX(), HEIGHT - Gdx.input.getY());
-            if (touchTime >= 1){
+            if (touchTime >= 1) {
                 //Gdx.app.log("Playing: " , "NTx: " + newTouch.x + " NTy: " + newTouch.y);
                 //Gdx.app.log("Playing: " , "LTx: " + lastTouch.x + " LTy: " + lastTouch.y);
                 touchX = newTouch.x - lastTouch.x;
                 touchY = newTouch.y - lastTouch.y;
                 //Gdx.app.log("Playing: ", "X: " + newTouch.x + " Y: " + newTouch.y);
                 //Gdx.app.log("PLAYING", "differenceX:  " + touchX + " differenceY: " + touchX);
-                if (touchX < 0){
-                    if (player.getSprite().getX() > 0){
+                if (touchX < 0) {
+                    if (player.getSprite().getX() > 0) {
                         //Gdx.app.log("Left","");
                         player.setX(player.getX() + touchX);
                     }
-                }
-                else if (touchX > 0){
-                    if (player.getSprite().getX() < (WIDTH - player.getSprite().getWidth())){
+                } else if (touchX > 0) {
+                    if (player.getSprite().getX() < (WIDTH - player.getSprite().getWidth())) {
                         player.setX(player.getX() + touchX);
                     }
                     //Gdx.app.log("Right","");
                 }
 
-                if (touchY < 0){
-                    if (player.getSprite().getY() > 0){
+                if (touchY < 0) {
+                    if (player.getSprite().getY() > 0) {
                         //Gdx.app.log("Down","");
                         player.setY(player.getY() + touchY);
                     }
-                }
-                else if (touchY > 0){
-                    if (player.getSprite().getY() < (HEIGHT - player.getSprite().getHeight())){
+                } else if (touchY > 0) {
+                    if (player.getSprite().getY() < (HEIGHT - player.getSprite().getHeight())) {
                         //Gdx.app.log("Up","");
                         player.setY(player.getY() + touchY);
                     }
@@ -722,9 +728,8 @@ public class Lvl3 implements Screen{
             }
             lastTouch.x = newTouch.x;
             lastTouch.y = newTouch.y;
-            touchTime ++;
-        }
-        else{
+            touchTime++;
+        } else {
             touchTime = 0;
         }
 
@@ -745,41 +750,37 @@ public class Lvl3 implements Screen{
     private void playerTrailSpawn() {
         if (playerTrailCD >= 2) {
             int i = particles.spawn(ParticleManager.Type.PLAYER_TRAIL, player);
-            particles.x[i] = player.getX() + player.getSprite().getWidth()/2;
+            particles.x[i] = player.getX() + player.getSprite().getWidth() / 2;
             particles.y[i] = player.getY();
             playerTrailCD = 0.0f;
-        }
-        else
-        {
+        } else {
             playerTrailCD++;
         }
     }
 
     //BACKGROUND
-    public void animateBackground(){
+    public void animateBackground() {
         bg1.setPosition(bg1.getX(), posYBackground1);
         bg2.setPosition(bg2.getX(), posYBackground2);
-        if(posYBackground1 < -1920){
-            bg1.setPosition(0,bg2.getHeight());
-            posYBackground1 = (int)bg2.getHeight();
+        if (posYBackground1 < -1920) {
+            bg1.setPosition(0, bg2.getHeight());
+            posYBackground1 = (int) bg2.getHeight();
             posYBackground1 -= 5;
-        }
-        else if(posYBackground2 < -1920){
-            bg2.setPosition(0,bg1.getHeight());
+        } else if (posYBackground2 < -1920) {
+            bg2.setPosition(0, bg1.getHeight());
             posYBackground2 = (int) bg1.getHeight();
             posYBackground2 -= 5;
-        }
-        else{
+        } else {
             posYBackground1 -= 5;
             posYBackground2 -= 5;
         }
     }
 
     //BULLETS
-    public void bulletUpdate(){
-        for (Bullet bullet: bullets){
+    public void bulletUpdate() {
+        for (Bullet bullet : bullets) {
             //Player
-            if (bullet.getId() == 1){
+            if (bullet.getId() == 1) {
                 playerBulletUpdate(bullet);
             }
 //            //Worm
@@ -797,7 +798,7 @@ public class Lvl3 implements Screen{
 //            else if (bullet.getId() == 5){
 //                memLeakBulletUpdate(bullet);
 //            }
-            else{
+            else {
                 enemyBulletUpdate(bullet);
             }
         }
@@ -805,37 +806,37 @@ public class Lvl3 implements Screen{
         for (ElissaFiles file : elissaFiles) {
             updateCorruptData(file);
         }
-        if (removeElissaFile != null){
+        if (removeElissaFile != null) {
             elissaFiles.remove(removeElissaFile);
         }
 
 
         //remove shot worm
-        if (removeWorm != null){
-            spawnFiles(removeWorm.getFileDropCount(), removeWorm.getX() + (removeWorm.getSprite().getWidth()/2), removeWorm.getY() + removeWorm.getSprite().getHeight()/2);
+        if (removeWorm != null) {
+            spawnFiles(removeWorm.getFileDropCount(), removeWorm.getX() + (removeWorm.getSprite().getWidth() / 2), removeWorm.getY() + removeWorm.getSprite().getHeight() / 2);
             worms.remove(removeWorm);
             removeWorm = null;
         }
         //remove shot memLeak
-        if (removeMemLeak != null){
-            spawnFiles(removeMemLeak.getFileDropCount(), removeMemLeak.getX() + (removeMemLeak.getSprite().getWidth()/2), removeMemLeak.getY() + removeMemLeak.getSprite().getHeight()/2);
+        if (removeMemLeak != null) {
+            spawnFiles(removeMemLeak.getFileDropCount(), removeMemLeak.getX() + (removeMemLeak.getSprite().getWidth() / 2), removeMemLeak.getY() + removeMemLeak.getSprite().getHeight() / 2);
             memLeaks.remove(removeMemLeak);
             removeMemLeak = null;
         }
         //remove shot trojan
-        if (removeTrojan != null){
-            spawnFiles(removeTrojan.getFileDropCount(), removeTrojan.getX() + (removeTrojan.getSprite().getWidth()/2), removeTrojan.getY() + removeTrojan.getSprite().getHeight()/2);
+        if (removeTrojan != null) {
+            spawnFiles(removeTrojan.getFileDropCount(), removeTrojan.getX() + (removeTrojan.getSprite().getWidth() / 2), removeTrojan.getY() + removeTrojan.getSprite().getHeight() / 2);
             trojans.remove(removeTrojan);
             removeTrojan = null;
         }
         //Remove shot Elissa
-        if (removeElissa != null){
-            spawnFiles(removeElissa.getFileDropCount(), removeElissa.getX() + (removeElissa.getSprite().getWidth()/2), removeElissa.getY() + removeElissa.getSprite().getHeight());
+        if (removeElissa != null) {
+            spawnFiles(removeElissa.getFileDropCount(), removeElissa.getX() + (removeElissa.getSprite().getWidth() / 2), removeElissa.getY() + removeElissa.getSprite().getHeight());
             elissaArray.remove(removeElissa);
             removeElissa = null;
         }
         //remove bullet
-        if(removeBullet != null){
+        if (removeBullet != null) {
             bullets.remove(removeBullet);
             removeBullet = null;
         }
@@ -843,22 +844,21 @@ public class Lvl3 implements Screen{
     }
 
     //PLAYER BULLETS
-    public void playerBulletSpawn(){
+    public void playerBulletSpawn() {
         //Shooting
-        if(!player.canShoot()) {
-            if(spawnCd >= playerDisableTime){
+        if (!player.canShoot()) {
+            if (spawnCd >= playerDisableTime) {
                 player.enableShoot();
             }
-        }
-        else if (playerBulletCd >= 10){
+        } else if (playerBulletCd >= 10) {
 
-            if (bullets.size() <= 30){
-                Bullet bullet = new Bullet(playerSprite.getX() + playerSprite.getWidth()/2, playerSprite.getY() + (playerSprite.getHeight()*0.9f), player.getId(), player.getDamage(), false);
-                bullet.setX(bullet.getX() - bullet.getSprite().getWidth()/2);
+            if (bullets.size() <= 30) {
+                Bullet bullet = new Bullet(playerSprite.getX() + playerSprite.getWidth() / 2, playerSprite.getY() + (playerSprite.getHeight() * 0.9f), player.getId(), player.getDamage(), false);
+                bullet.setX(bullet.getX() - bullet.getSprite().getWidth() / 2);
                 bullet.setBounds(new Rectangle(bullet.getX(), bullet.getY(), bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
                 sfx.playSound(SoundFXManager.Type.SHOOT);
                 int i = particles.spawn(ParticleManager.Type.MUZZLE_FLASH, player);
-                particles.x[i] = player.getSprite().getWidth()/2;
+                particles.x[i] = player.getSprite().getWidth() / 2;
                 particles.y[i] = player.getSprite().getHeight();
                 bullets.add(bullet);
             }
@@ -868,22 +868,22 @@ public class Lvl3 implements Screen{
         playerBulletCd++;
     }
 
-    public void playerBulletUpdate(Bullet bullet){
+    public void playerBulletUpdate(Bullet bullet) {
         //Bullet update
-        bullet.getBounds().setPosition(bullet.getX(),bullet.getY() + 20);
+        bullet.getBounds().setPosition(bullet.getX(), bullet.getY() + 20);
         bullet.setY(bullet.getY() + 20);
         if (bullet.getY() > 1670) {
             removeBullet = bullet;
         }
         //WORM
         //If bullet hits worm, worm loses health
-        if (worms.size() >0){
+        if (worms.size() > 0) {
             for (Worm worm : worms) {
-                if (worm.getBounds().overlaps(bullet.getBounds())){
+                if (worm.getBounds().overlaps(bullet.getBounds())) {
                     worm.setHp(worm.getHp() - bullet.getDamage());
-                    for(int i = 0; i < 5; i++) {
+                    for (int i = 0; i < 5; i++) {
                         int p = particles.spawn(ParticleManager.Type.IMPACT, worm);
-                        particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth()/2);
+                        particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth() / 2);
                         particles.y[p] = bullet.getY() + bullet.getSprite().getHeight();
                     }
                     sfx.playSound(SoundFXManager.Type.HIT);
@@ -891,14 +891,14 @@ public class Lvl3 implements Screen{
                     //If health is zero, remove it
                     if (worm.getHp() <= 0) {
                         score += worm.getPoints();
-                        for(int i = 0; i < 10; i++) {
+                        for (int i = 0; i < 10; i++) {
                             int p = particles.spawn(ParticleManager.Type.DATA, worm);
-                            particles.x[p] = (worm.getX() + worm.getSprite().getWidth()/2);
-                            particles.y[p] = worm.getY() + worm.getSprite().getHeight()/2;
+                            particles.x[p] = (worm.getX() + worm.getSprite().getWidth() / 2);
+                            particles.y[p] = worm.getY() + worm.getSprite().getHeight() / 2;
                         }
                         int p = particles.spawn(ParticleManager.Type.EXPLOSION, worm);
-                        particles.x[p] = (worm.getX() + worm.getSprite().getWidth()/2);
-                        particles.y[p] = worm.getY() + worm.getSprite().getHeight()/2;
+                        particles.x[p] = (worm.getX() + worm.getSprite().getWidth() / 2);
+                        particles.y[p] = worm.getY() + worm.getSprite().getHeight() / 2;
                         sfx.playSound(SoundFXManager.Type.DEATH);
                         removeWorm = worm;
                     }
@@ -907,28 +907,28 @@ public class Lvl3 implements Screen{
         }
         //MEMLEAK
         //If bullet hits memory leak, memleak loses health
-        if (memLeaks.size() > 0){
-            for (MemoryLeak memleak : memLeaks){
-                if (memleak.getBounds().overlaps(bullet.getBounds())){
+        if (memLeaks.size() > 0) {
+            for (MemoryLeak memleak : memLeaks) {
+                if (memleak.getBounds().overlaps(bullet.getBounds())) {
                     memleak.setHp(memleak.getHp() - bullet.getDamage());
-                    for(int i = 0; i < 5; i++) {
+                    for (int i = 0; i < 5; i++) {
                         int p = particles.spawn(ParticleManager.Type.IMPACT, memleak);
-                        particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth()/2);
+                        particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth() / 2);
                         particles.y[p] = bullet.getY() + bullet.getSprite().getHeight();
                     }
                     sfx.playSound(SoundFXManager.Type.HIT);
                     removeBullet = bullet;
                     //if health is zero, remove it
-                    if (memleak.getHp() <= 0){
+                    if (memleak.getHp() <= 0) {
                         score += memleak.getPoints();
-                        for(int i = 0; i < 10; i++) {
+                        for (int i = 0; i < 10; i++) {
                             int p = particles.spawn(ParticleManager.Type.DATA, memleak);
-                            particles.x[p] = (memleak.getX() + memleak.getSprite().getWidth()/2);
-                            particles.y[p] = memleak.getY() + memleak.getSprite().getHeight()/2;
+                            particles.x[p] = (memleak.getX() + memleak.getSprite().getWidth() / 2);
+                            particles.y[p] = memleak.getY() + memleak.getSprite().getHeight() / 2;
                         }
                         int p = particles.spawn(ParticleManager.Type.EXPLOSION, memleak);
-                        particles.x[p] = (memleak.getX() + memleak.getSprite().getWidth()/2);
-                        particles.y[p] = memleak.getY() + memleak.getSprite().getHeight()/2;
+                        particles.x[p] = (memleak.getX() + memleak.getSprite().getWidth() / 2);
+                        particles.y[p] = memleak.getY() + memleak.getSprite().getHeight() / 2;
                         sfx.playSound(SoundFXManager.Type.DEATH);
                         removeMemLeak = memleak;
                     }
@@ -938,28 +938,28 @@ public class Lvl3 implements Screen{
         //TROJAN
         //If bullet hits trojan, trojan loses health
         //If there is no big trojan, there are only baby trojans to hit
-        if (bigTrojan == null){
-            if (trojans.size() > 0){
-                for (Trojan trojan : trojans){
-                    if (trojan.getBounds().overlaps(bullet.getBounds())){
+        if (bigTrojan == null) {
+            if (trojans.size() > 0) {
+                for (Trojan trojan : trojans) {
+                    if (trojan.getBounds().overlaps(bullet.getBounds())) {
                         trojan.setHp(trojan.getHp() - bullet.getDamage());
-                        for(int i = 0; i < 5; i++) {
+                        for (int i = 0; i < 5; i++) {
                             int p = particles.spawn(ParticleManager.Type.IMPACT, trojan);
-                            particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth()/2);
+                            particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth() / 2);
                             particles.y[p] = bullet.getY() + bullet.getSprite().getHeight();
                         }
                         sfx.playSound(SoundFXManager.Type.HIT);
                         removeBullet = bullet;
-                        if (trojan.getHp() <= 0){
+                        if (trojan.getHp() <= 0) {
                             score += trojan.getPoints();
-                            for(int i = 0; i < 10; i++) {
+                            for (int i = 0; i < 10; i++) {
                                 int p = particles.spawn(ParticleManager.Type.DATA, trojan);
-                                particles.x[p] = (trojan.getX() + trojan.getSprite().getWidth()/2);
-                                particles.y[p] = trojan.getY() + trojan.getSprite().getHeight()/2;
+                                particles.x[p] = (trojan.getX() + trojan.getSprite().getWidth() / 2);
+                                particles.y[p] = trojan.getY() + trojan.getSprite().getHeight() / 2;
                             }
                             int p = particles.spawn(ParticleManager.Type.EXPLOSION, trojan);
-                            particles.x[p] = (trojan.getX() + trojan.getSprite().getWidth()/2);
-                            particles.y[p] = trojan.getY() + trojan.getSprite().getHeight()/2;
+                            particles.x[p] = (trojan.getX() + trojan.getSprite().getWidth() / 2);
+                            particles.y[p] = trojan.getY() + trojan.getSprite().getHeight() / 2;
                             sfx.playSound(SoundFXManager.Type.DEATH);
                             removeTrojan = trojan;
                         }
@@ -968,31 +968,31 @@ public class Lvl3 implements Screen{
             }
         }
         //otherwise there is just the big trojan
-        else{
-            if(bigTrojan.getBounds().overlaps(bullet.getBounds())){
+        else {
+            if (bigTrojan.getBounds().overlaps(bullet.getBounds())) {
                 bigTrojan.setHp(bigTrojan.getHp() - bullet.getDamage());
-                for(int i = 0; i < 5; i++) {
+                for (int i = 0; i < 5; i++) {
                     int p = particles.spawn(ParticleManager.Type.IMPACT, bigTrojan);
-                    particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth()/2);
+                    particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth() / 2);
                     particles.y[p] = bullet.getY() + bullet.getSprite().getHeight();
                 }
                 sfx.playSound(SoundFXManager.Type.HIT);
                 removeBullet = bullet;
-                if (bigTrojan.getHp() <= 0){
+                if (bigTrojan.getHp() <= 0) {
                     score += bigTrojan.getPoints();
-                    spawnFiles(bigTrojan.getFileDropCount(), bigTrojan.getX() + (bigTrojan.getSprite().getWidth()/2), bigTrojan.getY() + bigTrojan.getSprite().getHeight()/2);
-                    for(int i = 0; i < 10; i++) {
+                    spawnFiles(bigTrojan.getFileDropCount(), bigTrojan.getX() + (bigTrojan.getSprite().getWidth() / 2), bigTrojan.getY() + bigTrojan.getSprite().getHeight() / 2);
+                    for (int i = 0; i < 10; i++) {
                         int p = particles.spawn(ParticleManager.Type.DATA, bigTrojan);
-                        particles.x[p] = (bigTrojan.getX() + bigTrojan.getSprite().getWidth()/2);
-                        particles.y[p] = bigTrojan.getY() + bigTrojan.getSprite().getHeight()/2;
+                        particles.x[p] = (bigTrojan.getX() + bigTrojan.getSprite().getWidth() / 2);
+                        particles.y[p] = bigTrojan.getY() + bigTrojan.getSprite().getHeight() / 2;
                     }
                     int p = particles.spawn(ParticleManager.Type.EXPLOSION, bigTrojan);
-                    particles.x[p] = (bigTrojan.getX() + bigTrojan.getSprite().getWidth()/2);
-                    particles.y[p] = bigTrojan.getY() + bigTrojan.getSprite().getHeight()/2;
+                    particles.x[p] = (bigTrojan.getX() + bigTrojan.getSprite().getWidth() / 2);
+                    particles.y[p] = bigTrojan.getY() + bigTrojan.getSprite().getHeight() / 2;
                     sfx.playSound(SoundFXManager.Type.DEATH);
                     bigTrojan = null;
                     //Sets baby trojans to where big trojan died
-                    for (Trojan trojan : trojans){
+                    for (Trojan trojan : trojans) {
                         trojan.setY(trojanHeight);
 
                         trojan.setX(trojanWidth);
@@ -1008,27 +1008,27 @@ public class Lvl3 implements Screen{
         //ELISSA
         if (elissaArray.size() > 0) {
 
-            for (Elissa elissa : elissaArray){
-                if (elissa.getBounds().overlaps(bullet.getBounds())){
+            for (Elissa elissa : elissaArray) {
+                if (elissa.getBounds().overlaps(bullet.getBounds())) {
                     elissa.setHp(elissa.getHp() - bullet.getDamage());
-                    for(int i = 0; i < 5; i++) {
+                    for (int i = 0; i < 5; i++) {
                         int p = particles.spawn(ParticleManager.Type.IMPACT, elissa);
-                        particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth()/2);
+                        particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth() / 2);
                         particles.y[p] = bullet.getY() + bullet.getSprite().getHeight();
                     }
                     sfx.playSound(SoundFXManager.Type.HIT);
                     removeBullet = bullet;
                     //If health is zero, remove it
-                    if (elissa.getHp() <=0){
+                    if (elissa.getHp() <= 0) {
                         score += elissa.getPoints();
-                        for(int i = 0; i < 10; i++) {
+                        for (int i = 0; i < 10; i++) {
                             int p = particles.spawn(ParticleManager.Type.DATA, elissa);
-                            particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth()/2);
-                            particles.y[p] = elissa.getY() + elissa.getSprite().getHeight()/2;
+                            particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth() / 2);
+                            particles.y[p] = elissa.getY() + elissa.getSprite().getHeight() / 2;
                         }
                         int p = particles.spawn(ParticleManager.Type.EXPLOSION, elissa);
-                        particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth()/2);
-                        particles.y[p] = elissa.getY() + elissa.getSprite().getHeight()/2;
+                        particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth() / 2);
+                        particles.y[p] = elissa.getY() + elissa.getSprite().getHeight() / 2;
                         sfx.playSound(SoundFXManager.Type.DEATH);
                         removeElissa = elissa;
                     }
@@ -1038,147 +1038,142 @@ public class Lvl3 implements Screen{
     }
 
     //WORM BULLETS
-    public void wormBulletSpawn(){
+    public void wormBulletSpawn() {
         //Shooting
         //Gdx.app.log("Worm bullets: ", "wormBulletCd: " + wormBulletCd);
-        if (wormBulletCd >= 50){
+        if (wormBulletCd >= 50) {
             Random rand = new Random();
             int num;
-            if (worms.size() > 1){
-                num = rand.nextInt(worms.size()-1);
-            }
-            else{
+            if (worms.size() > 1) {
+                num = rand.nextInt(worms.size() - 1);
+            } else {
                 num = 0;
             }
             //Gdx.app.log("Worm bullets: ", "Rand num: " + num);
             Worm worm = worms.get(num);
-            if (bullets.size() <= 30){
-                Bullet bullet = new Bullet(worm.getSprite().getX() + worm.getSprite().getWidth()/2, worm.getSprite().getY() - 90, worm.getId(), worm.getDamage(), true);
+            if (bullets.size() <= 30) {
+                Bullet bullet = new Bullet(worm.getSprite().getX() + worm.getSprite().getWidth() / 2, worm.getSprite().getY() - 90, worm.getId(), worm.getDamage(), true);
                 bullet.setBounds(new Rectangle(worm.getSprite().getX() - 75, worm.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
                 sfx.playSound(SoundFXManager.Type.SHOOT);
                 int i = particles.spawn(ParticleManager.Type.MUZZLE_FLASH, worm);
-                particles.x[i] = worm.getSprite().getWidth()/2;
+                particles.x[i] = worm.getSprite().getWidth() / 2;
                 particles.y[i] = 0;
                 bullets.add(bullet);
             }
             wormBulletCd = 0;
         }
-        wormBulletCd ++;
+        wormBulletCd++;
     }
 
     //TROJAN BULLETS
-    public void trojanBulletSpawn(){
+    public void trojanBulletSpawn() {
         //Shooting
         //Gdx.app.log("Trojan bullets: ", "trojanBulletCd: " + trojanBulletCd);
-        if (bigTrojan != null){
+        if (bigTrojan != null) {
             //Gdx.app.log("Trojan bullets: ", "In big trojan bullet spawn");
             if (trojanBulletCd >= 150) {
                 if (bullets.size() <= 30) {
-                    Bullet bullet = new Bullet(bigTrojan.getSprite().getX() + bigTrojan.getSprite().getWidth()/2, bigTrojan.getSprite().getY() - 90, bigTrojan.getId(), bigTrojan.getDamage(), true);
-                    bullet.setBounds(new Rectangle(bigTrojan.getSprite().getX() + bigTrojan.getSprite().getWidth()/2, bigTrojan.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
+                    Bullet bullet = new Bullet(bigTrojan.getSprite().getX() + bigTrojan.getSprite().getWidth() / 2, bigTrojan.getSprite().getY() - 90, bigTrojan.getId(), bigTrojan.getDamage(), true);
+                    bullet.setBounds(new Rectangle(bigTrojan.getSprite().getX() + bigTrojan.getSprite().getWidth() / 2, bigTrojan.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
                     sfx.playSound(SoundFXManager.Type.SHOOT);
                     int i = particles.spawn(ParticleManager.Type.MUZZLE_FLASH, bigTrojan);
-                    particles.x[i] = bigTrojan.getSprite().getWidth()/2;
+                    particles.x[i] = bigTrojan.getSprite().getWidth() / 2;
                     particles.y[i] = 0;
                     bullets.add(bullet);
                 }
                 trojanBulletCd = 0;
             }
-        }
-        else if (trojans.size() > 0){
-            if (trojanBulletCd >= 100){
+        } else if (trojans.size() > 0) {
+            if (trojanBulletCd >= 100) {
                 Random rand = new Random();
                 int num;
-                if (trojans.size() > 1){
-                    num = rand.nextInt(trojans.size()-1);
-                }
-                else{
+                if (trojans.size() > 1) {
+                    num = rand.nextInt(trojans.size() - 1);
+                } else {
                     num = 0;
                 }
                 //Gdx.app.log("Trojan bullets: ", "Rand num: " + num);
                 Trojan trojan = trojans.get(num);
                 //Gdx.app.log("Trojan bullets: ", "Trojan Sprite X: " + trojan.getSprite().getX());
-                if (bullets.size() <= 30){
-                    Bullet bullet = new Bullet(trojan.getSprite().getX() + trojan.getSprite().getWidth()/2, trojan.getSprite().getY() - 90, trojan.getId(), trojan.getDamage(), true);
+                if (bullets.size() <= 30) {
+                    Bullet bullet = new Bullet(trojan.getSprite().getX() + trojan.getSprite().getWidth() / 2, trojan.getSprite().getY() - 90, trojan.getId(), trojan.getDamage(), true);
                     bullet.setBounds(new Rectangle(trojan.getSprite().getX() + trojan.getSprite().getWidth() / 2, trojan.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
                     sfx.playSound(SoundFXManager.Type.SHOOT);
                     int i = particles.spawn(ParticleManager.Type.MUZZLE_FLASH, trojan);
-                    particles.x[i] = trojan.getSprite().getWidth()/2;
+                    particles.x[i] = trojan.getSprite().getWidth() / 2;
                     particles.y[i] = 0;
                     bullets.add(bullet);
                 }
                 trojanBulletCd = 0;
             }
         }
-        trojanBulletCd ++;
+        trojanBulletCd++;
     }
 
     //MEMLEAK BULLETS
-    public void memLeakBulletSpawn(){
+    public void memLeakBulletSpawn() {
         //Shooting
         //Gdx.app.log("Worm bullets: ", "wormBulletCd: " + wormBulletCd);
-        if (memLeakBulletCd >= 50){
+        if (memLeakBulletCd >= 50) {
             Random rand = new Random();
             int num;
-            if (memLeaks.size() > 1){
-                num = rand.nextInt(memLeaks.size()-1);
-            }
-            else{
+            if (memLeaks.size() > 1) {
+                num = rand.nextInt(memLeaks.size() - 1);
+            } else {
                 num = 0;
             }
             //Gdx.app.log("Worm bullets: ", "Rand num: " + num);
             MemoryLeak memLeak = memLeaks.get(num);
-            if (bullets.size() <= 30){
-                Bullet bullet = new Bullet(memLeak.getSprite().getX() + memLeak.getSprite().getWidth()/2, memLeak.getSprite().getY() - 90, memLeak.getId(), memLeak.getDamage(), true);
+            if (bullets.size() <= 30) {
+                Bullet bullet = new Bullet(memLeak.getSprite().getX() + memLeak.getSprite().getWidth() / 2, memLeak.getSprite().getY() - 90, memLeak.getId(), memLeak.getDamage(), true);
                 bullet.setBounds(new Rectangle(memLeak.getSprite().getX() - 75, memLeak.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
                 sfx.playSound(SoundFXManager.Type.SHOOT);
                 int i = particles.spawn(ParticleManager.Type.MUZZLE_FLASH, memLeak);
-                particles.x[i] = memLeak.getSprite().getWidth()/2;
+                particles.x[i] = memLeak.getSprite().getWidth() / 2;
                 particles.y[i] = 0;
                 bullets.add(bullet);
             }
             memLeakBulletCd = 0;
         }
-        memLeakBulletCd ++;
+        memLeakBulletCd++;
     }
 
     //ELISSA BULLETS
-    public void elissaBulletSpawn(){
+    public void elissaBulletSpawn() {
         //Shooting
-        if (elissaBulletCd >= 100){
+        if (elissaBulletCd >= 100) {
             Random rand = new Random();
             int num;
-            if (elissaArray.size() > 1){
-                num = rand.nextInt(elissaArray.size()-1);
-            }
-            else{
+            if (elissaArray.size() > 1) {
+                num = rand.nextInt(elissaArray.size() - 1);
+            } else {
                 num = 0;
             }
             //Gdx.app.log("Worm bullets: ", "Rand num: " + num);
             Elissa elissa = elissaArray.get(num);
-            if (bullets.size() <= 30){
-                Bullet bullet = new Bullet(elissa.getSprite().getX() + elissa.getSprite().getWidth()/2, elissa.getSprite().getY() - 90, elissa.getId(), elissa.getDamage(), true);
+            if (bullets.size() <= 30) {
+                Bullet bullet = new Bullet(elissa.getSprite().getX() + elissa.getSprite().getWidth() / 2, elissa.getSprite().getY() - 90, elissa.getId(), elissa.getDamage(), true);
                 bullet.setBounds(new Rectangle(elissa.getSprite().getX() - 75, elissa.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
                 sfx.playSound(SoundFXManager.Type.SHOOT);
                 int i = particles.spawn(ParticleManager.Type.MUZZLE_FLASH, elissa);
-                particles.x[i] = elissa.getSprite().getWidth()/2;
+                particles.x[i] = elissa.getSprite().getWidth() / 2;
                 particles.y[i] = 0;
                 bullets.add(bullet);
             }
             elissaBulletCd = 0;
         }
-        elissaBulletCd ++;
+        elissaBulletCd++;
     }
 
-    public void enemyBulletUpdate(Bullet bullet){
+    public void enemyBulletUpdate(Bullet bullet) {
         //Bullet update
-        bullet.getBounds().setPosition(bullet.getX(), bullet.getY()  - 10);
+        bullet.getBounds().setPosition(bullet.getX(), bullet.getY() - 10);
         bullet.setY(bullet.getY() - 10);
         if (bullet.getY() < 0) {
             removeBullet = bullet;
         }
         //PLAYER
-        if (player.getBounds().overlaps(bullet.getBounds())){
+        if (player.getBounds().overlaps(bullet.getBounds())) {
             player.setHp(player.getHp() - bullet.getDamage());
             Gdx.app.log("Enemy Bullet Update: ", "Player Hit! Dmg: " + player.getHp());
             sfx.playSound(SoundFXManager.Type.HIT);
@@ -1186,20 +1181,19 @@ public class Lvl3 implements Screen{
         }
     }
 
-    public void spawnCorruptData(){
+    public void spawnCorruptData() {
 
-        if (elissaAttackCd >= 50){
+        if (elissaAttackCd >= 50) {
             Random rand = new Random();
             int num;
-            if (elissaArray.size() > 1){
-                num = rand.nextInt(elissaArray.size()-1);
-            }
-            else{
+            if (elissaArray.size() > 1) {
+                num = rand.nextInt(elissaArray.size() - 1);
+            } else {
                 num = 0;
             }
             //Gdx.app.log("Worm bullets: ", "Rand num: " + num);
             Elissa elissa = elissaArray.get(num);
-            if (elissaFiles.size() <= 30){
+            if (elissaFiles.size() <= 30) {
                 int x = rand.nextInt(WIDTH - 50);
                 ElissaFiles bullet = new ElissaFiles(x, HEIGHT + 50, elissa.getId(), elissa.getDamage(), false);
                 bullet.setBounds(new Rectangle(elissa.getSprite().getX() - 75, HEIGHT + 50, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
@@ -1207,10 +1201,10 @@ public class Lvl3 implements Screen{
             }
             elissaAttackCd = 0;
         }
-        elissaAttackCd ++;
+        elissaAttackCd++;
     }
 
-    public void updateCorruptData(ElissaFiles elissaFile){
+    public void updateCorruptData(ElissaFiles elissaFile) {
         //Bullet update
         elissaFile.getBounds().setPosition(elissaFile.getX(), elissaFile.getY() - 15);
         elissaFile.setY(elissaFile.getY() - 15);
@@ -1218,7 +1212,7 @@ public class Lvl3 implements Screen{
             removeElissaFile = elissaFile;
         }
         //PLAYER
-        if (player.getBounds().overlaps(elissaFile.getBounds())){
+        if (player.getBounds().overlaps(elissaFile.getBounds())) {
             player.setHp(player.getHp() - elissaFile.getDamage());
             Gdx.app.log("Enemy Bullet Update: ", "Player Hit! Dmg: " + player.getHp());
             removeElissaFile = elissaFile;
@@ -1233,21 +1227,20 @@ public class Lvl3 implements Screen{
     }
 
     //WORMS
-    public void spawnWorm(int x, int y, int xSpeed){
+    public void spawnWorm(int x, int y, int xSpeed) {
         Gdx.app.log("spawnWorm: ", "Spawning Worms");
         int tempY = y;
         wormsSpawned = 0;
-        while (wormsSpawned != 10){
+        while (wormsSpawned != 10) {
             Worm worm = new Worm();
 
             worm.setxSpeed(xSpeed);
 
-            if (tempY == y){
+            if (tempY == y) {
                 worm.setY(tempY);
                 worm.setIsUp(false);
                 tempY = y + 100;
-            }
-            else{
+            } else {
                 worm.setY(tempY);
                 worm.setIsUp(true);
                 tempY = y;
@@ -1270,16 +1263,15 @@ public class Lvl3 implements Screen{
         }
     }
 
-    public void animateWorm(){
+    public void animateWorm() {
         wormSpawnTime++;
         //Move worm sprite like it's wiggling
-        if (wormSpawnTime == 50){
-            for (Worm worm : worms){
-                if (worm.getIsUp()){
+        if (wormSpawnTime == 50) {
+            for (Worm worm : worms) {
+                if (worm.getIsUp()) {
                     worm.setY(worm.getY() - 100);
                     worm.setIsUp(false);
-                }
-                else if (!worm.getIsUp()){
+                } else if (!worm.getIsUp()) {
                     worm.setY(worm.getY() + 100);
                     worm.setIsUp(true);
                 }
@@ -1288,47 +1280,47 @@ public class Lvl3 implements Screen{
         }
     }
 
-    public void moveWorm(){
+    public void moveWorm() {
         //Move worm
-        for (Worm worm: worms){
+        for (Worm worm : worms) {
             worm.getBounds().setPosition(worm.getX() - worm.getxSpeed(), worm.getY() - worm.getySpeed());
             worm.setY(worm.getY() - worm.getySpeed());
             worm.setX(worm.getX() + worm.getxSpeed());
             worm.getSprite().setPosition(worm.getX(), worm.getY());
             //if worm collides with player remove player and worm section
-            if (worm.getBounds().overlaps(player.getBounds())){
-                score += worm.getPoints()/2;
-                for(int i = 0; i < 10; i++) {
+            if (worm.getBounds().overlaps(player.getBounds())) {
+                score += worm.getPoints() / 2;
+                for (int i = 0; i < 10; i++) {
                     int p = particles.spawn(ParticleManager.Type.DATA, worm);
-                    particles.x[p] = (worm.getX() + worm.getSprite().getWidth()/2);
-                    particles.y[p] = worm.getY() + worm.getSprite().getHeight()/2;
+                    particles.x[p] = (worm.getX() + worm.getSprite().getWidth() / 2);
+                    particles.y[p] = worm.getY() + worm.getSprite().getHeight() / 2;
                 }
                 int p = particles.spawn(ParticleManager.Type.EXPLOSION, worm);
-                particles.x[p] = (worm.getX() + worm.getSprite().getWidth()/2);
-                particles.y[p] = worm.getY() + worm.getSprite().getHeight()/2;
+                particles.x[p] = (worm.getX() + worm.getSprite().getWidth() / 2);
+                particles.y[p] = worm.getY() + worm.getSprite().getHeight() / 2;
                 sfx.playSound(SoundFXManager.Type.DEATH);
                 removeWorm = worm;
-                player.setHp(player.getHp() - (worm.getDamage()*10));
+                player.setHp(player.getHp() - (worm.getDamage() * 10));
             }
         }
-        if (removeWorm != null){
-            spawnFiles(removeWorm.getFileDropCount(), removeWorm.getX() + (removeWorm.getSprite().getWidth()/2), removeWorm.getY() + removeWorm.getSprite().getHeight()/2);
+        if (removeWorm != null) {
+            spawnFiles(removeWorm.getFileDropCount(), removeWorm.getX() + (removeWorm.getSprite().getWidth() / 2), removeWorm.getY() + removeWorm.getSprite().getHeight() / 2);
             worms.remove(removeWorm);
         }
     }
 
-    public void removeOutOfBoundsWorm(){
+    public void removeOutOfBoundsWorm() {
         removeWorm = null;
-        for (Worm worm : worms){
-            if (worm.getY() < -100 || worm.getX() > WIDTH + 1000 || worm.getX() < -1000){
+        for (Worm worm : worms) {
+            if (worm.getY() < -100 || worm.getX() > WIDTH + 1000 || worm.getX() < -1000) {
                 removeWorm = worm;
             }
         }
-        if (removeWorm != null){
+        if (removeWorm != null) {
             worms.remove(removeWorm);
         }
         //resets stats for spawnWorm
-        if (worms.size() == 0){
+        if (worms.size() == 0) {
             wormsSpawned = 0;
             wormHeight = HEIGHT;
             wormWidth = 50;
@@ -1336,7 +1328,7 @@ public class Lvl3 implements Screen{
     }
 
     //TROJANS
-    public void spawnTrojans(int x, int y, int bigTrojansXSpeed, int smallTrojansXSpeed){
+    public void spawnTrojans(int x, int y, int bigTrojansXSpeed, int smallTrojansXSpeed) {
         //For big trojan
         Gdx.app.log("spawnTrojans: ", "Spawning Trojans");
         trojansSpawned = 0;
@@ -1352,7 +1344,7 @@ public class Lvl3 implements Screen{
         totalFiles += bigTrojan.getFileDropCount();
 
         //For the small Trojans
-        while (trojansSpawned != 3){
+        while (trojansSpawned != 3) {
             Trojan smallTrojan = new Trojan();
 
             smallTrojan.setxSpeed(smallTrojansXSpeed);
@@ -1371,7 +1363,7 @@ public class Lvl3 implements Screen{
             trojansSpawned++;
         }
 
-        for (Trojan trojan : trojans){
+        for (Trojan trojan : trojans) {
             trojan.setSmallTrojan();
 
             //increments totalFiles
@@ -1379,11 +1371,11 @@ public class Lvl3 implements Screen{
         }
     }
 
-    public void moveTrojans(){
+    public void moveTrojans() {
         //Move trojan
         //Move baby trojans
-        if (bigTrojan == null){
-            for (Trojan trojan: trojans){
+        if (bigTrojan == null) {
+            for (Trojan trojan : trojans) {
                 //set X & Y to bigTrojan's death point.
 
                 trojan.getBounds().setPosition(trojan.getX() - trojan.getxSpeed(), trojan.getY() - trojan.getySpeed());
@@ -1391,49 +1383,49 @@ public class Lvl3 implements Screen{
                 trojan.setX(trojan.getX() + trojan.getxSpeed());
                 trojan.getSprite().setPosition(trojan.getX(), trojan.getY());
                 //if trojan collides with player remove player and worm section
-                if (trojan.getBounds().overlaps(player.getBounds())){
-                    score += trojan.getPoints()/2;
-                    for(int i = 0; i < 10; i++) {
+                if (trojan.getBounds().overlaps(player.getBounds())) {
+                    score += trojan.getPoints() / 2;
+                    for (int i = 0; i < 10; i++) {
                         int p = particles.spawn(ParticleManager.Type.DATA, trojan);
-                        particles.x[p] = (trojan.getX() + trojan.getSprite().getWidth()/2);
-                        particles.y[p] = trojan.getY() + trojan.getSprite().getHeight()/2;
+                        particles.x[p] = (trojan.getX() + trojan.getSprite().getWidth() / 2);
+                        particles.y[p] = trojan.getY() + trojan.getSprite().getHeight() / 2;
                     }
                     int p = particles.spawn(ParticleManager.Type.EXPLOSION, trojan);
-                    particles.x[p] = (trojan.getX() + trojan.getSprite().getWidth()/2);
-                    particles.y[p] = trojan.getY() + trojan.getSprite().getHeight()/2;
+                    particles.x[p] = (trojan.getX() + trojan.getSprite().getWidth() / 2);
+                    particles.y[p] = trojan.getY() + trojan.getSprite().getHeight() / 2;
                     sfx.playSound(SoundFXManager.Type.DEATH);
                     removeTrojan = trojan;
-                    player.setHp(player.getHp() - (trojan.getDamage()*5));
+                    player.setHp(player.getHp() - (trojan.getDamage() * 5));
                 }
             }
             if (removeTrojan != null) {
-                spawnFiles(removeTrojan.getFileDropCount(), removeTrojan.getX() + (removeTrojan.getSprite().getWidth() / 2), removeTrojan.getY() + removeTrojan.getSprite().getHeight()/2);
+                spawnFiles(removeTrojan.getFileDropCount(), removeTrojan.getX() + (removeTrojan.getSprite().getWidth() / 2), removeTrojan.getY() + removeTrojan.getSprite().getHeight() / 2);
                 trojans.remove(removeTrojan);
             }
         }
         //Move big trojan
-        else{
+        else {
             bigTrojan.getBounds().setPosition(bigTrojan.getX() - bigTrojan.getxSpeed(), bigTrojan.getY() - bigTrojan.getySpeed());
             bigTrojan.setY(bigTrojan.getY() - bigTrojan.getySpeed());
             bigTrojan.setX(bigTrojan.getX() + bigTrojan.getxSpeed());
             bigTrojan.getSprite().setPosition(bigTrojan.getX(), bigTrojan.getY());
-            trojanWidth = (int)bigTrojan.getX() - 150;
-            trojanHeight = (int)bigTrojan.getY();
-            if (bigTrojan.getBounds().overlaps(player.getBounds())){
-                score += bigTrojan.getPoints()/2;
-                player.setHp(player.getHp() - (bigTrojan.getDamage()*10));
-                for(int i = 0; i < 10; i++) {
+            trojanWidth = (int) bigTrojan.getX() - 150;
+            trojanHeight = (int) bigTrojan.getY();
+            if (bigTrojan.getBounds().overlaps(player.getBounds())) {
+                score += bigTrojan.getPoints() / 2;
+                player.setHp(player.getHp() - (bigTrojan.getDamage() * 10));
+                for (int i = 0; i < 10; i++) {
                     int p = particles.spawn(ParticleManager.Type.DATA, bigTrojan);
-                    particles.x[p] = (bigTrojan.getX() + bigTrojan.getSprite().getWidth()/2);
-                    particles.y[p] = bigTrojan.getY() + bigTrojan.getSprite().getHeight()/2;
+                    particles.x[p] = (bigTrojan.getX() + bigTrojan.getSprite().getWidth() / 2);
+                    particles.y[p] = bigTrojan.getY() + bigTrojan.getSprite().getHeight() / 2;
                 }
                 int p = particles.spawn(ParticleManager.Type.EXPLOSION, bigTrojan);
-                particles.x[p] = (bigTrojan.getX() + bigTrojan.getSprite().getWidth()/2);
-                particles.y[p] = bigTrojan.getY() + bigTrojan.getSprite().getHeight()/2;
+                particles.x[p] = (bigTrojan.getX() + bigTrojan.getSprite().getWidth() / 2);
+                particles.y[p] = bigTrojan.getY() + bigTrojan.getSprite().getHeight() / 2;
                 sfx.playSound(SoundFXManager.Type.DEATH);
                 bigTrojan = null;
                 //Sets baby trojans to where big trojan died
-                for (Trojan trojan : trojans){
+                for (Trojan trojan : trojans) {
                     trojan.setY(trojanHeight);
 
                     trojan.setX(trojanWidth);
@@ -1447,14 +1439,14 @@ public class Lvl3 implements Screen{
         }
     }
 
-    public void removeOutOfBoundsTrojan(){
+    public void removeOutOfBoundsTrojan() {
         removeTrojan = null;
-        if (bigTrojan != null){
-            if (bigTrojan.getY() < - 300 || bigTrojan.getX() > WIDTH + 1000 || bigTrojan.getX() < -1000){
+        if (bigTrojan != null) {
+            if (bigTrojan.getY() < -300 || bigTrojan.getX() > WIDTH + 1000 || bigTrojan.getX() < -1000) {
                 bigTrojan = null;
                 //Gdx.app.log("BigTrojan: ", "Removed big trojan!");
                 //Sets baby trojans to where big trojan died
-                for (Trojan trojan : trojans){
+                for (Trojan trojan : trojans) {
                     trojan.setY(trojanHeight);
 
                     trojan.setX(trojanWidth);
@@ -1465,32 +1457,31 @@ public class Lvl3 implements Screen{
                     trojanWidth += 200;
                 }
             }
-        }
-        else {
-            for (Trojan trojan : trojans){
-                if (trojan.getY() < - 300 || trojan.getX() > WIDTH + 1000 || trojan.getX() < -1000){
+        } else {
+            for (Trojan trojan : trojans) {
+                if (trojan.getY() < -300 || trojan.getX() > WIDTH + 1000 || trojan.getX() < -1000) {
                     removeTrojan = trojan;
                 }
             }
-            if (removeTrojan != null){
+            if (removeTrojan != null) {
                 trojans.remove(removeTrojan);
                 //Gdx.app.log("Small Trojan: ", "Removed a small trojan!");
             }
             //resets stats for spawnWorm
-            if (trojans.size() == 0){
+            if (trojans.size() == 0) {
                 //Gdx.app.log("Trojan Array: ", "All trojans removed!");
                 trojansSpawned = 0;
                 trojanHeight = HEIGHT;
-                trojanWidth = WIDTH/4;
+                trojanWidth = WIDTH / 4;
             }
         }
     }
 
     //MEMORY LEAK
-    public void spawnMemLeaks(int x, int y, int xSpeed){
+    public void spawnMemLeaks(int x, int y, int xSpeed) {
         Gdx.app.log("spawnMemLeaks: ", "Spawning memLeaks");
         memLeaksSpawned = 0;
-        while (memLeaksSpawned != 3){
+        while (memLeaksSpawned != 3) {
             MemoryLeak memLeak = new MemoryLeak();
             memLeak.setxSpeed(xSpeed);
             memLeak.setY(y);
@@ -1512,52 +1503,52 @@ public class Lvl3 implements Screen{
         }
     }
 
-    public void moveMemLeak(){
+    public void moveMemLeak() {
         //Move memLeak
-        for (MemoryLeak memLeak : memLeaks){
+        for (MemoryLeak memLeak : memLeaks) {
             memLeak.getBounds().setPosition(memLeak.getX() - memLeak.getxSpeed(), memLeak.getY() - memLeak.getySpeed());
             memLeak.setY(memLeak.getY() - memLeak.getySpeed());
             memLeak.setX(memLeak.getX() + memLeak.getxSpeed());
             memLeak.getSprite().setPosition(memLeak.getX(), memLeak.getY());
             //if memory leak collides with player, remove memoryleak
-            if (memLeak.getBounds().overlaps(player.getBounds())){
-                score += memLeak.getPoints()/2;
+            if (memLeak.getBounds().overlaps(player.getBounds())) {
+                score += memLeak.getPoints() / 2;
                 dotHappening = true;
                 dotDamage = memLeak.getDot();
                 startTime = System.currentTimeMillis();
-                for(int i = 0; i < 10; i++) {
+                for (int i = 0; i < 10; i++) {
                     int p = particles.spawn(ParticleManager.Type.DATA, memLeak);
-                    particles.x[p] = (memLeak.getX() + memLeak.getSprite().getWidth()/2);
-                    particles.y[p] = memLeak.getY() + memLeak.getSprite().getHeight()/2;
+                    particles.x[p] = (memLeak.getX() + memLeak.getSprite().getWidth() / 2);
+                    particles.y[p] = memLeak.getY() + memLeak.getSprite().getHeight() / 2;
                 }
                 int p = particles.spawn(ParticleManager.Type.EXPLOSION, memLeak);
-                particles.x[p] = (memLeak.getX() + memLeak.getSprite().getWidth()/2);
-                particles.y[p] = memLeak.getY() + memLeak.getSprite().getHeight()/2;
+                particles.x[p] = (memLeak.getX() + memLeak.getSprite().getWidth() / 2);
+                particles.y[p] = memLeak.getY() + memLeak.getSprite().getHeight() / 2;
                 sfx.playSound(SoundFXManager.Type.DEATH);
                 removeMemLeak = memLeak;
                 //player.setHp(player.getHp() - (memLeak.getDamage()*10));
             }
         }
-        if (removeMemLeak != null){
-            spawnFiles(removeMemLeak.getFileDropCount(), removeMemLeak.getX() + (removeMemLeak.getSprite().getWidth()/2), removeMemLeak.getY() + removeMemLeak.getSprite().getHeight()/2);
+        if (removeMemLeak != null) {
+            spawnFiles(removeMemLeak.getFileDropCount(), removeMemLeak.getX() + (removeMemLeak.getSprite().getWidth() / 2), removeMemLeak.getY() + removeMemLeak.getSprite().getHeight() / 2);
             memLeaks.remove(removeMemLeak);
         }
     }
 
-    public void removeOutOfBoundsMemLeak(){
+    public void removeOutOfBoundsMemLeak() {
         removeMemLeak = null;
 
-        for (MemoryLeak memLeak : memLeaks){
-            if (memLeak.getY() < - 300 || memLeak.getX() > WIDTH + 1000 || memLeak.getX() < -1000){
+        for (MemoryLeak memLeak : memLeaks) {
+            if (memLeak.getY() < -300 || memLeak.getX() > WIDTH + 1000 || memLeak.getX() < -1000) {
                 removeMemLeak = memLeak;
             }
         }
-        if (removeMemLeak != null){
+        if (removeMemLeak != null) {
             memLeaks.remove(removeMemLeak);
             //Gdx.app.log("MemLeak: ", "Removed memory leak!");
         }
         //resets stats for spawnWorm
-        if (memLeaks.size() == 0){
+        if (memLeaks.size() == 0) {
             //Gdx.app.log("MemLeak: ", "All memory leaks removed!");
             memLeaksSpawned = 0;
             //memLeakHeight = HEIGHT;
@@ -1566,19 +1557,20 @@ public class Lvl3 implements Screen{
     }
 
     long lastNum;
-    public void damageOverTimeCollision(){
+
+    public void damageOverTimeCollision() {
 
         countdown = ((System.currentTimeMillis() - startTime) / 1000);
 
-        Gdx.app.log( "LastNuM : " , "" + lastNum);
-        Gdx.app.log("Countdown: " , "" + countdown);
-        if (countdown > lastNum){
-            Gdx.app.log("DAMAGE: " , "" + dotDamage);
-            player.setHp(player.getHp()-dotDamage);
+        Gdx.app.log("LastNuM : ", "" + lastNum);
+        Gdx.app.log("Countdown: ", "" + countdown);
+        if (countdown > lastNum) {
+            Gdx.app.log("DAMAGE: ", "" + dotDamage);
+            player.setHp(player.getHp() - dotDamage);
             sfx.playSound(SoundFXManager.Type.HIT);
         }
 
-        if (countdown >= 6){
+        if (countdown >= 6) {
             dotHappening = false;
             dotDamage = 0;
         }
@@ -1587,24 +1579,23 @@ public class Lvl3 implements Screen{
     }
 
     //ELISSA
-    public void spawnElissa(){
+    public void spawnElissa() {
         elissaSpawned = 0;
-        while (elissaSpawned < 1){
+        while (elissaSpawned < 1) {
             Elissa elissa = new Elissa();
 
-            if (elissaHeight <= HEIGHT){
+            if (elissaHeight <= HEIGHT) {
                 elissa.setY(HEIGHT);
                 elissaHeight = HEIGHT + 150;
-            }
-            else{
-                elissa.setY(HEIGHT+150);
+            } else {
+                elissa.setY(HEIGHT + 150);
                 elissaHeight = HEIGHT;
             }
 
             //increments totalFiles
             totalFiles += elissa.getFileDropCount();
 
-            elissa.setX(WIDTH/2 - elissa.getSprite().getWidth()/2);
+            elissa.setX(WIDTH / 2 - elissa.getSprite().getWidth() / 2);
 
             elissa.getSprite().setPosition(elissa.getX(), elissa.getY());
 
@@ -1618,29 +1609,27 @@ public class Lvl3 implements Screen{
         }
     }
 
-    public void moveElissa(){
-        if (elissaArray.size() >= 1){
-            if (elissaArray.get(0).getY() <= (HEIGHT-(elissaArray.get(0).getSprite().getHeight()*1.5))) {
-                for (Elissa elissa: elissaArray){
-                    if(!elissa.getIsMovingLeft() && !elissa.getIsMovingRight()) {
+    public void moveElissa() {
+        if (elissaArray.size() >= 1) {
+            if (elissaArray.get(0).getY() <= (HEIGHT - (elissaArray.get(0).getSprite().getHeight() * 1.5))) {
+                for (Elissa elissa : elissaArray) {
+                    if (!elissa.getIsMovingLeft() && !elissa.getIsMovingRight()) {
                         elissa.setIsMovingLeft(true);
                     }
-                    if(elissa.getIsMovingLeft()) {
-                        if (elissa.getX() < WIDTH/8) {
+                    if (elissa.getIsMovingLeft()) {
+                        if (elissa.getX() < WIDTH / 8) {
                             elissa.setIsMovingLeft(false);
                             elissa.setIsMovingRight(true);
-                        }
-                        else {
+                        } else {
                             elissa.setX(elissa.getX() - elissa.getxSpeed());
                         }
                     }
 
-                    if(elissa.getIsMovingRight()) {
-                        if (elissa.getX()+elissa.getSprite().getWidth() > WIDTH - WIDTH/8) {
+                    if (elissa.getIsMovingRight()) {
+                        if (elissa.getX() + elissa.getSprite().getWidth() > WIDTH - WIDTH / 8) {
                             elissa.setIsMovingLeft(true);
                             elissa.setIsMovingRight(false);
-                        }
-                        else {
+                        } else {
                             elissa.setX(elissa.getX() + elissa.getxSpeed());
                         }
                     }
@@ -1648,103 +1637,98 @@ public class Lvl3 implements Screen{
                     elissa.getBounds().setPosition(elissa.getX(), elissa.getY());
                     elissa.getSprite().setPosition(elissa.getX(), elissa.getY());
                     //if worm collides with player remove player and worm section
-                    if (elissa.getBounds().overlaps(player.getBounds())){
-                        score += elissa.getPoints()/2;
-                        for(int i = 0; i < 10; i++) {
+                    if (elissa.getBounds().overlaps(player.getBounds())) {
+                        score += elissa.getPoints() / 2;
+                        for (int i = 0; i < 10; i++) {
                             int p = particles.spawn(ParticleManager.Type.DATA, elissa);
-                            particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth()/2);
-                            particles.y[p] = elissa.getY() + elissa.getSprite().getHeight()/2;
+                            particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth() / 2);
+                            particles.y[p] = elissa.getY() + elissa.getSprite().getHeight() / 2;
                         }
                         int p = particles.spawn(ParticleManager.Type.EXPLOSION, elissa);
-                        particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth()/2);
-                        particles.y[p] = elissa.getY() + elissa.getSprite().getHeight()/2;
+                        particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth() / 2);
+                        particles.y[p] = elissa.getY() + elissa.getSprite().getHeight() / 2;
                         sfx.playSound(SoundFXManager.Type.DEATH);
                         removeElissa = elissa;
-                        player.setHp(player.getHp() - (elissa.getDamage()*10));
+                        player.setHp(player.getHp() - (elissa.getDamage() * 10));
                     }
                 }
-            }
-            else{
-                for (Elissa elissa: elissaArray){
+            } else {
+                for (Elissa elissa : elissaArray) {
 
                     elissa.getBounds().setPosition(elissa.getX(), elissa.getY() - elissa.getySpeed());
                     elissa.setY(elissa.getY() - elissa.getySpeed());
                     elissa.getSprite().setPosition(elissa.getX(), elissa.getY());
                     //if worm collides with player remove player and worm section
-                    if (elissa.getBounds().overlaps(player.getBounds())){
-                        score += elissa.getPoints()/2;
-                        for(int i = 0; i < 10; i++) {
+                    if (elissa.getBounds().overlaps(player.getBounds())) {
+                        score += elissa.getPoints() / 2;
+                        for (int i = 0; i < 10; i++) {
                             int p = particles.spawn(ParticleManager.Type.DATA, elissa);
-                            particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth()/2);
-                            particles.y[p] = elissa.getY() + elissa.getSprite().getHeight()/2;
+                            particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth() / 2);
+                            particles.y[p] = elissa.getY() + elissa.getSprite().getHeight() / 2;
                         }
                         int p = particles.spawn(ParticleManager.Type.EXPLOSION, elissa);
-                        particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth()/2);
-                        particles.y[p] = elissa.getY() + elissa.getSprite().getHeight()/2;
+                        particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth() / 2);
+                        particles.y[p] = elissa.getY() + elissa.getSprite().getHeight() / 2;
                         sfx.playSound(SoundFXManager.Type.DEATH);
                         removeElissa = elissa;
-                        player.setHp(player.getHp() - (elissa.getDamage()*10));
+                        player.setHp(player.getHp() - (elissa.getDamage() * 10));
                     }
                 }
             }
-        }
-        else{
-            for (Elissa elissa: elissaArray){
+        } else {
+            for (Elissa elissa : elissaArray) {
                 elissa.getBounds().setPosition(elissa.getX(), elissa.getY());
                 elissa.getSprite().setPosition(elissa.getX(), elissa.getY());
                 //if worm collides with player remove player and worm section
-                if (elissa.getBounds().overlaps(player.getBounds())){
-                    score += elissa.getPoints()/2;
-                    for(int i = 0; i < 10; i++) {
+                if (elissa.getBounds().overlaps(player.getBounds())) {
+                    score += elissa.getPoints() / 2;
+                    for (int i = 0; i < 10; i++) {
                         int p = particles.spawn(ParticleManager.Type.DATA, elissa);
-                        particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth()/2);
-                        particles.y[p] = elissa.getY() + elissa.getSprite().getHeight()/2;
+                        particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth() / 2);
+                        particles.y[p] = elissa.getY() + elissa.getSprite().getHeight() / 2;
                     }
                     int p = particles.spawn(ParticleManager.Type.EXPLOSION, elissa);
-                    particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth()/2);
-                    particles.y[p] = elissa.getY() + elissa.getSprite().getHeight()/2;
+                    particles.x[p] = (elissa.getX() + elissa.getSprite().getWidth() / 2);
+                    particles.y[p] = elissa.getY() + elissa.getSprite().getHeight() / 2;
                     sfx.playSound(SoundFXManager.Type.DEATH);
                     removeElissa = elissa;
-                    player.setHp(player.getHp() - (elissa.getDamage()*10));
+                    player.setHp(player.getHp() - (elissa.getDamage() * 10));
                 }
             }
         }
 
 
-
-        if (removeElissa != null){
-            spawnFiles(removeElissa.getFileDropCount(), removeElissa.getX() + (removeElissa.getSprite().getWidth()/2), removeElissa.getY() + removeElissa.getSprite().getHeight());
+        if (removeElissa != null) {
+            spawnFiles(removeElissa.getFileDropCount(), removeElissa.getX() + (removeElissa.getSprite().getWidth() / 2), removeElissa.getY() + removeElissa.getSprite().getHeight());
             elissaArray.remove(removeElissa);
         }
     }
 
     //File Drops
-    public void spawnFiles(int amount, float x, float y){
+    public void spawnFiles(int amount, float x, float y) {
         int count = 0;
         //Random rand = new Random();
 
-        int locationX = (int)x - 100;
-        int locationY = (int)y;
+        int locationX = (int) x - 100;
+        int locationY = (int) y;
 
-        if (amount >= 3){
-            while (count != amount){
+        if (amount >= 3) {
+            while (count != amount) {
 
-                if ((count%3) == 0){
-                    locationX = (int)x -100;
+                if ((count % 3) == 0) {
+                    locationX = (int) x - 100;
                     locationY -= 60;
                 }
 
-                if (locationX < 0){
+                if (locationX < 0) {
                     locationX = 0;
-                }
-                else if (locationX > WIDTH-75){
-                    locationX = WIDTH-75;
+                } else if (locationX > WIDTH - 75) {
+                    locationX = WIDTH - 75;
                 }
 
-                if (locationY < 0){
+                if (locationY < 0) {
                     locationY = 0;
-                }
-                else if (locationY > HEIGHT-75){
+                } else if (locationY > HEIGHT - 75) {
                     locationY = HEIGHT - 75;
                 }
 //            numX = rand.nextInt((int)x + 50)-50;
@@ -1760,23 +1744,20 @@ public class Lvl3 implements Screen{
                 files.add(file);
 
                 locationX += 100;
-                count ++;
+                count++;
             }
-        }
-        else{
-            locationX = (int)x;
-            while (count != amount){
-                if (locationX < 0){
+        } else {
+            locationX = (int) x;
+            while (count != amount) {
+                if (locationX < 0) {
                     locationX = 0;
-                }
-                else if (locationX > WIDTH-75){
-                    locationX = WIDTH-75;
+                } else if (locationX > WIDTH - 75) {
+                    locationX = WIDTH - 75;
                 }
 
-                if (locationY < 0){
+                if (locationY < 0) {
                     locationY = 0;
-                }
-                else if (locationY > HEIGHT-75){
+                } else if (locationY > HEIGHT - 75) {
                     locationY = HEIGHT - 75;
                 }
 
@@ -1791,29 +1772,29 @@ public class Lvl3 implements Screen{
                 files.add(file);
 
                 locationX += 100;
-                count ++;
+                count++;
             }
         }
 
 
     }
 
-    public void updateFiles(){
+    public void updateFiles() {
         float y;
         ArrayList<Files> filesToRemove = new ArrayList<Files>();
-        for (Files file : files){
+        for (Files file : files) {
             y = file.getY() - 2;
             file.setY(y);
             file.getBounds().setPosition(file.getX(), file.getY());
             file.getSprite().setY(y);
 
-            if (file.getBounds().overlaps(player.getBounds())){
+            if (file.getBounds().overlaps(player.getBounds())) {
                 sfx.playSound(SoundFXManager.Type.FILE);
                 filesToRemove.add(file);
-                fileScore ++;
+                fileScore++;
             }
         }
-        if (!filesToRemove.isEmpty()){
+        if (!filesToRemove.isEmpty()) {
             for (Files file : filesToRemove) {
                 files.remove(file);
             }
@@ -1828,7 +1809,7 @@ public class Lvl3 implements Screen{
 //    TextButton exit;
 //    TextButton setting;
 
-    private void pauseScreenCreate(){
+    private void pauseScreenCreate() {
         pauseStage = new Stage();
         sfx.playSound(SoundFXManager.Type.SELECT);
 
@@ -1851,7 +1832,7 @@ public class Lvl3 implements Screen{
         setting.getLabel().setFontScale(3);
         setting.setWidth(WIDTH / 2);
         setting.setHeight(WIDTH / 4);
-        setting.setPosition(WIDTH / 2 - (setting.getWidth() / 2), resume.getY() - resume.getHeight() - (resume.getHeight() / 2 ));
+        setting.setPosition(WIDTH / 2 - (setting.getWidth() / 2), resume.getY() - resume.getHeight() - (resume.getHeight() / 2));
         setting.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.input.setInputProcessor(inputMultiplexer);
@@ -1865,7 +1846,7 @@ public class Lvl3 implements Screen{
         exit.getLabel().setFontScale(3);
         exit.setWidth(WIDTH / 2);
         exit.setHeight(WIDTH / 4);
-        exit.setPosition(WIDTH / 2 - (exit.getWidth() / 2), setting.getY() - setting.getHeight() - (setting.getHeight()/2)   );
+        exit.setPosition(WIDTH / 2 - (exit.getWidth() / 2), setting.getY() - setting.getHeight() - (setting.getHeight() / 2));
         exit.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.input.setInputProcessor(inputMultiplexer);
@@ -1884,10 +1865,10 @@ public class Lvl3 implements Screen{
         Gdx.input.setInputProcessor(pauseStage);
     }
 
-    private void pauseScreenRender(){
+    private void pauseScreenRender() {
         overlay.draw(batch, 0.5f);
         uiFont.draw(batch, scoreTxt, 0, HEIGHT - (scoreLayout.height));
-        uiFont.draw(batch,healthTxt,WIDTH/2 , HEIGHT - (healthLayout.height));
+        uiFont.draw(batch, healthTxt, WIDTH / 2, HEIGHT - (healthLayout.height));
         resume.draw(batch, 1);
         exit.draw(batch, 1);
         pauseStage.draw();
@@ -1899,7 +1880,7 @@ public class Lvl3 implements Screen{
     TextButton exit;
     TextButton setting;
 
-    private void settingsScreenCreate(){
+    private void settingsScreenCreate() {
         settingStage = new Stage();
         settingsOn = true;
 
@@ -1920,13 +1901,11 @@ public class Lvl3 implements Screen{
         musicOn.toFront();
 
 
-
-
         musicOff = new TextButton("Music off", skin, "default");
         musicOff.getLabel().setFontScale(3);
         musicOff.setWidth(WIDTH / 2);
         musicOff.setHeight(WIDTH / 4);
-        musicOff.setPosition(WIDTH / 2 - (musicOff.getWidth() / 2), musicOn.getY() - musicOn.getHeight() - (musicOn.getHeight() / 2 ));
+        musicOff.setPosition(WIDTH / 2 - (musicOff.getWidth() / 2), musicOn.getY() - musicOn.getHeight() - (musicOn.getHeight() / 2));
 
         musicOff.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
@@ -1943,7 +1922,7 @@ public class Lvl3 implements Screen{
         resume.getLabel().setFontScale(3);
         resume.setWidth(WIDTH / 2);
         resume.setHeight(WIDTH / 4);
-        resume.setPosition(WIDTH / 2 - (resume.getWidth() / 2), musicOff.getY() - musicOff.getHeight() - (musicOff.getHeight()/2)   );
+        resume.setPosition(WIDTH / 2 - (resume.getWidth() / 2), musicOff.getY() - musicOff.getHeight() - (musicOff.getHeight() / 2));
         resume.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.input.setInputProcessor(inputMultiplexer);
@@ -1956,20 +1935,17 @@ public class Lvl3 implements Screen{
         });
         resume.toFront();
 
-
-
         settingStage.addActor(musicOff);
         settingStage.addActor(musicOn);
         settingStage.addActor(resume);
         Gdx.input.setInputProcessor(settingStage);
     }
+
     //Initializes variables for settings screen
-
-
-    private void settingsScreenRender(){
+    private void settingsScreenRender() {
         overlay.draw(batch, 0.5f);
         uiFont.draw(batch, scoreTxt, 0, HEIGHT - (scoreLayout.height));
-        uiFont.draw(batch,healthTxt,WIDTH/2 , HEIGHT - (healthLayout.height));
+        uiFont.draw(batch, healthTxt, WIDTH / 2, HEIGHT - (healthLayout.height));
         musicOn.draw(batch, 1);
         musicOff.draw(batch, 1);
         resume.draw(batch, 1);
@@ -1982,21 +1958,19 @@ public class Lvl3 implements Screen{
     TextButton done;
     int fileRecovery;
 
-    private void completeScreenCreate(){
+    private void completeScreenCreate() {
         completeStage = new Stage();
 
-        if(totalFiles > 0) {
-            fileRecovery = Math.round(((float)fileScore / (float)totalFiles) * 100f);
-        }
-        else
-        {
+        if (totalFiles > 0) {
+            fileRecovery = Math.round(((float) fileScore / (float) totalFiles) * 100f);
+        } else {
             fileRecovery = -1;
         }
 
         System.out.println("SCORE: " + score + " | Data Recovery: " + fileRecovery + "%");
 
         //check to see if player has High Score
-        if(score > ScoreHandler.getHighScore(3) || fileRecovery > ScoreHandler.getHighFileRecovery(3)) {
+        if (score > ScoreHandler.getHighScore(3) || fileRecovery > ScoreHandler.getHighFileRecovery(3)) {
             complete = "HIGH SCORE!";
             ScoreHandler.setHighScore(score, fileRecovery, 3);
         }
@@ -2020,16 +1994,15 @@ public class Lvl3 implements Screen{
         Gdx.input.setInputProcessor(completeStage);
     }
 
-    private void completeScreenRender(){
+    private void completeScreenRender() {
         overlay.draw(batch, 0.5f);
-        font.draw(batch, complete, WIDTH/2 - completeLayout.width/2, HEIGHT/2 + completeLayout.height/2);
+        font.draw(batch, complete, WIDTH / 2 - completeLayout.width / 2, (HEIGHT / 4) * 3 + completeLayout.height / 2);
         String fileString = ("Data Recovery: " + fileRecovery + "%");
         completeLayout.setText(uiFont, fileString);
-        uiFont.draw(batch, fileString, WIDTH / 2 - completeLayout.width / 2, HEIGHT / 2 - HEIGHT / 4);
+        uiFont.draw(batch, fileString, WIDTH / 2 - completeLayout.width / 2, HEIGHT / 2);
         completeLayout.setText(font, complete);
-        overlay.draw(batch, 0.5f);
         uiFont.draw(batch, scoreTxt, 0, HEIGHT - (scoreLayout.height));
-        uiFont.draw(batch,healthTxt,WIDTH/2 , HEIGHT - (healthLayout.height));
+        uiFont.draw(batch, healthTxt, WIDTH / 2, HEIGHT - (healthLayout.height));
         done.draw(batch, 1);
         completeStage.draw();
     }

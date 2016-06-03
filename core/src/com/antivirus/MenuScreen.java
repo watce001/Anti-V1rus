@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 
-
 /**
  * Created by Caroline on 22/03/2016.
  * Co-Authored by Corey
@@ -38,13 +37,15 @@ public class MenuScreen implements Screen {
     GlyphLayout layout;
 
     //Constructor to keep a reference to the main Game class
-    public MenuScreen(AntiVirus game){this.game = game;}
+    public MenuScreen(AntiVirus game) {
+        this.game = game;
+    }
 
 //    public BitmapFont titleFont;
 //    public BitmapFont startFont;
 
 
-    public void create(){
+    public void create() {
         //Gdx.app.log("MenuScreen: ", "menuScreen create");
         batch = new SpriteBatch();
         //initFonts(Gdx.graphics.getWidth()/10);
@@ -56,7 +57,7 @@ public class MenuScreen implements Screen {
 
         //Initializes title
         font = new BitmapFont(Gdx.files.internal("MainMenu/datacontrol.fnt"));
-        txt = "anti virus";
+        txt = "anti-v1rus";
         //Centers font text
         layout = new GlyphLayout();
         layout.setText(font, txt);
@@ -64,19 +65,19 @@ public class MenuScreen implements Screen {
 
         //Creates start button
         final TextButton button = new TextButton("Start", skin, "default");
-        button.setWidth(Gdx.graphics.getWidth()/2);
+        button.setWidth(Gdx.graphics.getWidth() / 2);
         button.setHeight(Gdx.graphics.getHeight() / 8);
-        button.setPosition((Gdx.graphics.getWidth() / 2) - (button.getWidth()/2),
-                (Gdx.graphics.getHeight() / 4) - (button.getHeight()/2));
+        button.setPosition((Gdx.graphics.getWidth() / 2) - (button.getWidth() / 2),
+                (Gdx.graphics.getHeight() / 4) - (button.getHeight() / 2));
         button.getLabel().setFontScale(3);
-        button.addListener(new ClickListener(){
-           public void clicked (InputEvent event, float x, float y){
-               button.setText("CLICKED");
-               selectSound.play();
-               Gdx.app.log("MenuScreen: ", "About to call LevelSelectScreen");
-               game.setScreen(AntiVirus.levelSelectScreen);
-               Gdx.app.log("MenuScreen: ", "LevelSelectScreen started");
-           }
+        button.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                button.setText("CLICKED");
+                selectSound.play();
+                Gdx.app.log("MenuScreen: ", "About to call LevelSelectScreen");
+                game.setScreen(AntiVirus.levelSelectScreen);
+                Gdx.app.log("MenuScreen: ", "LevelSelectScreen started");
+            }
         });
 
 
@@ -85,7 +86,7 @@ public class MenuScreen implements Screen {
 
     }
 
-    public void render (float f){
+    public void render(float f) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -93,7 +94,7 @@ public class MenuScreen implements Screen {
         stage.draw();
 
         batch.begin();
-        font.draw(batch, txt, Gdx.graphics.getWidth()/2 - layout.width/2, (Gdx.graphics.getHeight() - Gdx.graphics.getHeight()/4) + layout.height/2);
+        font.draw(batch, txt, Gdx.graphics.getWidth() / 2 - layout.width / 2, (Gdx.graphics.getHeight() - Gdx.graphics.getHeight() / 4) + layout.height / 2);
 
 
 //        titleFont.draw(batch, "ANTI-V1RUS",
@@ -108,26 +109,32 @@ public class MenuScreen implements Screen {
     }
 
     @Override
-    public void dispose(){
+    public void dispose() {
 //        titleFont.dispose();
 //        startFont.dispose();
         selectSound.dispose();
     }
-    @Override
-    public void resize(int width, int height){}
-    @Override
-    public void pause(){}
-    @Override
-    public void resume(){}
 
     @Override
-    public void show(){
+    public void resize(int width, int height) {
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
+    @Override
+    public void show() {
         Gdx.app.log("MenuScreen: ", "menuScreen show called");
         create();
     }
 
     @Override
-    public void hide(){
+    public void hide() {
         Gdx.app.log("MenuScreen: ", "menuScreen hide called");
     }
 

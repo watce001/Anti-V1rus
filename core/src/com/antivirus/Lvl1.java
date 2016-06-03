@@ -1940,7 +1940,6 @@ public class Lvl1 implements Screen{
     private void completeScreenCreate(){
         completeStage = new Stage();
 
-        musicBackground.pause();
         if(totalFiles > 0) {
             fileRecovery = Math.round(((float)fileScore / (float)totalFiles) * 100f);
         }
@@ -1949,10 +1948,12 @@ public class Lvl1 implements Screen{
             fileRecovery = -1;
         }
 
+        System.out.println("SCORE: " + score + " | Data Recovery: " + fileRecovery + "%");
+
         //check to see if player has High Score
-        if(score > ScoreHandler.getHighScore(1) || fileRecovery > ScoreHandler.getHighFileRecovery(1)) {
+        if(score > ScoreHandler.getHighScore(3) || fileRecovery > ScoreHandler.getHighFileRecovery(3)) {
             complete = "HIGH SCORE!";
-            ScoreHandler.setHighScore(score, fileRecovery, 1);
+            ScoreHandler.setHighScore(score, fileRecovery, 3);
         }
 
         //Add button
@@ -1965,7 +1966,7 @@ public class Lvl1 implements Screen{
             public void clicked(InputEvent event, float x, float y) {
                 sfx.playSound(SoundFXManager.Type.SELECT);
                 gameState = GameState.PLAYING;
-                musicBackground.dispose();
+                Lvl1.musicBackground.dispose();
                 game.setScreen(AntiVirus.levelSelectScreen);
             }
         });
@@ -1976,12 +1977,11 @@ public class Lvl1 implements Screen{
 
     private void completeScreenRender(){
         overlay.draw(batch, 0.5f);
-        font.draw(batch, complete, WIDTH/2 - completeLayout.width/2, HEIGHT/2 + completeLayout.height/2);
+        font.draw(batch, complete, WIDTH / 2 - completeLayout.width / 2, (HEIGHT / 4) * 3 + completeLayout.height / 2);
         String fileString = ("Data Recovery: " + fileRecovery + "%");
         completeLayout.setText(uiFont, fileString);
-        uiFont.draw(batch, fileString, WIDTH / 2 - completeLayout.width / 2, HEIGHT / 2 - HEIGHT / 4);
+        uiFont.draw(batch, fileString, WIDTH / 2 - completeLayout.width / 2, HEIGHT / 2);
         completeLayout.setText(font, complete);
-        overlay.draw(batch, 0.5f);
         uiFont.draw(batch, scoreTxt, 0, HEIGHT - (scoreLayout.height));
         uiFont.draw(batch,healthTxt,WIDTH/2 , HEIGHT - (healthLayout.height));
         done.draw(batch, 1);
