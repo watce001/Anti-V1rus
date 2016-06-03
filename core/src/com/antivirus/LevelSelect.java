@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.audio.Sound;
 
 
 /**
@@ -23,6 +24,8 @@ public class LevelSelect implements Screen {
     private SpriteBatch batch;
     private Skin skin;
     private Stage stage;
+
+    private Sound selectSound;
 
     //load bitmap font
     BitmapFont font;
@@ -42,6 +45,9 @@ public class LevelSelect implements Screen {
         skin = new Skin(Gdx.files.internal("uidata/uiskin.json"));
         stage = new Stage();
 
+        //init select sound
+        selectSound = Gdx.audio.newSound(Gdx.files.internal("Blip_Select.wav"));
+
         //Initializes title
         font = new BitmapFont(Gdx.files.internal("MainMenu/datacontrol.fnt"));
         txt = "Select Scan";
@@ -58,6 +64,7 @@ public class LevelSelect implements Screen {
         lvl1button.getLabel().setFontScale(3);
         lvl1button.addListener(new ClickListener(){
             public void clicked (InputEvent event, float x, float y){
+                selectSound.play();
                 Gdx.app.log("LevelSelectScreen: ", "About to call level1");
                 game.setScreen(AntiVirus.level1);
                 Gdx.app.log("LevelSelectScreen: ", "level1 started");
@@ -73,14 +80,15 @@ public class LevelSelect implements Screen {
         lvl2button.getLabel().setFontScale(3);
         lvl2button.addListener(new ClickListener(){
             public void clicked (InputEvent event, float x, float y){
+                selectSound.play();
                 Gdx.app.log("LevelSelectScreen: ", "About to call level2");
-                Gdx.app.log("LevelSelectScreen: ", "Level Coming Soon");
+                game.setScreen(AntiVirus.level2);
 
-                //Presents dialog box with a coming soon message - Remove once level implemented
-                showComingSoon();
+                Gdx.app.log("LevelSelectScreen: ", "level2 started");
 
-                //game.setScreen(AntiVirus.level2);
-                //Gdx.app.log("LevelSelectScreen: ", "level1 started");
+
+
+
             }
         });
 
@@ -93,14 +101,10 @@ public class LevelSelect implements Screen {
         lvl3button.getLabel().setFontScale(3);
         lvl3button.addListener(new ClickListener(){
             public void clicked (InputEvent event, float x, float y){
+                selectSound.play();
                 Gdx.app.log("LevelSelectScreen: ", "About to call level3");
-                Gdx.app.log("LevelSelectScreen: ", "Level Coming Soon");
-
-                //Presents dialog box with a coming soon message - Remove once level implemented
-                showComingSoon();
-
-                //game.setScreen(AntiVirus.level3);
-                //Gdx.app.log("LevelSelectScreen: ", "level3 started");
+                game.setScreen(AntiVirus.level3);
+                Gdx.app.log("LevelSelectScreen: ", "level3 started");
             }
         });
 
@@ -111,7 +115,6 @@ public class LevelSelect implements Screen {
     }
 
     public void render (float f){
-        Gdx.app.log("LevelSelect: ", "levelSelect render");
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -124,22 +127,12 @@ public class LevelSelect implements Screen {
         batch.end();
     }
 
-    private void showComingSoon()
-    {
-        Dialog dialog = new Dialog("Coming Soon!", skin, "dialog") {
-            public void result(Object obj) {
-                System.out.println("result "+obj);
-            }
-        };
-        dialog.setScale(3);
-        dialog.setWidth(Gdx.graphics.getWidth());
-        dialog.text("This level is currently unavailable.");
-        dialog.button("Okay");
-        dialog.show(stage);
-    }
+
 
     @Override
-    public void dispose(){}
+    public void dispose(){
+        selectSound.dispose();
+    }
     @Override
     public void resize(int width, int height){}
     @Override

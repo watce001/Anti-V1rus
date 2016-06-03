@@ -27,9 +27,9 @@ public class Worm extends Enemies {
         batch = new SpriteBatch();
         img = new TextureRegion(new Texture("WormSprite.png"));
         sprite = new Sprite(img);
-
         sprite.setSize(100,100);
 
+        hitImg = new Texture("WormHitSprite.png");
     }
 
     public boolean getIsUp() {

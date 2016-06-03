@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -37,14 +38,16 @@ import Units.MemoryLeak;
 import Units.Player;
 import Units.Trojan;
 import Units.Worm;
-import Units.YourDoom;
+import Units.body;
+
+
 
 
 /**
  * Created by Caroline on 22/03/2016.
  * Co-Authored by Corey
  */
-public class GameClass implements Screen{
+public class Lvl2 implements Screen{
 
     public enum GameState {PLAYING, PAUSED, COMPLETE, GAMEOVER}
     GameState gameState = GameState.PLAYING;
@@ -91,13 +94,14 @@ public class GameClass implements Screen{
     MemoryLeak removeMemLeak;
     boolean dotHappening;
 
-    //Boss - YourDoom
-    ArrayList<YourDoom> yourDoomArray;
-    float yourDoomSpawnTime;
-    int yourDoomSpawned;
-    int yourDoomWidth;
-    int yourDoomHeight;
-    YourDoom removeYourDoom;
+    //Boss - body
+    ArrayList<body> bodyArray;
+    float bodySpawnTime;
+    int bodySpawned;
+    int bodyWidth;
+    int bodyHeight;
+    body removeBody;
+
 
     //Touch mechanics
     //Vector2 origin = new Vector2();
@@ -108,7 +112,7 @@ public class GameClass implements Screen{
     float wormBulletCd;
     float trojanBulletCd;
     float memLeakBulletCd;
-    float yourDoomBulletCd;
+    float bodyBulletCd;
     float spawnCd;
     float elapsedTime;
     float lastTime;
@@ -199,7 +203,7 @@ public class GameClass implements Screen{
     private ParticleManager particles;
     float playerTrailCD;
 
-    public GameClass(AntiVirus game){this.game = game;}
+    public Lvl2(AntiVirus game){this.game = game;}
 
     public void create() {
 
@@ -262,12 +266,12 @@ public class GameClass implements Screen{
         memLeakHeight = HEIGHT;
         dotHappening = false;
 
-        //Boss - YourDoom
-        yourDoomArray = new ArrayList<YourDoom>();
-        yourDoomSpawnTime = 0.0f;
-        yourDoomSpawned = 0;
-        yourDoomWidth = 20;
-        yourDoomHeight = HEIGHT;
+        //Boss - body
+        bodyArray = new ArrayList<body>();
+        bodySpawnTime = 0.0f;
+        bodySpawned = 0;
+        bodyWidth = 350;
+        bodyHeight = HEIGHT;
 
 
         //creating sprite
@@ -288,7 +292,7 @@ public class GameClass implements Screen{
         wormBulletCd = 0.0f;
         trojanBulletCd = 0.0f;
         memLeakBulletCd = 0.0f;
-        yourDoomBulletCd = 0.0f;
+        bodyBulletCd = 0.0f;
         spawnCd = 0.0f;
         bossDefeatedCd = 0.0f;
 
@@ -432,9 +436,9 @@ public class GameClass implements Screen{
             }
         }
 
-        if (yourDoomArray.size() > 0){
-            for (YourDoom yourDoom : yourDoomArray){
-                yourDoom.getSprite().draw(batch);
+        if (bodyArray.size() > 0){
+            for (body Body : bodyArray){
+                Body.getSprite().draw(batch);
             }
         }
 
@@ -505,7 +509,7 @@ public class GameClass implements Screen{
         removeWorm = null;
         removeTrojan = null;
         removeFile = null;
-        removeYourDoom = null;
+        removeBody = null;
 
         switch (gameState){
             case PLAYING:
@@ -564,10 +568,10 @@ public class GameClass implements Screen{
                         removeOutOfBoundsMemLeak();
                     }
 
-                    if (yourDoomArray.size() > 0){
-                        yourDoomBulletSpawn();
-                        animateYourDoom();
-                        moveYourDoom();
+                    if (bodyArray.size() > 0){
+                        bodyBulletSpawn();
+                        animateBody();
+                        moveBody();
                     }
 
                     if (files.size() > 0){
@@ -584,10 +588,14 @@ public class GameClass implements Screen{
                     //MemLeak speed = 4
 
                     //Spawns worm
+
                     if (spawnCd == 100){
                         spawnWorm(5, HEIGHT, 0);
                     }
                     //Spawns Trojan
+                    if (spawnCd == 500){
+                        spawnTrojans(WIDTH/2, HEIGHT, 0,0);
+                    }
                     if (spawnCd == 500){
                         spawnTrojans(WIDTH/2, HEIGHT, 0,0);
                     }
@@ -599,17 +607,29 @@ public class GameClass implements Screen{
 
                     if (spawnCd == 1500){
                         spawnWorm(WIDTH, HEIGHT, -5);
+
                     }
+                    if (spawnCd == 1750){
+                        spawnMemLeaks(200,HEIGHT,0);
+                    }
+
                     if (spawnCd == 2000){
                         spawnMemLeaks(0 - 500, HEIGHT - HEIGHT / 5, 2);
                     }
                     if (spawnCd == 2500){
                         spawnTrojans(0, HEIGHT, 3, -3);
                     }
-                    if (spawnCd == 3000){
-                        spawnYourDoom();
+                    if (spawnCd == 2650){
+                        spawnTrojans(0, HEIGHT, -3, 3);
                     }
-                    if (spawnCd > 3000 && yourDoomArray.size() == 0){
+
+
+                    //3000
+                    if (spawnCd == 3000){
+                        spawnBody();
+
+                    }
+                    if (spawnCd > 3000 && bodyArray.size() == 0){
                         bossDefeatedCd ++;
                         if (bossDefeatedCd == 200){
                             Gdx.input.setInputProcessor(stage);
@@ -811,11 +831,11 @@ public class GameClass implements Screen{
             trojans.remove(removeTrojan);
             removeTrojan = null;
         }
-        //Remove shot yourDOom
-        if (removeYourDoom != null){
-            spawnFiles(removeYourDoom.getFileDropCount(), removeYourDoom.getX() + (removeYourDoom.getSprite().getWidth()/2), removeYourDoom.getY() + removeYourDoom.getSprite().getHeight());
-            yourDoomArray.remove(removeYourDoom);
-            removeYourDoom = null;
+        //Remove shot body
+        if (removeBody != null){
+            spawnFiles(removeBody.getFileDropCount(), removeBody.getX() + (removeBody.getSprite().getWidth()/2), removeBody.getY() + removeBody.getSprite().getHeight());
+            bodyArray.remove(removeBody);
+            removeBody = null;
         }
         //remove bullet
         if(removeBullet != null){
@@ -984,32 +1004,32 @@ public class GameClass implements Screen{
                 }
             }
         }
-        //YOURDOOM
-        if (yourDoomArray.size() > 0) {
+        //body
+        if (bodyArray.size() > 0) {
 
-            for (YourDoom yourDoom : yourDoomArray){
-                if (yourDoom.getBounds().overlaps(bullet.getBounds())){
-                    yourDoom.setHp(yourDoom.getHp() - bullet.getDamage());
+            for (body Body : bodyArray){
+                if (Body.getBounds().overlaps(bullet.getBounds())){
+                    Body.setHp(Body.getHp() - bullet.getDamage());
                     for(int i = 0; i < 5; i++) {
-                        int p = particles.spawn(ParticleManager.Type.IMPACT, yourDoom);
+                        int p = particles.spawn(ParticleManager.Type.IMPACT, Body);
                         particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth()/2);
                         particles.y[p] = bullet.getY() + bullet.getSprite().getHeight();
                     }
                     sfx.playSound(SoundFXManager.Type.HIT);
                     removeBullet = bullet;
                     //If health is zero, remove it
-                    if (yourDoom.getHp() <=0){
-                        score += yourDoom.getPoints();
+                    if (Body.getHp() <=0){
+                        score += Body.getPoints();
                         for(int i = 0; i < 10; i++) {
-                            int p = particles.spawn(ParticleManager.Type.DATA, yourDoom);
-                            particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
-                            particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
+                            int p = particles.spawn(ParticleManager.Type.DATA, Body);
+                            particles.x[p] = (Body.getX() + Body.getSprite().getWidth()/2);
+                            particles.y[p] = Body.getY() + Body.getSprite().getHeight()/2;
                         }
-                        int p = particles.spawn(ParticleManager.Type.EXPLOSION, yourDoom);
-                        particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
-                        particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
+                        int p = particles.spawn(ParticleManager.Type.EXPLOSION, Body);
+                        particles.x[p] = (Body.getX() + Body.getSprite().getWidth()/2);
+                        particles.y[p] = Body.getY() + Body.getSprite().getHeight()/2;
                         sfx.playSound(SoundFXManager.Type.DEATH);
-                        removeYourDoom = yourDoom;
+                        removeBody = Body;
                     }
                 }
             }
@@ -1126,35 +1146,35 @@ public class GameClass implements Screen{
         memLeakBulletCd ++;
     }
 
-    //YOURDOOM BULLETS
+    //Body BULLETS
 
-    public void yourDoomBulletSpawn(){
+    public void bodyBulletSpawn(){
         //Shooting
         //Gdx.app.log("Worm bullets: ", "wormBulletCd: " + wormBulletCd);
-        if (yourDoomBulletCd >= 50){
+        if (bodyBulletCd >= 50){
             Random rand = new Random();
             int num;
-            if (yourDoomArray.size() > 1){
-                num = rand.nextInt(yourDoomArray.size()-1);
+            if (bodyArray.size() > 1){
+                num = rand.nextInt(bodyArray.size()-1);
             }
             else{
                 num = 0;
             }
             //Gdx.app.log("Worm bullets: ", "Rand num: " + num);
-            YourDoom yourDoom = yourDoomArray.get(num);
+            body Body = bodyArray.get(num);
             //Gdx.app.log("GameClass: ", "Adding bullets!");
             if (bullets.size() <= 30){
-                Bullet bullet = new Bullet(yourDoom.getSprite().getX() + yourDoom.getSprite().getWidth()/2, yourDoom.getSprite().getY() - 90, yourDoom.getId(), yourDoom.getDamage(), true);
-                bullet.setBounds(new Rectangle(yourDoom.getSprite().getX() - 75, yourDoom.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
-                int i = particles.spawn(ParticleManager.Type.MUZZLE_FLASH, yourDoom);
-                particles.x[i] = yourDoom.getSprite().getWidth()/2;
+                Bullet bullet = new Bullet(Body.getSprite().getX() + Body.getSprite().getWidth()/2, Body.getSprite().getY() - 90, Body.getId(), Body.getDamage(), true);
+                bullet.setBounds(new Rectangle(Body.getSprite().getX() - 75, Body.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
+                int i = particles.spawn(ParticleManager.Type.MUZZLE_FLASH, Body);
+                particles.x[i] = Body.getSprite().getWidth()/2;
                 particles.y[i] = 0;
                 sfx.playSound(SoundFXManager.Type.SHOOT);
                 bullets.add(bullet);
             }
-            yourDoomBulletCd = 0;
+            bodyBulletCd = 0;
         }
-        yourDoomBulletCd ++;
+       bodyBulletCd ++;
     }
 
     public void enemyBulletUpdate(Bullet bullet){
@@ -1512,132 +1532,144 @@ public class GameClass implements Screen{
 
     }
 
-    //YOURDOOM
-    public void spawnYourDoom(){
-        yourDoomSpawned = 0;
-        while (yourDoomSpawned != 7){
-            YourDoom yourDoom = new YourDoom();
+    //body
+    public void spawnBody(){
+        bodySpawned = 0;
+        while (bodySpawned != 4){
+            body Body = new body();
+//            if (bodyHeight == HEIGHT){
+//                Body.setY(HEIGHT);
+//                Body.setIsUp(false);
+//                bodyHeight = bodyHeight + 150;
+//            }
+//            else{
+//                Body.setY(HEIGHT+150);
+//                Body.setIsUp(true);
+//                bodyHeight = HEIGHT;
+//            }
+            if (bodySpawned == 2){
+                bodyWidth = 350;
+            }
 
+            Body.setY(bodyHeight);
+            if (bodySpawned%2 == 1){
 
-            if (yourDoomHeight == HEIGHT){
-                yourDoom.setY(HEIGHT);
-                yourDoom.setIsUp(false);
-                yourDoomHeight = HEIGHT + 150;
+               Body.setIsUp(true);
             }
             else{
-                yourDoom.setY(HEIGHT+150);
-                yourDoom.setIsUp(true);
-                yourDoomHeight = HEIGHT;
+                Body.setIsUp(false);
             }
 
-            yourDoom.setX(yourDoomWidth);
 
-            yourDoom.getSprite().setPosition(yourDoom.getX(), yourDoom.getY());
+
+            Body.setX(bodyWidth);
+
+            Body.getSprite().setPosition(Body.getY(), 100);
 
             //Creates Bounding box
-            yourDoom.setBounds(new Rectangle(yourDoom.getX(), yourDoom.getY(), yourDoom.getSprite().getWidth(), yourDoom.getSprite().getHeight()));
+            Body.setBounds(new Rectangle(Body.getX(), Body.getX(), Body.getSprite().getWidth(), Body.getSprite().getHeight()));
             //Adds the worm to the arrayList
-            yourDoomArray.add(yourDoom);
-
-            yourDoomWidth += 150;
-            yourDoomSpawned++;
+            bodyArray.add(Body);
+            bodyHeight += 160;
+            bodyWidth += 200;
+            bodySpawned++;
         }
     }
 
-    public void animateYourDoom(){
-        yourDoomSpawnTime++;
+    public void animateBody(){
+        bodySpawnTime++;
         //Move worm sprite like it's wiggling
-        Gdx.app.log("YourDoom: ", "Getting ready to animate");
-        if (yourDoomSpawnTime == 50){
-            for (YourDoom yourDoom : yourDoomArray){
-                Gdx.app.log("YourDoom: ", "animating");
-                if (yourDoom.getIsUp() == true){
-                    yourDoom.setY(yourDoom.getY() - 150);
-                    yourDoom.setIsUp(false);
+        Gdx.app.log("Body: ", "Getting ready to animate");
+        if (bodySpawnTime == 100){
+            for (body Body : bodyArray){
+                Gdx.app.log("Body: ", "animating");
+                if (Body.getIsUp() == true){
+                    Body.setY(Body.getY() - 150);
+                    Body.setIsUp(false);
                 }
-                else if (yourDoom.getIsUp() == false){
-                    yourDoom.setY(yourDoom.getY() + 150);
-                    yourDoom.setIsUp(true);
+                else if (Body.getIsUp() == false){
+                    Body.setY(Body.getY() + 150);
+                    Body.setIsUp(true);
                 }
             }
-            yourDoomSpawnTime = 0;
+            bodySpawnTime = 0;
         }
     }
 
-    public void moveYourDoom(){
-        if (yourDoomArray.size() > 2){
-            if (yourDoomArray.get(0).getY() <= (HEIGHT-(yourDoomArray.get(0).getSprite().getHeight()*3))
-                    || yourDoomArray.get(1).getY() <= (HEIGHT-(yourDoomArray.get(1).getSprite().getHeight()*3))){
-                for (YourDoom yourDoom: yourDoomArray){
-                    yourDoom.getBounds().setPosition(yourDoom.getX(), yourDoom.getY());
-                    yourDoom.getSprite().setPosition(yourDoom.getX(), yourDoom.getY());
+    public void moveBody(){
+        if (bodyArray.size() > 2){
+            if (bodyArray.get(0).getY() <= (HEIGHT-(bodyArray.get(0).getSprite().getWidth()*4))
+                    || bodyArray.get(1).getY() <= (HEIGHT-(bodyArray.get(1).getSprite().getWidth()*4))){
+                for (body Body: bodyArray){
+                    Body.getBounds().setPosition(Body.getX(), Body.getY());
+                    Body.getSprite().setPosition(Body.getX(), Body.getY());
                     //if worm collides with player remove player and worm section
-                    if (yourDoom.getBounds().overlaps(player.getBounds())){
-                        score += yourDoom.getPoints();
+                    if (Body.getBounds().overlaps(player.getBounds())){
+                        score += Body.getPoints();
                         for(int i = 0; i < 10; i++) {
-                            int p = particles.spawn(ParticleManager.Type.DATA, yourDoom);
-                            particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
-                            particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
+                            int p = particles.spawn(ParticleManager.Type.DATA, Body);
+                            particles.x[p] = (Body.getX() + Body.getSprite().getWidth()/2);
+                            particles.y[p] = Body.getY() + Body.getSprite().getHeight()/2;
                         }
-                        int p = particles.spawn(ParticleManager.Type.EXPLOSION, yourDoom);
-                        particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
-                        particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
+                        int p = particles.spawn(ParticleManager.Type.EXPLOSION, Body);
+                        particles.x[p] = (Body.getX() + Body.getSprite().getWidth()/2);
+                        particles.y[p] = Body.getY() + Body.getSprite().getHeight()/2;
                         sfx.playSound(SoundFXManager.Type.DEATH);
-                        removeYourDoom = yourDoom;
-                        player.setHp(player.getHp() - (yourDoom.getDamage()*10));
+                        removeBody = Body;
+                        player.setHp(player.getHp() - (Body.getDamage()*10));
                     }
                 }
             }
             else{
-                for (YourDoom yourDoom: yourDoomArray){
-                    yourDoom.getBounds().setPosition(yourDoom.getX(), yourDoom.getY() - yourDoom.getySpeed());
-                    yourDoom.setY(yourDoom.getY() - yourDoom.getySpeed());
-                    yourDoom.getSprite().setPosition(yourDoom.getX(), yourDoom.getY());
+                for (body Body: bodyArray){
+                    Body.getBounds().setPosition(Body.getX(), Body.getY() - Body.getySpeed());
+                    Body.setY(Body.getY() - Body.getySpeed());
+                    Body.getSprite().setPosition(Body.getX(), Body.getY());
                     //if worm collides with player remove player and worm section
-                    if (yourDoom.getBounds().overlaps(player.getBounds())){
-                        score += yourDoom.getPoints();
+                    if (Body.getBounds().overlaps(player.getBounds())){
+                        score += Body.getPoints();
                         for(int i = 0; i < 10; i++) {
-                            int p = particles.spawn(ParticleManager.Type.DATA, yourDoom);
-                            particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
-                            particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
+                            int p = particles.spawn(ParticleManager.Type.DATA, Body);
+                            particles.x[p] = (Body.getX() + Body.getSprite().getWidth()/2);
+                            particles.y[p] = Body.getY() + Body.getSprite().getHeight()/2;
                         }
-                        int p = particles.spawn(ParticleManager.Type.EXPLOSION, yourDoom);
-                        particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
-                        particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
+                        int p = particles.spawn(ParticleManager.Type.EXPLOSION, Body);
+                        particles.x[p] = (Body.getX() + Body.getSprite().getWidth()/2);
+                        particles.y[p] = Body.getY() + Body.getSprite().getHeight()/2;
                         sfx.playSound(SoundFXManager.Type.DEATH);
-                        removeYourDoom = yourDoom;
-                        player.setHp(player.getHp() - (yourDoom.getDamage()*10));
+                        removeBody = Body;
+                        player.setHp(player.getHp() - (Body.getDamage()*10));
                     }
                 }
             }
         }
         else{
-            for (YourDoom yourDoom: yourDoomArray){
-                yourDoom.getBounds().setPosition(yourDoom.getX(), yourDoom.getY());
-                yourDoom.getSprite().setPosition(yourDoom.getX(), yourDoom.getY());
+            for (body Body: bodyArray){
+                Body.getBounds().setPosition(Body.getX(), Body.getY());
+                Body.getSprite().setPosition(Body.getX(), Body.getY());
                 //if worm collides with player remove player and worm section
-                if (yourDoom.getBounds().overlaps(player.getBounds())){
-                    score += yourDoom.getPoints();
+                if (Body.getBounds().overlaps(player.getBounds())){
+                    score += Body.getPoints();
                     for(int i = 0; i < 10; i++) {
-                        int p = particles.spawn(ParticleManager.Type.DATA, yourDoom);
-                        particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
-                        particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
+                        int p = particles.spawn(ParticleManager.Type.DATA, Body);
+                        particles.x[p] = (Body.getX() + Body.getSprite().getWidth()/2);
+                        particles.y[p] = Body.getY() + Body.getSprite().getHeight()/2;
                     }
-                    int p = particles.spawn(ParticleManager.Type.EXPLOSION, yourDoom);
-                    particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
-                    particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
+                    int p = particles.spawn(ParticleManager.Type.EXPLOSION, Body);
+                    particles.x[p] = (Body.getX() + Body.getSprite().getWidth()/2);
+                    particles.y[p] = Body.getY() + Body.getSprite().getHeight()/2;
                     sfx.playSound(SoundFXManager.Type.DEATH);
-                    removeYourDoom = yourDoom;
-                    player.setHp(player.getHp() - (yourDoom.getDamage()*10));
+                    removeBody = Body;
+                    player.setHp(player.getHp() - (Body.getDamage()*10));
                 }
             }
         }
 
 
 
-        if (removeYourDoom != null){
-            spawnFiles(removeYourDoom.getFileDropCount(), removeYourDoom.getX() + (removeYourDoom.getSprite().getWidth()/2), removeYourDoom.getY() + removeYourDoom.getSprite().getHeight());
-            yourDoomArray.remove(removeYourDoom);
+        if (removeBody != null){
+            spawnFiles(removeBody.getFileDropCount(), removeBody.getX() + (removeBody.getSprite().getWidth()/2), removeBody.getY() + removeBody.getSprite().getHeight());
+            bodyArray.remove(removeBody);
         }
     }
 
@@ -1891,7 +1923,7 @@ public class GameClass implements Screen{
         settingStage.addActor(resume);
         Gdx.input.setInputProcessor(settingStage);
     }
-        //Initializes variables for settings screen
+    //Initializes variables for settings screen
 
 
     private void settingsScreenRender(){
