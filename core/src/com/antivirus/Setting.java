@@ -4,15 +4,20 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-
+import FX.ParticleManager;
+import FX.SoundFXManager;
 
 
 
@@ -38,10 +43,21 @@ public class Setting implements Screen {
     TextButton resume;
     Stage settingStage;
     InputMultiplexer inputMultiplexer;
+    private SoundFXManager sfx;
+    Screen level;
+    Pixmap pixmap;
+    TextureRegion pauseBackground;
+    Image overlay;
+    SpriteBatch pauseBatch;
 
     public Setting(AntiVirus game){
         this.game = game;
     }
+    public void setLevel(Screen level){
+        this.level = level;
+    }
+
+
     public void create() {
         batch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("uidata/uiskin.json"));
@@ -49,9 +65,31 @@ public class Setting implements Screen {
         txt = "setting page";
         WIDTH = Gdx.graphics.getWidth();
         HEIGHT = Gdx.graphics.getHeight();
+
+        //changing page
+        /*
+        pixmap = new Pixmap(0,0,Pixmap.Format.RGB888);
+        pauseBackground = new TextureRegion(new Texture(pixmap));
+        overlay = new Image(pauseBackground);
+        pixmap.setColor(1, 0, 0, 05f);
+        pixmap.fill();
+        overlay.setWidth(WIDTH);
+        overlay.setHeight(HEIGHT);
+        pauseBatch = new SpriteBatch();
+        */
+
+
         inputMultiplexer = new InputMultiplexer();
         layout = new GlyphLayout();
         layout.setText(font, txt);
+
+
+
+
+
+
+
+        sfx = new SoundFXManager();
 
         Gdx.input.setInputProcessor(settingStage);
         settingButton();
@@ -116,8 +154,10 @@ public class Setting implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.input.setInputProcessor(inputMultiplexer);
                 GameClass.musicBackground.pause();
+                sfx.playSound(SoundFXManager.Type.SELECT);
                 gameState = GameState.PLAYING;
-                game.setScreen(AntiVirus.level1);
+                GameClass.musicBackground.pause();
+
 
 
                 //resume();
@@ -135,6 +175,7 @@ public class Setting implements Screen {
         musicOff.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 //Gdx.input.setInputProcessor(inputMultiplexer);
+                sfx.playSound(SoundFXManager.Type.SELECT);
                 GameClass.musicBackground.pause();
             }
 
@@ -151,6 +192,7 @@ public class Setting implements Screen {
         musicOn.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 //Gdx.input.setInputProcessor(inputMultiplexer);
+                sfx.playSound(SoundFXManager.Type.SELECT);
                 GameClass.musicBackground.play();
             }
         });
@@ -170,6 +212,7 @@ public class Setting implements Screen {
         musicOff.draw(batch, 1);
         settingStage.draw();
     }
+
 
 
 

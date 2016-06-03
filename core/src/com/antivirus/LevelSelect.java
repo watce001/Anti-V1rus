@@ -82,13 +82,13 @@ public class LevelSelect implements Screen {
             public void clicked (InputEvent event, float x, float y){
                 selectSound.play();
                 Gdx.app.log("LevelSelectScreen: ", "About to call level2");
-                Gdx.app.log("LevelSelectScreen: ", "Level Coming Soon");
+                game.setScreen(AntiVirus.level2);
 
-                //Presents dialog box with a coming soon message - Remove once level implemented
-                showComingSoon();
+                Gdx.app.log("LevelSelectScreen: ", "level2 started");
 
-                //game.setScreen(AntiVirus.level2);
-                //Gdx.app.log("LevelSelectScreen: ", "level1 started");
+
+
+
             }
         });
 
@@ -115,7 +115,6 @@ public class LevelSelect implements Screen {
     }
 
     public void render (float f){
-        Gdx.app.log("LevelSelect: ", "levelSelect render");
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -128,19 +127,7 @@ public class LevelSelect implements Screen {
         batch.end();
     }
 
-    private void showComingSoon()
-    {
-        Dialog dialog = new Dialog("Coming Soon!", skin, "dialog") {
-            public void result(Object obj) {
-                System.out.println("result "+obj);
-            }
-        };
-        dialog.setScale(3);
-        dialog.setWidth(Gdx.graphics.getWidth());
-        dialog.text("This level is currently unavailable.");
-        dialog.button("Okay");
-        dialog.show(stage);
-    }
+
 
     @Override
     public void dispose(){

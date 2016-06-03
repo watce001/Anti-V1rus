@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import FX.ParticleManager;
 import FX.SoundFXManager;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.Media;
@@ -149,6 +150,8 @@ public class GameClass implements Screen{
     private Stage stage;
     public static TextButton pauseButton;
 
+    boolean settingsOn;
+
     //In-Game Score
     BitmapFont uiFont;
     String scoreTxt;
@@ -181,11 +184,20 @@ public class GameClass implements Screen{
     boolean bugFix;
     int touchTime;
 
+    //Setting
+    TextButton musicOff;
+    TextButton musicOn;
+
     //Game Background Music
     public static Music musicBackground;
+    boolean musicPlayOn;
 
     //SoundFX
     private SoundFXManager sfx;
+
+    //Particles
+    private ParticleManager particles;
+    float playerTrailCD;
 
     public GameClass(AntiVirus game){this.game = game;}
 
@@ -207,9 +219,14 @@ public class GameClass implements Screen{
         musicBackground = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
         musicBackground.setLooping(true);
         musicBackground.play();
+        musicPlayOn = false;
 
         //SoundFX
         sfx = new SoundFXManager();
+
+        //Particle System
+        particles = new ParticleManager();
+        particles.init();
 
         //Player
         player = new Player();
@@ -279,6 +296,8 @@ public class GameClass implements Screen{
         //playerBullet = new Bullet(playerSprite.getX(), playerSprite.getY(), player.getId(), player.getDamage());
         bullets = new ArrayList<Bullet>();
 
+
+
         //Overlay for other screens
         pixmap = new Pixmap(0,0,Pixmap.Format.RGB888);
         pauseBackground = new TextureRegion(new Texture(pixmap));
@@ -290,6 +309,8 @@ public class GameClass implements Screen{
         pauseBatch = new SpriteBatch();
 
         //Creates button to pause game
+        settingsOn = false;
+        musicPlayOn = false;
         stage = new Stage();
         skin = new Skin(Gdx.files.internal("uidata/uiskin.json"));
         pauseButton = new TextButton("||",skin,"default");
@@ -424,6 +445,9 @@ public class GameClass implements Screen{
             }
         }
 
+        //particle system
+        particles.render(batch);
+
         switch (gameState){
             case PLAYING:
                 //Score
@@ -441,7 +465,13 @@ public class GameClass implements Screen{
                 break;
             case PAUSED:
                 //Fill in pause code
-                pauseScreenRender();
+                if(settingsOn == false){
+                    pauseScreenRender();
+                }
+                else if(settingsOn == true){
+                    settingsScreenRender();
+                }
+
                 break;
             case GAMEOVER:
                 countdown = ((System.currentTimeMillis() - startTime) / 1000);
@@ -486,8 +516,8 @@ public class GameClass implements Screen{
 
                     checkPlayerHealth();
 
-                    //FOR FIGURING OUT WHEN TO SPAWN THINGS
-                    //Gdx.app.log("GameClass: ", "spawnCd: " + spawnCd);
+                    //spawnPlayerTrailParticles
+                    playerTrailSpawn();
 
                     //Shooting player bullets
                     playerBulletSpawn();
@@ -543,6 +573,10 @@ public class GameClass implements Screen{
                     if (files.size() > 0){
                         updateFiles();
                     }
+
+                    //update particles
+                    float deltaTime = Gdx.graphics.getDeltaTime();
+                    particles.update(deltaTime);
 
                     //SPAWNING
                     //Worm speed = 3
@@ -603,6 +637,7 @@ public class GameClass implements Screen{
         batch.dispose();
         game.dispose();
         sfx.dispose();
+        particles.dispose();
     }
     @Override
     public void resize(int width, int height) {}
@@ -697,6 +732,19 @@ public class GameClass implements Screen{
 //        }
     }
 
+    private void playerTrailSpawn() {
+        if (playerTrailCD >= 2) {
+            int i = particles.spawn(ParticleManager.Type.PLAYER_TRAIL, player);
+            particles.x[i] = player.getX() + player.getSprite().getWidth()/2;
+            particles.y[i] = player.getY();
+            playerTrailCD = 0.0f;
+        }
+        else
+        {
+            playerTrailCD++;
+        }
+    }
+
     //BACKGROUND
     public void animateBackground(){
         bg1.setPosition(bg1.getX(), posXBackground1);
@@ -776,17 +824,21 @@ public class GameClass implements Screen{
         }
 
     }
-    //PLAYER BULLETS
 
+    //PLAYER BULLETS
     public void playerBulletSpawn(){
         //Shooting
         //Gdx.app.log("GameClass: ", "Adding bullets!" + bullets.size());
         if (playerBulletCd >= 10){
 
             if (bullets.size() <= 30){
-                Bullet bullet = new Bullet(playerSprite.getX() + 75, playerSprite.getY() + 90, player.getId(), player.getDamage(), false);
-                bullet.setBounds(new Rectangle(playerSprite.getX() + 75, playerSprite.getY() + 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
+                Bullet bullet = new Bullet(playerSprite.getX() + playerSprite.getWidth()/2, playerSprite.getY() + (playerSprite.getHeight()*0.9f), player.getId(), player.getDamage(), false);
+                bullet.setX(bullet.getX() - bullet.getSprite().getWidth()/2);
+                bullet.setBounds(new Rectangle(bullet.getX(), bullet.getY(), bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
                 sfx.playSound(SoundFXManager.Type.SHOOT);
+                int i = particles.spawn(ParticleManager.Type.MUZZLE_FLASH, player);
+                particles.x[i] = player.getSprite().getWidth()/2;
+                particles.y[i] = player.getSprite().getHeight();
                 bullets.add(bullet);
             }
             playerBulletCd = 0;
@@ -808,11 +860,24 @@ public class GameClass implements Screen{
             for (Worm worm : worms) {
                 if (worm.getBounds().overlaps(bullet.getBounds())){
                     worm.setHp(worm.getHp() - bullet.getDamage());
+                    for(int i = 0; i < 5; i++) {
+                        int p = particles.spawn(ParticleManager.Type.IMPACT, worm);
+                        particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth()/2);
+                        particles.y[p] = bullet.getY() + bullet.getSprite().getHeight();
+                    }
                     sfx.playSound(SoundFXManager.Type.HIT);
                     removeBullet = bullet;
                     //If health is zero, remove it
                     if (worm.getHp() <= 0) {
                         score += worm.getPoints();
+                        for(int i = 0; i < 10; i++) {
+                            int p = particles.spawn(ParticleManager.Type.DATA, worm);
+                            particles.x[p] = (worm.getX() + worm.getSprite().getWidth()/2);
+                            particles.y[p] = worm.getY() + worm.getSprite().getHeight()/2;
+                        }
+                        int p = particles.spawn(ParticleManager.Type.EXPLOSION, worm);
+                        particles.x[p] = (worm.getX() + worm.getSprite().getWidth()/2);
+                        particles.y[p] = worm.getY() + worm.getSprite().getHeight()/2;
                         sfx.playSound(SoundFXManager.Type.DEATH);
                         removeWorm = worm;
                     }
@@ -825,11 +890,24 @@ public class GameClass implements Screen{
             for (MemoryLeak memleak : memLeaks){
                 if (memleak.getBounds().overlaps(bullet.getBounds())){
                     memleak.setHp(memleak.getHp() - bullet.getDamage());
+                    for(int i = 0; i < 5; i++) {
+                        int p = particles.spawn(ParticleManager.Type.IMPACT, memleak);
+                        particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth()/2);
+                        particles.y[p] = bullet.getY() + bullet.getSprite().getHeight();
+                    }
                     sfx.playSound(SoundFXManager.Type.HIT);
                     removeBullet = bullet;
                     //if health is zero, remove it
                     if (memleak.getHp() <= 0){
                         score += memleak.getPoints();
+                        for(int i = 0; i < 10; i++) {
+                            int p = particles.spawn(ParticleManager.Type.DATA, memleak);
+                            particles.x[p] = (memleak.getX() + memleak.getSprite().getWidth()/2);
+                            particles.y[p] = memleak.getY() + memleak.getSprite().getHeight()/2;
+                        }
+                        int p = particles.spawn(ParticleManager.Type.EXPLOSION, memleak);
+                        particles.x[p] = (memleak.getX() + memleak.getSprite().getWidth()/2);
+                        particles.y[p] = memleak.getY() + memleak.getSprite().getHeight()/2;
                         sfx.playSound(SoundFXManager.Type.DEATH);
                         removeMemLeak = memleak;
                     }
@@ -844,10 +922,23 @@ public class GameClass implements Screen{
                 for (Trojan trojan : trojans){
                     if (trojan.getBounds().overlaps(bullet.getBounds())){
                         trojan.setHp(trojan.getHp() - bullet.getDamage());
+                        for(int i = 0; i < 5; i++) {
+                            int p = particles.spawn(ParticleManager.Type.IMPACT, trojan);
+                            particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth()/2);
+                            particles.y[p] = bullet.getY() + bullet.getSprite().getHeight();
+                        }
                         sfx.playSound(SoundFXManager.Type.HIT);
                         removeBullet = bullet;
                         if (trojan.getHp() <= 0){
                             score += trojan.getPoints();
+                            for(int i = 0; i < 10; i++) {
+                                int p = particles.spawn(ParticleManager.Type.DATA, trojan);
+                                particles.x[p] = (trojan.getX() + trojan.getSprite().getWidth()/2);
+                                particles.y[p] = trojan.getY() + trojan.getSprite().getHeight()/2;
+                            }
+                            int p = particles.spawn(ParticleManager.Type.EXPLOSION, trojan);
+                            particles.x[p] = (trojan.getX() + trojan.getSprite().getWidth()/2);
+                            particles.y[p] = trojan.getY() + trojan.getSprite().getHeight()/2;
                             sfx.playSound(SoundFXManager.Type.DEATH);
                             removeTrojan = trojan;
                         }
@@ -859,11 +950,24 @@ public class GameClass implements Screen{
         else{
             if(bigTrojan.getBounds().overlaps(bullet.getBounds())){
                 bigTrojan.setHp(bigTrojan.getHp() - bullet.getDamage());
+                for(int i = 0; i < 5; i++) {
+                    int p = particles.spawn(ParticleManager.Type.IMPACT, bigTrojan);
+                    particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth()/2);
+                    particles.y[p] = bullet.getY() + bullet.getSprite().getHeight();
+                }
                 sfx.playSound(SoundFXManager.Type.HIT);
                 removeBullet = bullet;
                 if (bigTrojan.getHp() <= 0){
                     score += bigTrojan.getPoints();
                     spawnFiles(bigTrojan.getFileDropCount(), bigTrojan.getX() + (bigTrojan.getSprite().getWidth()/2), bigTrojan.getY() + bigTrojan.getSprite().getHeight()/2);
+                    for(int i = 0; i < 10; i++) {
+                        int p = particles.spawn(ParticleManager.Type.DATA, bigTrojan);
+                        particles.x[p] = (bigTrojan.getX() + bigTrojan.getSprite().getWidth()/2);
+                        particles.y[p] = bigTrojan.getY() + bigTrojan.getSprite().getHeight()/2;
+                    }
+                    int p = particles.spawn(ParticleManager.Type.EXPLOSION, bigTrojan);
+                    particles.x[p] = (bigTrojan.getX() + bigTrojan.getSprite().getWidth()/2);
+                    particles.y[p] = bigTrojan.getY() + bigTrojan.getSprite().getHeight()/2;
                     sfx.playSound(SoundFXManager.Type.DEATH);
                     bigTrojan = null;
                     //Sets baby trojans to where big trojan died
@@ -886,11 +990,24 @@ public class GameClass implements Screen{
             for (YourDoom yourDoom : yourDoomArray){
                 if (yourDoom.getBounds().overlaps(bullet.getBounds())){
                     yourDoom.setHp(yourDoom.getHp() - bullet.getDamage());
+                    for(int i = 0; i < 5; i++) {
+                        int p = particles.spawn(ParticleManager.Type.IMPACT, yourDoom);
+                        particles.x[p] = (bullet.getX() + bullet.getSprite().getWidth()/2);
+                        particles.y[p] = bullet.getY() + bullet.getSprite().getHeight();
+                    }
                     sfx.playSound(SoundFXManager.Type.HIT);
                     removeBullet = bullet;
                     //If health is zero, remove it
                     if (yourDoom.getHp() <=0){
                         score += yourDoom.getPoints();
+                        for(int i = 0; i < 10; i++) {
+                            int p = particles.spawn(ParticleManager.Type.DATA, yourDoom);
+                            particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
+                            particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
+                        }
+                        int p = particles.spawn(ParticleManager.Type.EXPLOSION, yourDoom);
+                        particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
+                        particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
                         sfx.playSound(SoundFXManager.Type.DEATH);
                         removeYourDoom = yourDoom;
                     }
@@ -919,6 +1036,9 @@ public class GameClass implements Screen{
             if (bullets.size() <= 30){
                 Bullet bullet = new Bullet(worm.getSprite().getX() + worm.getSprite().getWidth()/2, worm.getSprite().getY() - 90, worm.getId(), worm.getDamage(), true);
                 bullet.setBounds(new Rectangle(worm.getSprite().getX() - 75, worm.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
+                int i = particles.spawn(ParticleManager.Type.MUZZLE_FLASH, worm);
+                particles.x[i] = worm.getSprite().getWidth()/2;
+                particles.y[i] = 0;
                 sfx.playSound(SoundFXManager.Type.SHOOT);
                 bullets.add(bullet);
             }
@@ -938,6 +1058,9 @@ public class GameClass implements Screen{
                 if (bullets.size() <= 30) {
                     Bullet bullet = new Bullet(bigTrojan.getSprite().getX() + bigTrojan.getSprite().getWidth()/2, bigTrojan.getSprite().getY() - 90, bigTrojan.getId(), bigTrojan.getDamage(), true);
                     bullet.setBounds(new Rectangle(bigTrojan.getSprite().getX() + bigTrojan.getSprite().getWidth()/2, bigTrojan.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
+                    int i = particles.spawn(ParticleManager.Type.MUZZLE_FLASH, bigTrojan);
+                    particles.x[i] = bigTrojan.getSprite().getWidth()/2;
+                    particles.y[i] = 0;
                     sfx.playSound(SoundFXManager.Type.SHOOT);
                     bullets.add(bullet);
                 }
@@ -960,6 +1083,9 @@ public class GameClass implements Screen{
                 if (bullets.size() <= 30){
                     Bullet bullet = new Bullet(trojan.getSprite().getX() + trojan.getSprite().getWidth()/2, trojan.getSprite().getY() - 90, trojan.getId(), trojan.getDamage(), true);
                     bullet.setBounds(new Rectangle(trojan.getSprite().getX() + trojan.getSprite().getWidth() / 2, trojan.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
+                    int i = particles.spawn(ParticleManager.Type.MUZZLE_FLASH, trojan);
+                    particles.x[i] = trojan.getSprite().getWidth()/2;
+                    particles.y[i] = 0;
                     sfx.playSound(SoundFXManager.Type.SHOOT);
                     bullets.add(bullet);
                 }
@@ -989,6 +1115,9 @@ public class GameClass implements Screen{
             if (bullets.size() <= 30){
                 Bullet bullet = new Bullet(memLeak.getSprite().getX() + memLeak.getSprite().getWidth()/2, memLeak.getSprite().getY() - 90, memLeak.getId(), memLeak.getDamage(), true);
                 bullet.setBounds(new Rectangle(memLeak.getSprite().getX() - 75, memLeak.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
+                int i = particles.spawn(ParticleManager.Type.MUZZLE_FLASH, memLeak);
+                particles.x[i] = memLeak.getSprite().getWidth()/2;
+                particles.y[i] = 0;
                 sfx.playSound(SoundFXManager.Type.SHOOT);
                 bullets.add(bullet);
             }
@@ -1017,6 +1146,9 @@ public class GameClass implements Screen{
             if (bullets.size() <= 30){
                 Bullet bullet = new Bullet(yourDoom.getSprite().getX() + yourDoom.getSprite().getWidth()/2, yourDoom.getSprite().getY() - 90, yourDoom.getId(), yourDoom.getDamage(), true);
                 bullet.setBounds(new Rectangle(yourDoom.getSprite().getX() - 75, yourDoom.getSprite().getY() - 90, bullet.getSprite().getWidth(), bullet.getSprite().getHeight()));
+                int i = particles.spawn(ParticleManager.Type.MUZZLE_FLASH, yourDoom);
+                particles.x[i] = yourDoom.getSprite().getWidth()/2;
+                particles.y[i] = 0;
                 sfx.playSound(SoundFXManager.Type.SHOOT);
                 bullets.add(bullet);
             }
@@ -1104,6 +1236,14 @@ public class GameClass implements Screen{
             //if worm collides with player remove player and worm section
             if (worm.getBounds().overlaps(player.getBounds())){
                 score += worm.getPoints();
+                for(int i = 0; i < 10; i++) {
+                    int p = particles.spawn(ParticleManager.Type.DATA, worm);
+                    particles.x[p] = (worm.getX() + worm.getSprite().getWidth()/2);
+                    particles.y[p] = worm.getY() + worm.getSprite().getHeight()/2;
+                }
+                int p = particles.spawn(ParticleManager.Type.EXPLOSION, worm);
+                particles.x[p] = (worm.getX() + worm.getSprite().getWidth()/2);
+                particles.y[p] = worm.getY() + worm.getSprite().getHeight()/2;
                 sfx.playSound(SoundFXManager.Type.DEATH);
                 removeWorm = worm;
                 player.setHp(player.getHp() - (worm.getDamage()*10));
@@ -1186,6 +1326,14 @@ public class GameClass implements Screen{
                 //if trojan collides with player remove player and worm section
                 if (trojan.getBounds().overlaps(player.getBounds())){
                     score += trojan.getPoints();
+                    for(int i = 0; i < 10; i++) {
+                        int p = particles.spawn(ParticleManager.Type.DATA, trojan);
+                        particles.x[p] = (trojan.getX() + trojan.getSprite().getWidth()/2);
+                        particles.y[p] = trojan.getY() + trojan.getSprite().getHeight()/2;
+                    }
+                    int p = particles.spawn(ParticleManager.Type.EXPLOSION, trojan);
+                    particles.x[p] = (trojan.getX() + trojan.getSprite().getWidth()/2);
+                    particles.y[p] = trojan.getY() + trojan.getSprite().getHeight()/2;
                     sfx.playSound(SoundFXManager.Type.DEATH);
                     removeTrojan = trojan;
                     player.setHp(player.getHp() - (trojan.getDamage()*5));
@@ -1207,6 +1355,14 @@ public class GameClass implements Screen{
             if (bigTrojan.getBounds().overlaps(player.getBounds())){
                 score += bigTrojan.getPoints();
                 player.setHp(player.getHp() - (bigTrojan.getDamage()*10));
+                for(int i = 0; i < 10; i++) {
+                    int p = particles.spawn(ParticleManager.Type.DATA, bigTrojan);
+                    particles.x[p] = (bigTrojan.getX() + bigTrojan.getSprite().getWidth()/2);
+                    particles.y[p] = bigTrojan.getY() + bigTrojan.getSprite().getHeight()/2;
+                }
+                int p = particles.spawn(ParticleManager.Type.EXPLOSION, bigTrojan);
+                particles.x[p] = (bigTrojan.getX() + bigTrojan.getSprite().getWidth()/2);
+                particles.y[p] = bigTrojan.getY() + bigTrojan.getSprite().getHeight()/2;
                 sfx.playSound(SoundFXManager.Type.DEATH);
                 bigTrojan = null;
                 //Sets baby trojans to where big trojan died
@@ -1298,6 +1454,14 @@ public class GameClass implements Screen{
                 score += memLeak.getPoints();
                 dotHappening = true;
                 startTime = System.currentTimeMillis();
+                for(int i = 0; i < 10; i++) {
+                    int p = particles.spawn(ParticleManager.Type.DATA, memLeak);
+                    particles.x[p] = (memLeak.getX() + memLeak.getSprite().getWidth()/2);
+                    particles.y[p] = memLeak.getY() + memLeak.getSprite().getHeight()/2;
+                }
+                int p = particles.spawn(ParticleManager.Type.EXPLOSION, memLeak);
+                particles.x[p] = (memLeak.getX() + memLeak.getSprite().getWidth()/2);
+                particles.y[p] = memLeak.getY() + memLeak.getSprite().getHeight()/2;
                 sfx.playSound(SoundFXManager.Type.DEATH);
                 removeMemLeak = memLeak;
                 //player.setHp(player.getHp() - (memLeak.getDamage()*10));
@@ -1410,6 +1574,14 @@ public class GameClass implements Screen{
                     //if worm collides with player remove player and worm section
                     if (yourDoom.getBounds().overlaps(player.getBounds())){
                         score += yourDoom.getPoints();
+                        for(int i = 0; i < 10; i++) {
+                            int p = particles.spawn(ParticleManager.Type.DATA, yourDoom);
+                            particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
+                            particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
+                        }
+                        int p = particles.spawn(ParticleManager.Type.EXPLOSION, yourDoom);
+                        particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
+                        particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
                         sfx.playSound(SoundFXManager.Type.DEATH);
                         removeYourDoom = yourDoom;
                         player.setHp(player.getHp() - (yourDoom.getDamage()*10));
@@ -1424,6 +1596,14 @@ public class GameClass implements Screen{
                     //if worm collides with player remove player and worm section
                     if (yourDoom.getBounds().overlaps(player.getBounds())){
                         score += yourDoom.getPoints();
+                        for(int i = 0; i < 10; i++) {
+                            int p = particles.spawn(ParticleManager.Type.DATA, yourDoom);
+                            particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
+                            particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
+                        }
+                        int p = particles.spawn(ParticleManager.Type.EXPLOSION, yourDoom);
+                        particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
+                        particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
                         sfx.playSound(SoundFXManager.Type.DEATH);
                         removeYourDoom = yourDoom;
                         player.setHp(player.getHp() - (yourDoom.getDamage()*10));
@@ -1438,6 +1618,14 @@ public class GameClass implements Screen{
                 //if worm collides with player remove player and worm section
                 if (yourDoom.getBounds().overlaps(player.getBounds())){
                     score += yourDoom.getPoints();
+                    for(int i = 0; i < 10; i++) {
+                        int p = particles.spawn(ParticleManager.Type.DATA, yourDoom);
+                        particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
+                        particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
+                    }
+                    int p = particles.spawn(ParticleManager.Type.EXPLOSION, yourDoom);
+                    particles.x[p] = (yourDoom.getX() + yourDoom.getSprite().getWidth()/2);
+                    particles.y[p] = yourDoom.getY() + yourDoom.getSprite().getHeight()/2;
                     sfx.playSound(SoundFXManager.Type.DEATH);
                     removeYourDoom = yourDoom;
                     player.setHp(player.getHp() - (yourDoom.getDamage()*10));
@@ -1556,6 +1744,8 @@ public class GameClass implements Screen{
     //Pause Screen Variables
     SpriteBatch pauseBatch;
     Stage pauseStage;
+
+    Stage settingStage;
     TextButton resume;
     TextButton exit;
     public static TextButton setting;
@@ -1564,7 +1754,10 @@ public class GameClass implements Screen{
         pauseStage = new Stage();
         sfx.playSound(SoundFXManager.Type.SELECT);
 
+
+
         //Add buttons
+
         resume = new TextButton("Resume", skin, "default");
         resume.getLabel().setFontScale(3);
         resume.setWidth(WIDTH / 2);
@@ -1575,6 +1768,7 @@ public class GameClass implements Screen{
                 Gdx.input.setInputProcessor(inputMultiplexer);
                 sfx.playSound(SoundFXManager.Type.SELECT);
                 gameState = GameState.PLAYING;
+
             }
         });
         resume.toFront();
@@ -1587,14 +1781,16 @@ public class GameClass implements Screen{
         setting.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.input.setInputProcessor(inputMultiplexer);
-<<<<<<< HEAD
-                gameState = GameState.PLAYING;//,llklk
-                game.setScreen(AntiVirus.settingPage);
-=======
+
+//<<<<<<< HEAD
+
+
+//=======
                 sfx.playSound(SoundFXManager.Type.SELECT);
-                gameState = GameState.PLAYING;
+
+                settingsScreenCreate();
                 //game.setScreen(AntiVirus.settingPage);
->>>>>>> origin/master
+//>>>>>>> origin/master
             }
         });
         setting.toFront();
@@ -1629,6 +1825,83 @@ public class GameClass implements Screen{
         setting.draw(batch, 1);
         exit.draw(batch, 1);
         pauseStage.draw();
+    }
+
+    private void settingsScreenCreate(){
+        settingStage = new Stage();
+        settingsOn = true;
+
+        //music on button
+        musicOn = new TextButton("Music on", skin, "default");
+        musicOn.getLabel().setFontScale(3);
+        musicOn.setWidth(WIDTH / 2);
+        musicOn.setHeight(WIDTH / 4);
+        musicOn.setPosition(WIDTH / 2 - (musicOn.getWidth() / 2), (HEIGHT - (HEIGHT / 4)) - (musicOn.getHeight()));
+
+        musicOn.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                //Gdx.input.setInputProcessor(inputMultiplexer);
+                sfx.playSound(SoundFXManager.Type.SELECT);
+                GameClass.musicBackground.play();
+            }
+        });
+        musicOn.toFront();
+
+
+
+
+        musicOff = new TextButton("Music off", skin, "default");
+        musicOff.getLabel().setFontScale(3);
+        musicOff.setWidth(WIDTH / 2);
+        musicOff.setHeight(WIDTH / 4);
+        musicOff.setPosition(WIDTH / 2 - (musicOff.getWidth() / 2), musicOn.getY() - musicOn.getHeight() - (musicOn.getHeight() / 2 ));
+
+        musicOff.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                //Gdx.input.setInputProcessor(inputMultiplexer);
+                sfx.playSound(SoundFXManager.Type.SELECT);
+                GameClass.musicBackground.pause();
+            }
+
+        });
+        musicOff.toFront();
+
+        //adding buttons
+        resume = new TextButton("Resume", skin, "default");
+        resume.getLabel().setFontScale(3);
+        resume.setWidth(WIDTH / 2);
+        resume.setHeight(WIDTH / 4);
+        resume.setPosition(WIDTH / 2 - (resume.getWidth() / 2), musicOff.getY() - musicOff.getHeight() - (musicOff.getHeight()/2)   );
+        resume.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.input.setInputProcessor(inputMultiplexer);
+                sfx.playSound(SoundFXManager.Type.SELECT);
+                settingsOn = false;
+                GameClass.musicBackground.play();
+                gameState = GameState.PLAYING;
+
+            }
+        });
+        resume.toFront();
+
+
+
+        settingStage.addActor(musicOff);
+        settingStage.addActor(musicOn);
+        settingStage.addActor(resume);
+        Gdx.input.setInputProcessor(settingStage);
+    }
+        //Initializes variables for settings screen
+
+
+    private void settingsScreenRender(){
+        overlay.draw(batch, 0.5f);
+        uiFont.draw(batch, scoreTxt, 0, HEIGHT - (scoreLayout.height));
+        uiFont.draw(batch,healthTxt,WIDTH/2 , HEIGHT - (healthLayout.height));
+        musicOn.draw(batch, 1);
+        musicOff.draw(batch, 1);
+        resume.draw(batch, 1);
+        settingStage.draw();
     }
 
 }
