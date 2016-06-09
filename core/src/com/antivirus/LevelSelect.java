@@ -127,7 +127,7 @@ public class LevelSelect implements Screen {
         lvl2button.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 selectSound.play();
-                Gdx.app.log("LevelSelectScreen: ", "About to call level1 Score");
+                Gdx.app.log("LevelSelectScreen: ", "About to call level2 Score");
                 scoreScreenCreate(2);
                 checkingScore = true;
 
@@ -254,7 +254,7 @@ public class LevelSelect implements Screen {
                 public void clicked(InputEvent event, float x, float y) {
                     selectSound.play();
                     Gdx.app.log("LevelSelectScreen: ", "About to call level2");
-                    game.setScreen(AntiVirus.level1);
+                    game.setScreen(AntiVirus.level2);
                     Gdx.app.log("LevelSelectScreen: ", "level2 started");
                 }
             });
