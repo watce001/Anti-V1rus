@@ -39,8 +39,8 @@ import Units.body;
 
 
 /**
- * Created by Caroline on 22/03/2016.
- * Co-Authored by Corey
+ * Created by Tony on 26/05/2016.
+ * Co-Authored by Caroline & Corey
  */
 public class Lvl2 implements Screen{
 
@@ -1201,6 +1201,10 @@ public class Lvl2 implements Screen{
 
             //Creates Bounding box
             worm.setBounds(new Rectangle(worm.getX(), worm.getY(), worm.getSprite().getWidth(), worm.getSprite().getHeight()));
+
+            //increments totalFiles
+            totalFiles += worm.getFileDropCount();
+
             //Adds the worm to the arrayList
             worms.add(worm);
 
@@ -1236,7 +1240,7 @@ public class Lvl2 implements Screen{
             worm.getSprite().setPosition(worm.getX(), worm.getY());
             //if worm collides with player remove player and worm section
             if (worm.getBounds().overlaps(player.getBounds())){
-                score += worm.getPoints();
+                score += worm.getPoints()/2;
                 for(int i = 0; i < 10; i++) {
                     int p = particles.spawn(ParticleManager.Type.DATA, worm);
                     particles.x[p] = (worm.getX() + worm.getSprite().getWidth()/2);
@@ -1282,10 +1286,13 @@ public class Lvl2 implements Screen{
         bigTrojan = new Trojan();
         //trojanSprite = bigTrojan.getSprite();
         bigTrojan.setxSpeed(bigTrojansXSpeed);
-        bigTrojan.setX(x - bigTrojan.getSprite().getWidth()/2);
+        bigTrojan.setX(x - bigTrojan.getSprite().getWidth() / 2);
         bigTrojan.setY(y);
         bigTrojan.getSprite().setPosition(x, y);
         bigTrojan.setBounds(new Rectangle(x, y, bigTrojan.getSprite().getWidth(), bigTrojan.getSprite().getHeight()));
+
+        //increments totalFiles
+        totalFiles += bigTrojan.getFileDropCount();
 
         x = (int)bigTrojan.getX() - 150;
         //For the small Trojans
@@ -1301,6 +1308,10 @@ public class Lvl2 implements Screen{
 
             //Creates Bounding box
             smallTrojan.setBounds(new Rectangle(smallTrojan.getX(), smallTrojan.getY(), smallTrojan.getSprite().getWidth(), smallTrojan.getSprite().getHeight()));
+
+            //increments totalFiles
+            totalFiles += smallTrojan.getFileDropCount();
+
             //Adds the worm to the arrayList
             trojans.add(smallTrojan);
 
@@ -1326,7 +1337,7 @@ public class Lvl2 implements Screen{
                 trojan.getSprite().setPosition(trojan.getX(), trojan.getY());
                 //if trojan collides with player remove player and worm section
                 if (trojan.getBounds().overlaps(player.getBounds())){
-                    score += trojan.getPoints();
+                    score += trojan.getPoints()/2;
                     for(int i = 0; i < 10; i++) {
                         int p = particles.spawn(ParticleManager.Type.DATA, trojan);
                         particles.x[p] = (trojan.getX() + trojan.getSprite().getWidth()/2);
@@ -1354,7 +1365,7 @@ public class Lvl2 implements Screen{
             trojanWidth = (int)bigTrojan.getX() - 150;
             trojanHeight = (int)bigTrojan.getY();
             if (bigTrojan.getBounds().overlaps(player.getBounds())){
-                score += bigTrojan.getPoints();
+                score += bigTrojan.getPoints()/2;
                 player.setHp(player.getHp() - (bigTrojan.getDamage()*10));
                 for(int i = 0; i < 10; i++) {
                     int p = particles.spawn(ParticleManager.Type.DATA, bigTrojan);
@@ -1435,6 +1446,10 @@ public class Lvl2 implements Screen{
 
             //Creates Bounding box
             memLeak.setBounds(new Rectangle(x, y, memLeak.getSprite().getWidth(), memLeak.getSprite().getHeight()));
+
+            //increments totalFiles
+            totalFiles += memLeak.getFileDropCount();
+
             //Adds the memory leak to the arrayList
             memLeaks.add(memLeak);
 
@@ -1452,7 +1467,7 @@ public class Lvl2 implements Screen{
             memLeak.getSprite().setPosition(memLeak.getX(), memLeak.getY());
             //if memory leak collides with player, remove memoryleak
             if (memLeak.getBounds().overlaps(player.getBounds())){
-                score += memLeak.getPoints();
+                score += memLeak.getPoints()/2;
                 dotHappening = true;
                 startTime = System.currentTimeMillis();
                 for(int i = 0; i < 10; i++) {
@@ -1549,6 +1564,10 @@ public class Lvl2 implements Screen{
 
             //Creates Bounding box
             Body.setBounds(new Rectangle(Body.getX(), Body.getX(), Body.getSprite().getWidth(), Body.getSprite().getHeight()));
+
+            //increments totalFiles
+            totalFiles += Body.getFileDropCount();
+
             //Adds the worm to the arrayList
             bodyArray.add(Body);
             bodyHeight += 160;
@@ -1586,7 +1605,7 @@ public class Lvl2 implements Screen{
                     Body.getSprite().setPosition(Body.getX(), Body.getY());
                     //if worm collides with player remove player and worm section
                     if (Body.getBounds().overlaps(player.getBounds())){
-                        score += Body.getPoints();
+                        score += Body.getPoints()/2;
                         for(int i = 0; i < 10; i++) {
                             int p = particles.spawn(ParticleManager.Type.DATA, Body);
                             particles.x[p] = (Body.getX() + Body.getSprite().getWidth()/2);
@@ -1608,7 +1627,7 @@ public class Lvl2 implements Screen{
                     Body.getSprite().setPosition(Body.getX(), Body.getY());
                     //if worm collides with player remove player and worm section
                     if (Body.getBounds().overlaps(player.getBounds())){
-                        score += Body.getPoints();
+                        score += Body.getPoints()/2;
                         for(int i = 0; i < 10; i++) {
                             int p = particles.spawn(ParticleManager.Type.DATA, Body);
                             particles.x[p] = (Body.getX() + Body.getSprite().getWidth()/2);
@@ -1630,7 +1649,7 @@ public class Lvl2 implements Screen{
                 Body.getSprite().setPosition(Body.getX(), Body.getY());
                 //if worm collides with player remove player and worm section
                 if (Body.getBounds().overlaps(player.getBounds())){
-                    score += Body.getPoints();
+                    score += Body.getPoints()/2;
                     for(int i = 0; i < 10; i++) {
                         int p = particles.spawn(ParticleManager.Type.DATA, Body);
                         particles.x[p] = (Body.getX() + Body.getSprite().getWidth()/2);
@@ -1736,6 +1755,7 @@ public class Lvl2 implements Screen{
 
     public void updateFiles(){
         float y;
+        ArrayList<Files> filesToRemove = new ArrayList<Files>();
         for (Files file : files){
             y = file.getY() - 2;
             file.setY(y);
@@ -1744,12 +1764,14 @@ public class Lvl2 implements Screen{
 
             if (file.getBounds().overlaps(player.getBounds())){
                 sfx.playSound(SoundFXManager.Type.FILE);
-                removeFile = file;
+                filesToRemove.add(file);
                 fileScore ++;
             }
         }
-        if (removeFile != null){
-            files.remove(removeFile);
+        if (!filesToRemove.isEmpty()){
+            for (Files file : filesToRemove) {
+                files.remove(file);
+            }
         }
     }
 

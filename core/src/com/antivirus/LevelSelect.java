@@ -39,6 +39,8 @@ public class LevelSelect implements Screen {
     TextureRegion scoreBackground;
     Image overlay;
 
+    Image background;
+
     GlyphLayout scoreLayout;
 
     private int checkedScore;
@@ -66,6 +68,9 @@ public class LevelSelect implements Screen {
         //initFonts(Gdx.graphics.getWidth()/10);
         skin = new Skin(Gdx.files.internal("uidata/uiskin.json"));
         stage = new Stage();
+
+        background = new Image(new Texture("LevelSelectBackground.png"));
+        background.setSize(1080,1920);
 
         //Gets width and height of screen, ans sets them to variables
         WIDTH = Gdx.graphics.getWidth();
@@ -154,7 +159,7 @@ public class LevelSelect implements Screen {
                 checkingScore = true;
             }
         });
-
+        stage.addActor(background);
         stage.addActor(lvl1button);
         stage.addActor(lvl2button);
         stage.addActor(lvl3button);
@@ -169,7 +174,7 @@ public class LevelSelect implements Screen {
         stage.draw();
 
         batch.begin();
-        font.draw(batch, txt, Gdx.graphics.getWidth() / 2 - layout.width / 2, (Gdx.graphics.getHeight() - Gdx.graphics.getHeight() / 4) + layout.height / 2);
+        font.draw(batch, txt, Gdx.graphics.getWidth() / 2 - layout.width / 2, (Gdx.graphics.getHeight() - Gdx.graphics.getHeight() / 4) + layout.height / 2 + 100);
 
         if (checkingScore) {
             scoreScreenRender();

@@ -4,11 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -25,6 +27,7 @@ public class MenuScreen implements Screen {
     private SpriteBatch batch;
     private Skin skin;
     private Stage stage;
+    private Image background;
 
     private Sound selectSound;
 
@@ -48,6 +51,9 @@ public class MenuScreen implements Screen {
     public void create() {
         //Gdx.app.log("MenuScreen: ", "menuScreen create");
         batch = new SpriteBatch();
+
+        background = new Image(new Texture("MainMenuBackground.png"));
+        background.setSize(1080,1920);
         //initFonts(Gdx.graphics.getWidth()/10);
         skin = new Skin(Gdx.files.internal("uidata/uiskin.json"));
         stage = new Stage();
@@ -80,7 +86,7 @@ public class MenuScreen implements Screen {
             }
         });
 
-
+        stage.addActor(background);
         stage.addActor(button);
         Gdx.input.setInputProcessor(stage);
 
@@ -95,6 +101,7 @@ public class MenuScreen implements Screen {
 
         batch.begin();
         font.draw(batch, txt, Gdx.graphics.getWidth() / 2 - layout.width / 2, (Gdx.graphics.getHeight() - Gdx.graphics.getHeight() / 4) + layout.height / 2);
+
 
 
 //        titleFont.draw(batch, "ANTI-V1RUS",
